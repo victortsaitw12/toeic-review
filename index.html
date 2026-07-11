@@ -304,8 +304,19 @@
     font-size: 1.05rem; padding: 9px 26px; font-weight: 600;
   }
   .controls .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
-  /* 電腦版：左側題目 sidebar；手機版：頂部下拉選單 */
-  .shadow-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 18px; align-items: start; }
+  /* 電腦版：左側題目 sidebar＋右側逐字稿；手機版：單欄＋頂部下拉選單 */
+  body[data-view="shadow"] main { max-width: 1380px; }
+  .shadow-grid {
+    display: grid; grid-template-columns: 220px minmax(0, 1fr) minmax(280px, 430px);
+    gap: 18px; align-items: start;
+  }
+  @media (min-width: 861px) {
+    .tpanel {
+      position: sticky; top: 78px; margin-bottom: 0;
+      max-height: calc(100vh - 96px); display: flex; flex-direction: column;
+    }
+    .tpanel #tlist { max-height: none; flex: 1; }
+  }
   .qside {
     position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow-y: auto;
     background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px;
@@ -328,6 +339,7 @@
   @media (max-width: 860px) {
     .shadow-grid { grid-template-columns: 1fr; }
     .qside { display: none; }
+    .tpanel { position: static; max-height: none; }
   }
   .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; }
   .qpickrow select {
@@ -646,6 +658,7 @@
         <button id="clear-ab">清 A-B</button>
       </div>
     </div>
+    </div><!-- /shadow-main -->
     <div class="tpanel" id="tpanel">
       <div class="thead">
         <h3>逐字稿</h3>
@@ -655,7 +668,6 @@
       </div>
       <div id="tlist"><div class="empty">選擇題目後顯示逐字稿與翻譯</div></div>
     </div>
-    </div><!-- /shadow-main -->
     </div><!-- /shadow-grid -->
     <audio id="audio" preload="auto"></audio>
   </section>
@@ -855,6 +867,7 @@ function showView(v) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
+  document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
 }
 $('tab-cards').onclick = () => showView('cards');
