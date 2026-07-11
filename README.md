@@ -65,3 +65,22 @@ audio/Test1..5/   # 切割好的聽力音檔（每題／每組一個 mp3）
 2. Zero Trust → Access → Applications → Add application → Self-hosted，
    Domain 填你的 `xxx.pages.dev`，Policy 設定只允許你的 Email（一次性驗證碼登入）。
 3. 之後每次 push GitHub，Cloudflare 會自動重新部署；「單字管理」同步功能照常可用。
+
+## 音檔來源
+
+- 模擬考 1–5：**EZ出版社 NEW TOEIC 模擬試題**（版權屬原出版社，僅供個人學習）
+- 來源註記在 `data/audio.js` 的 `TEST_META`，網站的跟讀頁會顯示
+
+## 未來新增其他出版社的考題（SOP）
+
+1. 準備音檔：每回考試兩個 mp3（第 1–52 題、第 53–100 題），放到工作目錄
+2. 執行 `tools/split.py`（修改開頭的 `FILES` 對照表）→ 依靜音自動切成每題一檔，
+   輸出到 `split/Test6/`（編號接續）
+3. 把切好的資料夾複製到 `audio/Test6/`，用 `tools/` 內既有邏輯重新產生
+   `data/audio.js` 的清單，並在 `TEST_META` 加上
+   `"Test6": {"name": "模擬考 6", "source": "○○出版社"}`
+4. 執行 `tools/transcribe.py Test6` 產生逐字稿（需 `pip install faster-whisper`），
+   翻譯後併入 `data/transcripts.js`
+5. `git add . && git commit && git push` 部署
+
+（最簡單的做法：把新音檔放進工作目錄後，直接請 Claude Code 照這個 SOP 跑一遍。）

@@ -171,6 +171,49 @@
   .resultbig { text-align: center; font-size: 2.2rem; font-weight: 800; margin: 6px 0 2px; }
   .resultsub { text-align: center; color: var(--muted); margin-bottom: 14px; }
 
+  /* ---------- exam ---------- */
+  .exam-timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .exam-timer.low { color: var(--bad); }
+  .exambar {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    position: sticky; top: 64px; z-index: 6; background: var(--card);
+    border: 1px solid var(--line); border-radius: 14px; padding: 10px 16px; margin-bottom: 14px;
+  }
+  .exambar .grow2 { flex: 1; }
+  .exambar button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 16px; border-radius: 9px; cursor: pointer; font-size: .9rem;
+  }
+  .exambar .submitbtn { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .passage {
+    background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; white-space: pre-wrap; font-size: .93rem; line-height: 1.65; margin: 10px 0;
+  }
+  .passage .ptype { color: var(--muted); font-size: .78rem; display: block; margin-bottom: 6px; }
+  .rq { padding: 12px 4px; border-bottom: 1px solid var(--line); }
+  .rq .qno { font-weight: 700; margin-right: 6px; }
+  .rq .opts { display: grid; gap: 6px; margin-top: 8px; }
+  .rq .opts label {
+    display: flex; gap: 8px; align-items: baseline; cursor: pointer;
+    padding: 7px 10px; border-radius: 8px; border: 1px solid transparent;
+  }
+  .rq .opts label:hover { background: var(--chip); }
+  .rq .opts label.picked { border-color: var(--accent); background: var(--chip); }
+  .rq .opts label.rgt { border-color: var(--good); background: rgba(31,157,99,.1); }
+  .rq .opts label.wrg { border-color: var(--bad); background: rgba(214,69,69,.1); }
+  .rq .exp { color: var(--muted); font-size: .86rem; margin-top: 8px; padding: 8px 10px; background: var(--chip); border-radius: 8px; }
+  .lq-now {
+    border: 2px solid var(--accent); border-radius: 12px; padding: 4px 10px; margin: 8px 0;
+  }
+  .abc { display: flex; gap: 10px; justify-content: center; margin: 8px 0; }
+  .abc button {
+    width: 62px; height: 52px; font-size: 1.15rem; font-weight: 700; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 11px; background: var(--bg); color: var(--ink);
+  }
+  .abc button.picked { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .lstatus { text-align: center; color: var(--muted); font-size: .88rem; min-height: 1.4em; margin: 6px 0; }
+  .examnote { color: var(--muted); font-size: .85rem; line-height: 1.7; }
+
   /* ---------- shadowing ---------- */
   .testtabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .testtabs button {
@@ -181,11 +224,49 @@
 
   .player {
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
-    padding: 20px 22px; margin-bottom: 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    padding: 16px 20px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,.06);
     position: sticky; top: 64px; z-index: 5;
   }
-  .now { font-size: 1.05rem; font-weight: 650; margin-bottom: 4px; }
-  .now small { color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .now { font-size: 1.02rem; font-weight: 650; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .now small { color: var(--muted); font-weight: 400; }
+  .playrow { display: flex; align-items: center; gap: 14px; }
+  .bigplay {
+    width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-size: 1.3rem; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .playrow .grow { flex: 1; min-width: 0; }
+  .segctrl { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .segctrl button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 13px; border-radius: 10px; cursor: pointer; font-size: .9rem;
+  }
+  .segctrl .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+  .segctrl .sep { width: 1px; height: 22px; background: var(--line); margin: 0 2px; }
+
+  .tpanel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 12px 16px; margin-bottom: 18px;
+  }
+  .thead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .thead h3 { margin: 0; font-size: .95rem; color: var(--muted); font-weight: 600; flex: 1; }
+  .thead button {
+    border: 1px solid var(--line); background: var(--card); color: var(--muted);
+    padding: 4px 12px; border-radius: 999px; cursor: pointer; font-size: .8rem;
+  }
+  .thead button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  #tlist { max-height: 320px; overflow-y: auto; }
+  .tseg {
+    display: flex; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    border-left: 3px solid transparent; align-items: baseline;
+  }
+  .tseg:hover { background: var(--chip); }
+  .tseg.cur { background: var(--chip); border-left-color: var(--accent); }
+  .tseg .tt { color: var(--muted); font-size: .75rem; flex: none; width: 44px; font-variant-numeric: tabular-nums; }
+  .tseg .txt { flex: 1; }
+  .tseg .en { font-size: .96rem; }
+  .tseg .zh2 { color: var(--muted); font-size: .88rem; margin-top: 1px; }
+  .tpanel .empty { color: var(--muted); font-size: .88rem; padding: 8px 4px; }
   .bar {
     height: 10px; background: var(--chip); border-radius: 999px; cursor: pointer;
     position: relative; margin: 12px 0 6px;
@@ -288,6 +369,7 @@
     <button id="tab-cards" class="active">單字卡</button>
     <button id="tab-quiz">單字測驗</button>
     <button id="tab-shadow">聽力跟讀</button>
+    <button id="tab-exam">模擬考試</button>
     <button id="tab-admin">單字管理</button>
   </nav>
   <button id="logout" title="登出後需重新輸入密碼">登出</button>
@@ -347,9 +429,18 @@
           <button data-m="e2z" class="sel">英翻中<small>看英文選中文意思</small></button>
           <button data-m="z2e">中翻英<small>看中文選英文單字</small></button>
           <button data-m="spell">拼字測驗<small>看中文拼出英文</small></button>
-          <button data-m="listen">聽力測驗<small>聽發音選中文意思</small></button>
+          <button data-m="listen">單字聽力<small>聽發音選中文意思</small></button>
+          <button data-m="dict">聽寫測驗<small>聽模擬考句子打出來</small></button>
         </div>
         <div class="toolbar" style="margin-top:14px">
+          <select id="q-dtest" class="hidden dictopt"></select>
+          <select id="q-dpart" class="hidden dictopt">
+            <option value="all">全部 Part</option>
+            <option value="Part1">Part 1</option>
+            <option value="Part2">Part 2</option>
+            <option value="Part3">Part 3</option>
+            <option value="Part4">Part 4</option>
+          </select>
           <select id="q-lv">
             <option value="0">全部級距</option>
             <option value="1">基礎 250–545</option>
@@ -415,16 +506,26 @@
   <section id="view-shadow" class="hidden">
     <div class="testtabs" id="testtabs"></div>
     <div class="player">
-      <div class="now" id="now">請選擇題目</div>
-      <div class="bar" id="bar"><div class="ab hidden" id="abzone"></div><div class="fill" id="fill"></div></div>
-      <div class="time"><span id="t-cur">0:00</span><span id="t-dur">0:00</span></div>
-      <div class="controls">
-        <button id="prev-q">⏮</button>
-        <button class="play" id="play">▶ 播放</button>
-        <button id="next-q">⏭</button>
+      <div class="playrow">
+        <button class="bigplay" id="play">▶</button>
+        <div class="grow">
+          <div class="now" id="now">請選擇題目</div>
+          <div class="bar" id="bar"><div class="ab hidden" id="abzone"></div><div class="fill" id="fill"></div></div>
+          <div class="time"><span id="t-cur">0:00</span><span id="t-dur">0:00</span></div>
+        </div>
+      </div>
+      <div class="segctrl">
+        <button id="prev-q" title="上一題">⏮ 題</button>
+        <button id="next-q" title="下一題">題 ⏭</button>
+        <span class="sep"></span>
+        <button id="prev-seg" title="上一句">⏮ 句</button>
+        <button id="rep-seg" title="重播這一句">↻ 句</button>
+        <button id="next-seg" title="下一句">句 ⏭</button>
+        <button id="seg-loop" title="單句循環（跟讀）">🔂 單句循環</button>
+        <span class="sep"></span>
         <button id="back3">↺ 3 秒</button>
-        <span class="speed">語速
-          <select id="rate">
+        <span class="speed">
+          <select id="rate" title="語速">
             <option value="0.6">0.6×</option>
             <option value="0.75">0.75×</option>
             <option value="0.85">0.85×</option>
@@ -432,14 +533,87 @@
             <option value="1.15">1.15×</option>
           </select>
         </span>
-        <button id="loop">🔁 循環</button>
+        <button id="loop" title="整段循環">🔁 整段</button>
         <button id="set-a">A</button>
         <button id="set-b">B</button>
-        <button id="clear-ab">清除 A-B</button>
+        <button id="clear-ab">清 A-B</button>
       </div>
+    </div>
+    <div class="tpanel" id="tpanel">
+      <div class="thead">
+        <h3>逐字稿</h3>
+        <button id="tg-en" class="on">英文</button>
+        <button id="tg-zh" class="on">中文</button>
+        <button id="tg-follow" class="on">自動捲動</button>
+      </div>
+      <div id="tlist"><div class="empty">選擇題目後顯示逐字稿與翻譯</div></div>
     </div>
     <div class="qlist" id="qlist"></div>
     <audio id="audio" preload="auto"></audio>
+  </section>
+
+  <!-- ================= 模擬考試 ================= -->
+  <section id="view-exam" class="hidden">
+
+    <div id="exam-setup">
+      <div class="panel">
+        <h3>TOEIC 模擬考試（Claude 出題）</h3>
+        <p class="examnote">
+          聽力 <b>94 題</b>（Part 2 應答 25、Part 3 對話 39、Part 4 獨白 30，語音自動播放、比照真實考試節奏）＋
+          閱讀 <b>68 題</b>（Part 5 單句 30、Part 6 段落填空 16、Part 7 閱讀 22，限時 55 分鐘）。<br>
+          聽力採用瀏覽器語音合成播放，Part 1 因需照片素材暫不提供。交卷後自動閱卷、附中文詳解與粗估分數。
+        </p>
+        <div class="btnrow">
+          <button class="primary" id="ex-start-full">▶ 完整模擬考（聽力＋閱讀）</button>
+          <button id="ex-start-l">只考聽力</button>
+          <button id="ex-start-r">只考閱讀</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>考試紀錄</h3>
+        <div id="ex-history"></div>
+      </div>
+    </div>
+
+    <div id="exam-listen" class="hidden">
+      <div class="exambar">
+        <b id="el-part">Part 2</b>
+        <span id="el-prog" style="color:var(--muted);font-size:.9rem"></span>
+        <span class="grow2"></span>
+        <button id="el-pause">⏸ 暫停</button>
+        <button id="el-replay">↻ 重播本題</button>
+        <button id="el-skipwait">⏩ 跳過等待</button>
+        <button id="el-quit" style="color:var(--bad)">結束</button>
+      </div>
+      <div class="panel">
+        <div class="lstatus" id="el-status"></div>
+        <div id="el-area"></div>
+      </div>
+    </div>
+
+    <div id="exam-read" class="hidden">
+      <div class="exambar">
+        <span class="exam-timer" id="er-timer">55:00</span>
+        <span id="er-left" style="color:var(--muted);font-size:.9rem"></span>
+        <span class="grow2"></span>
+        <button class="submitbtn" id="er-submit">交卷</button>
+        <button id="er-quit" style="color:var(--bad)">放棄</button>
+      </div>
+      <div id="er-area"></div>
+    </div>
+
+    <div id="exam-result" class="hidden">
+      <div class="panel">
+        <div class="resultbig" id="ex-score"></div>
+        <div class="resultsub" id="ex-sub"></div>
+        <div class="btnrow" style="justify-content:center">
+          <button id="ex-review-btn">📖 檢討全部題目</button>
+          <button id="ex-back">回考試首頁</button>
+        </div>
+        <div id="ex-review"></div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ================= 單字管理 ================= -->
@@ -498,10 +672,13 @@
   </section>
 </main>
 
-<footer>TOEIC 模擬試題聽力跟讀 & 刷刷鍋多益 1000 單字</footer>
+<footer>聽力音檔：EZ出版社 NEW TOEIC 模擬試題・單字：刷刷鍋多益 1000 單<br>內容版權屬原出版社所有，本站僅供個人學習複習使用</footer>
 
 <script src="data/words.js"></script>
 <script src="data/audio.js"></script>
+<script src="data/transcripts.js"></script>
+<script src="data/exam_l.js"></script>
+<script src="data/exam_r.js"></script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -562,7 +739,7 @@ function updPending() {
 
 /* ================= tabs ================= */
 function showView(v) {
-  for (const k of ['cards', 'quiz', 'shadow', 'admin']) {
+  for (const k of ['cards', 'quiz', 'shadow', 'exam', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
@@ -571,6 +748,7 @@ function showView(v) {
 $('tab-cards').onclick = () => showView('cards');
 $('tab-quiz').onclick = () => showView('quiz');
 $('tab-shadow').onclick = () => showView('shadow');
+$('tab-exam').onclick = () => showView('exam');
 $('tab-admin').onclick = () => showView('admin');
 
 /* ================= flashcards ================= */
@@ -671,15 +849,62 @@ document.addEventListener('keydown', e => {
 });
 
 /* ================= quiz ================= */
-const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '聽力測驗'};
+const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '單字聽力', dict: '聽寫測驗'};
 let qMode = 'e2z', qOnlyHard = false;
-let quiz = null;   // {mode, words:[entry], i, correct, wrong:[w], answered}
+let quiz = null;   // {mode, words:[entry|seg], i, correct, wrong:[], answered}
 let qHistory = JSON.parse(localStorage.getItem('toeic-quiz-history') || '[]');
 
 document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
   qMode = b.dataset.m;
   document.querySelectorAll('.modes button').forEach(x => x.classList.toggle('sel', x === b));
+  const dict = qMode === 'dict';
+  document.querySelectorAll('.dictopt').forEach(el => el.classList.toggle('hidden', !dict));
+  for (const id of ['q-lv', 'q-range', 'q-onlyhard']) $(id).classList.toggle('hidden', dict);
 });
+$('q-dtest').innerHTML = Object.keys(TESTS).map(t =>
+  `<option value="${t}">${testName(t)}</option>`).join('');
+
+/* ----- dictation (listening) helpers ----- */
+const qaudio = new Audio();
+let qaSrc = '', snipEnd = 0;
+qaudio.addEventListener('timeupdate', () => {
+  if (snipEnd && qaudio.currentTime >= snipEnd) qaudio.pause();
+});
+function playSnippet(seg) {
+  snipEnd = seg.e;
+  const src = `audio/${seg.test}/${seg.f}`;
+  if (qaSrc !== src) {
+    qaSrc = src; qaudio.src = src;
+    qaudio.addEventListener('canplay', function h() {
+      qaudio.removeEventListener('canplay', h);
+      qaudio.currentTime = seg.s; qaudio.play();
+    });
+    qaudio.load();
+  } else {
+    qaudio.pause(); qaudio.currentTime = seg.s; qaudio.play();
+  }
+}
+const norm = s => s.toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').split(/\s+/).filter(Boolean);
+function dictExpected(text) {
+  const exp = norm(text);
+  while (exp.length && (/^\d+$/.test(exp[0]) || /^[abcd]$/.test(exp[0]))) exp.shift();
+  return exp;
+}
+function dictPool(test, part) {
+  const T = (typeof TRANSCRIPTS !== 'undefined' && TRANSCRIPTS[test]) || {};
+  const out = [];
+  for (const [f, segs] of Object.entries(T)) {
+    if (f.startsWith('00_')) continue;
+    if (part !== 'all' && !f.startsWith(part)) continue;
+    for (const s of segs) {
+      const dur = s.e - s.s, wc = dictExpected(s.t).length;
+      if (dur < 3 || dur > 14 || wc < 5) continue;
+      if (/^(questions? \d|number \d|part (one|two|three|four)|go on to|look at the graphic)/i.test(s.t)) continue;
+      out.push({test, f, s: s.s, e: s.e, t: s.t, z: s.z || ''});
+    }
+  }
+  return out;
+}
 $('q-onlyhard').onclick = () => { qOnlyHard = !qOnlyHard; $('q-onlyhard').classList.toggle('on', qOnlyHard); };
 
 function buildQRange() {
@@ -722,6 +947,12 @@ function startQuiz(mode, wordList) {
   showQuestion();
 }
 $('q-start').onclick = () => {
+  if (qMode === 'dict') {
+    const pool = dictPool($('q-dtest').value, $('q-dpart').value);
+    if (!pool.length) { alert('這個範圍還沒有逐字稿可以出題'); return; }
+    startQuiz('dict', sample(pool, Math.min(+$('q-count').value, pool.length)));
+    return;
+  }
   const pool = quizPool();
   startQuiz(qMode, sample(pool, Math.min(+$('q-count').value, pool.length)));
 };
@@ -743,6 +974,7 @@ function makeChoices(entry, field) {
 function showQuestion() {
   const q = quiz, e = q.words[q.i];
   q.answered = false;
+  qaudio.pause();
   $('q-progress').textContent = `第 ${q.i + 1} / ${q.words.length} 題・${MODE_NAME[q.mode]}`;
   $('q-score').textContent = `答對 ${q.correct}｜答錯 ${q.wrong.length}`;
   $('q-fb').textContent = ''; $('q-fb').className = 'feedback';
@@ -771,9 +1003,22 @@ function showQuestion() {
     $('q-speak').classList.remove('hidden');
     renderChoices(makeChoices(e, 'zh'), 'zh', e);
     speak(e.w);
+  } else if (q.mode === 'dict') {
+    $('q-big').textContent = '🎧';
+    $('q-sub').textContent = '聽模擬考句子，把聽到的內容打出來（可重聽）';
+    $('q-speak').classList.remove('hidden');
+    $('q-spell').classList.remove('hidden');
+    $('q-input').value = ''; $('q-input').disabled = false;
+    $('q-input').placeholder = '輸入聽到的句子後按 Enter';
+    setTimeout(() => $('q-input').focus(), 50);
+    playSnippet(e);
   }
 }
-$('q-speak').onclick = () => { if (quiz) speak(quiz.words[quiz.i].w); };
+$('q-speak').onclick = () => {
+  if (!quiz) return;
+  const e = quiz.words[quiz.i];
+  quiz.mode === 'dict' ? playSnippet(e) : speak(e.w);
+};
 
 function renderChoices(opts, field, entry) {
   const box = $('q-choices');
@@ -789,7 +1034,7 @@ function renderChoices(opts, field, entry) {
 function answer(ok, entry, pickedBtn) {
   const q = quiz;
   q.answered = true;
-  if (ok) q.correct++; else q.wrong.push(entry.w);
+  if (ok) q.correct++; else q.wrong.push(q.mode === 'dict' ? entry : entry.w);
 
   $('q-choices').querySelectorAll('button').forEach(b => {
     b.disabled = true;
@@ -798,6 +1043,16 @@ function answer(ok, entry, pickedBtn) {
   });
   $('q-input').disabled = true;
 
+  if (q.mode === 'dict') {
+    const {html, pct} = dictDiffHTML(entry, $('q-input').value);
+    $('q-fb').innerHTML = (ok ? `✅ 正確率 ${pct}%` : `❌ 正確率 ${pct}%`) +
+      `<div style="font-weight:400;margin-top:6px">${html}` +
+      (entry.z ? `<div style="color:var(--muted);font-size:.9rem;margin-top:2px">${esc(entry.z)}</div>` : '') + '</div>';
+    $('q-fb').className = 'feedback ' + (ok ? 'good' : 'bad');
+    $('q-next').classList.remove('hidden');
+    $('q-next').focus();
+    return;
+  }
   if (ok) {
     $('q-fb').textContent = '✅ 答對了！';
     $('q-fb').className = 'feedback good';
@@ -810,12 +1065,29 @@ function answer(ok, entry, pickedBtn) {
     $('q-next').focus();
   }
 }
+function dictDiffHTML(seg, typed) {
+  const exp = dictExpected(seg.t);
+  const bag = new Map();
+  norm(typed).forEach(w => bag.set(w, (bag.get(w) || 0) + 1));
+  let hit = 0;
+  const parts = exp.map(w => {
+    const c = bag.get(w) || 0;
+    if (c > 0) { hit++; bag.set(w, c - 1); return `<span style="color:var(--good)">${esc(w)}</span>`; }
+    return `<span style="color:var(--bad);text-decoration:underline">${esc(w)}</span>`;
+  });
+  const pct = exp.length ? Math.round(hit / exp.length * 100) : 0;
+  return {html: parts.join(' '), pct, ratio: exp.length ? hit / exp.length : 0};
+}
 function submitSpell() {
   if (!quiz || quiz.answered || $('q-spell').classList.contains('hidden')) return;
   const e = quiz.words[quiz.i];
-  const val = $('q-input').value.trim().toLowerCase();
+  const val = $('q-input').value.trim();
   if (!val) return;
-  answer(val === e.w.toLowerCase(), e, null);
+  if (quiz.mode === 'dict') {
+    answer(dictDiffHTML(e, val).ratio >= 0.8, e, null);
+    return;
+  }
+  answer(val.toLowerCase() === e.w.toLowerCase(), e, null);
 }
 $('q-submit').onclick = submitSpell;
 $('q-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitSpell(); });
@@ -841,6 +1113,7 @@ $('q-quit').onclick = () => {
 };
 
 function finishQuiz() {
+  qaudio.pause();
   const q = quiz;
   const total = q.correct + q.wrong.length;
   qHistory.unshift({t: Date.now(), mode: q.mode, total, correct: q.correct, wrong: q.wrong});
@@ -857,9 +1130,22 @@ function finishQuiz() {
   bindSpeakBtns($('r-wrong'));
   renderHistory();
 }
-function wrongListHTML(words) {
+let reviewSegs = [];
+function segLabel(seg) {
+  const it = (TESTS[seg.test] || []).find(x => x.f === seg.f);
+  return `${testName(seg.test)}・${it ? it.part + '・' + it.label : seg.f}`;
+}
+function wrongListHTML(items) {
   const map = new Map(getWords().map(w => [w.w, w]));
-  return '<div class="wreview">' + words.map(k => {
+  reviewSegs = [];
+  return '<div class="wreview">' + items.map(k => {
+    if (typeof k === 'object') {   // dictation segment
+      reviewSegs.push(k);
+      return `<div class="item"><b>🎧</b><span class="m">${esc(segLabel(k))}</span>
+        <button class="speak" data-segi="${reviewSegs.length - 1}" style="margin:0 0 0 8px;padding:2px 10px">▶ 重聽</button>
+        <div style="margin-top:3px">${esc(k.t)}</div>
+        ${k.z ? `<div class="m">${esc(k.z)}</div>` : ''}</div>`;
+    }
     const e = map.get(k);
     if (!e) return '';
     return `<div class="item"><b>${esc(e.w)}</b><span class="m">${esc(e.pos)}</span> ${esc(e.zh)}
@@ -869,10 +1155,15 @@ function wrongListHTML(words) {
 }
 function bindSpeakBtns(root) {
   root.querySelectorAll('[data-s]').forEach(b => b.onclick = () => speak(b.dataset.s));
+  root.querySelectorAll('[data-segi]').forEach(b => b.onclick = () => playSnippet(reviewSegs[+b.dataset.segi]));
+}
+function wrongEntries(mode, wrong) {
+  if (mode === 'dict') return wrong.filter(k => typeof k === 'object');
+  const map = new Map(getWords().map(w => [w.w, w]));
+  return wrong.map(k => map.get(k)).filter(Boolean);
 }
 $('r-retry').onclick = () => {
-  const map = new Map(getWords().map(w => [w.w, w]));
-  const list = quiz.wrong.map(k => map.get(k)).filter(Boolean);
+  const list = wrongEntries(quiz.mode, quiz.wrong);
   startQuiz(quiz.mode, sample(list, list.length));
 };
 $('r-again').onclick = () => {
@@ -899,7 +1190,7 @@ function renderHistory() {
     return `<div class="hist-row">
       <span class="score ${pct >= 80 ? 'pass' : 'fail'}">${h.correct}/${h.total}</span>
       <span>${MODE_NAME[h.mode]}</span><span class="when">${when}</span>
-      ${h.wrong.length ? `<span style="color:var(--bad);font-size:.82rem">錯 ${h.wrong.length} 字</span>` : '<span style="color:var(--good);font-size:.82rem">全對</span>'}
+      ${h.wrong.length ? `<span style="color:var(--bad);font-size:.82rem">錯 ${h.wrong.length} 題</span>` : '<span style="color:var(--good);font-size:.82rem">全對</span>'}
       <span class="act">
         ${h.wrong.length ? `<button data-rev="${i}">${openHist === i ? '收合' : '複習錯題'}</button>
         <button data-ret="${i}">重測錯題</button>` : ''}
@@ -913,9 +1204,8 @@ function renderHistory() {
   });
   $('q-history').querySelectorAll('[data-ret]').forEach(b => b.onclick = () => {
     const h = qHistory[+b.dataset.ret];
-    const map = new Map(getWords().map(w => [w.w, w]));
-    const list = h.wrong.map(k => map.get(k)).filter(Boolean);
-    if (!list.length) { alert('這些單字已不在單字表中'); return; }
+    const list = wrongEntries(h.mode, h.wrong);
+    if (!list.length) { alert('這些題目已無法重測（單字可能已被刪除）'); return; }
     startQuiz(h.mode, sample(list, list.length));
   });
   $('q-history').querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
@@ -941,16 +1231,368 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ================= mock exam ================= */
+// 攤平題目：聽力 1–94、閱讀 101–168
+const EXL = [], EXR = [];
+(() => {
+  let no = 1;
+  EXAM_LISTENING.part2.forEach((it, gi) => EXL.push({no: no++, part: 2, gi, ...it}));
+  EXAM_LISTENING.part3.forEach((g, gi) => g.qs.forEach((q, qi) => EXL.push({no: no++, part: 3, gi, qi, ...q})));
+  EXAM_LISTENING.part4.forEach((g, gi) => g.qs.forEach((q, qi) => EXL.push({no: no++, part: 4, gi, qi, ...q})));
+  no = 101;
+  EXAM_READING.part5.forEach((it, gi) => EXR.push({no: no++, part: 5, gi, ...it}));
+  EXAM_READING.part6.forEach((g, gi) => g.qs.forEach((q, qi) => EXR.push({no: no++, part: 6, gi, qi, q: `填空 [${qi + 1}]`, ...q})));
+  EXAM_READING.part7.forEach((g, gi) => g.qs.forEach((q, qi) => EXR.push({no: no++, part: 7, gi, qi, ...q})));
+})();
+const ABCD = ['A', 'B', 'C', 'D'];
+let exam = null;          // {type, la:[], ra:[], unit}
+let exTimer = null, exToken = 0, exSkip = null, exPauseRes = null, exPauseP = null;
+let exHistory = JSON.parse(localStorage.getItem('toeic-exam-history') || '[]');
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+
+function exVoice(gender) {
+  const vs = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().replace('_', '-').startsWith('en'));
+  if (!vs.length) return null;
+  const m = vs.find(v => /david|mark|guy|alex|daniel|fred|james|male/i.test(v.name));
+  const f = vs.find(v => /zira|samantha|victoria|karen|susan|jenny|aria|hazel|kate|female/i.test(v.name));
+  return gender === 'M' ? (m || vs[0]) : (f || vs[1] || vs[0]);
+}
+function exSay(text, gender) {
+  return new Promise(res => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.95;
+    const v = exVoice(gender || 'W');
+    if (v) u.voice = v;
+    if (!v || exVoice('M') === exVoice('W')) u.pitch = gender === 'M' ? 0.8 : 1.15;
+    u.onend = res; u.onerror = res;
+    speechSynthesis.speak(u);
+  });
+}
+const exWait = ms => new Promise(res => {
+  const id = setTimeout(() => { exSkip = null; res(); }, ms);
+  exSkip = () => { clearTimeout(id); exSkip = null; res(); };
+});
+const exGate = () => exPauseP || Promise.resolve();
+
+function examShow(panel) {
+  for (const p of ['exam-setup', 'exam-listen', 'exam-read', 'exam-result'])
+    $(p).classList.toggle('hidden', p !== panel);
+}
+
+/* ----- 聽力單元（unit）列表：P2 每題一單元、P3/4 每題組一單元 ----- */
+const LUNITS = [];
+(() => {
+  EXAM_LISTENING.part2.forEach((it, gi) => LUNITS.push({part: 2, gi}));
+  EXAM_LISTENING.part3.forEach((g, gi) => LUNITS.push({part: 3, gi}));
+  EXAM_LISTENING.part4.forEach((g, gi) => LUNITS.push({part: 4, gi}));
+})();
+const lqOfUnit = u => EXL.filter(q => q.part === u.part && q.gi === u.gi);
+
+function startExam(type) {
+  if (type !== 'r' && !('speechSynthesis' in window)) { alert('此瀏覽器不支援語音合成，無法進行聽力測驗'); return; }
+  exam = {type, la: Array(EXL.length).fill(-1), ra: Array(EXR.length).fill(-1), unit: 0};
+  if (type === 'r') { startReading(); return; }
+  examShow('exam-listen');
+  $('el-pause').textContent = '⏸ 暫停';
+  exPauseP = null; exPauseRes = null;
+  runListening(0);
+}
+$('ex-start-full').onclick = () => startExam('full');
+$('ex-start-l').onclick = () => startExam('l');
+$('ex-start-r').onclick = () => startExam('r');
+
+async function runListening(fromUnit) {
+  const tok = ++exToken;
+  for (let ui = fromUnit; ui < LUNITS.length; ui++) {
+    if (tok !== exToken) return;
+    exam.unit = ui;
+    await playUnit(LUNITS[ui], tok);
+    if (tok !== exToken) return;
+  }
+  speechSynthesis.cancel();
+  if (exam.type === 'full') startReading();
+  else finishExam();
+}
+function renderLUnit(u) {
+  const qs = lqOfUnit(u);
+  $('el-part').textContent = `Part ${u.part}`;
+  $('el-prog').textContent = u.part === 2
+    ? `第 ${qs[0].no} 題 / 共 94 題`
+    : `第 ${qs[0].no}–${qs[qs.length - 1].no} 題 / 共 94 題`;
+  if (u.part === 2) {
+    $('el-area').innerHTML = `
+      <div class="qprompt"><div class="big">第 ${qs[0].no} 題</div>
+      <div class="sub">聽問題與三個回應，選出最合適的答案</div></div>
+      <div class="abc" data-no="${qs[0].no}">
+        ${['A','B','C'].map((L, i) => `<button data-i="${i}" class="${exam.la[qs[0].no - 1] === i ? 'picked' : ''}">${L}</button>`).join('')}
+      </div>`;
+  } else {
+    const g = (u.part === 3 ? EXAM_LISTENING.part3 : EXAM_LISTENING.part4)[u.gi];
+    $('el-area').innerHTML = qs.map(q => `
+      <div class="rq" id="lq-${q.no}">
+        <span class="qno">${q.no}.</span>${esc(q.q)}
+        <div class="opts">${q.opts.map((o, i) => `
+          <label data-no="${q.no}" data-i="${i}" class="${exam.la[q.no - 1] === i ? 'picked' : ''}">
+          <b>(${ABCD[i]})</b> ${esc(o)}</label>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+  $('el-area').querySelectorAll('.abc button').forEach(b => b.onclick = () => {
+    const no = +b.parentElement.dataset.no;
+    exam.la[no - 1] = +b.dataset.i;
+    b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('picked', x === b));
+  });
+  $('el-area').querySelectorAll('.opts label').forEach(l => l.onclick = () => {
+    exam.la[+l.dataset.no - 1] = +l.dataset.i;
+    l.parentElement.querySelectorAll('label').forEach(x => x.classList.toggle('picked', x === l));
+  });
+}
+async function playUnit(u, tok) {
+  renderLUnit(u);
+  const qs = lqOfUnit(u);
+  const st = m => { if (tok === exToken) $('el-status').textContent = m; };
+  if (u.part === 2) {
+    const it = EXAM_LISTENING.part2[u.gi];
+    st('▶ 播放中…');
+    await exGate(); if (tok !== exToken) return;
+    await exSay(`Number ${qs[0].no}.`, 'W');
+    await exGate(); await exSay(it.q, 'W');
+    for (let i = 0; i < 3; i++) {
+      if (tok !== exToken) return;
+      await exGate(); await exSay(['A.', 'B.', 'C.'][i] + ' ' + it.opts[i], 'M');
+    }
+    st('✏️ 作答時間（5 秒）');
+    await exWait(5000);
+  } else {
+    const g = (u.part === 3 ? EXAM_LISTENING.part3 : EXAM_LISTENING.part4)[u.gi];
+    const what = u.part === 3 ? 'conversation' : (g.intro || 'talk');
+    st('▶ 播放中…');
+    await exGate(); if (tok !== exToken) return;
+    await exSay(`Questions ${qs[0].no} through ${qs[qs.length - 1].no} refer to the following ${what}.`, 'W');
+    for (const line of g.lines) {
+      if (tok !== exToken) return;
+      await exGate(); await exSay(line.t, line.s);
+    }
+    for (const q of qs) {
+      if (tok !== exToken) return;
+      document.querySelectorAll('.lq-now').forEach(el => el.classList.remove('lq-now'));
+      const el = $('lq-' + q.no); if (el) el.classList.add('lq-now');
+      await exGate(); await exSay(`Number ${q.no}. ${q.q}`, 'W');
+      st(`✏️ 第 ${q.no} 題作答時間（8 秒）`);
+      await exWait(8000);
+      st('');
+    }
+    document.querySelectorAll('.lq-now').forEach(el => el.classList.remove('lq-now'));
+  }
+}
+$('el-pause').onclick = () => {
+  if (exPauseP) {
+    exPauseRes(); exPauseP = null; exPauseRes = null;
+    speechSynthesis.resume();
+    $('el-pause').textContent = '⏸ 暫停';
+  } else {
+    exPauseP = new Promise(r => { exPauseRes = r; });
+    speechSynthesis.pause();
+    $('el-pause').textContent = '▶ 繼續';
+  }
+};
+$('el-replay').onclick = () => {
+  speechSynthesis.cancel();
+  if (exSkip) exSkip();
+  runListening(exam.unit);
+};
+$('el-skipwait').onclick = () => { if (exSkip) exSkip(); };
+$('el-quit').onclick = () => {
+  if (!confirm('要結束聽力測驗嗎？將直接進入閱卷。')) return;
+  exToken++; speechSynthesis.cancel();
+  if (exSkip) exSkip();
+  exam.type === 'full' ? startReading() : finishExam();
+};
+
+/* ----- 閱讀 ----- */
+const READ_MIN = 55;
+function startReading() {
+  examShow('exam-read');
+  renderReading();
+  let left = READ_MIN * 60;
+  const tick = () => {
+    const m = Math.floor(left / 60), s = left % 60;
+    $('er-timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
+    $('er-timer').classList.toggle('low', left <= 300);
+    if (left-- <= 0) { clearInterval(exTimer); alert('時間到，自動交卷'); finishExam(); }
+  };
+  tick();
+  clearInterval(exTimer);
+  exTimer = setInterval(tick, 1000);
+  updLeft();
+}
+function optHTML(q, i, o, ridx) {
+  return `<label data-r="${ridx}" data-i="${i}" class="${exam.ra[ridx] === i ? 'picked' : ''}"><b>(${ABCD[i]})</b> ${esc(o)}</label>`;
+}
+function renderReading() {
+  let html = '<div class="panel"><h3>Part 5・單句填空（30 題）</h3>';
+  EXR.forEach((q, ri) => {
+    if (q.part !== 5) return;
+    html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(q.q)}
+      <div class="opts">${q.opts.map((o, i) => optHTML(q, i, o, ri)).join('')}</div></div>`;
+  });
+  html += '</div><div class="panel"><h3>Part 6・段落填空（16 題）</h3>';
+  EXAM_READING.part6.forEach((g, gi) => {
+    html += `<div class="passage"><span class="ptype">${esc(g.title)}</span>${esc(g.passage)}</div>`;
+    EXR.forEach((q, ri) => {
+      if (q.part !== 6 || q.gi !== gi) return;
+      html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(q.q)}
+        <div class="opts">${q.opts.map((o, i) => optHTML(q, i, o, ri)).join('')}</div></div>`;
+    });
+  });
+  html += '</div><div class="panel"><h3>Part 7・閱讀測驗（22 題）</h3>';
+  EXAM_READING.part7.forEach((g, gi) => {
+    html += g.passages.map(p => `<div class="passage"><span class="ptype">${esc(p.type)}</span>${esc(p.text)}</div>`).join('');
+    EXR.forEach((q, ri) => {
+      if (q.part !== 7 || q.gi !== gi) return;
+      html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(q.q)}
+        <div class="opts">${q.opts.map((o, i) => optHTML(q, i, o, ri)).join('')}</div></div>`;
+    });
+    html += '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0">';
+  });
+  html += '</div>';
+  $('er-area').innerHTML = html;
+  $('er-area').querySelectorAll('.opts label').forEach(l => l.onclick = () => {
+    exam.ra[+l.dataset.r] = +l.dataset.i;
+    l.parentElement.querySelectorAll('label').forEach(x => x.classList.toggle('picked', x === l));
+    updLeft();
+  });
+}
+function updLeft() {
+  const n = exam.ra.filter(a => a === -1).length;
+  $('er-left').textContent = n ? `尚有 ${n} 題未作答` : '全部作答完畢';
+}
+$('er-submit').onclick = () => {
+  const n = exam.ra.filter(a => a === -1).length;
+  if (n && !confirm(`還有 ${n} 題未作答，確定交卷？`)) return;
+  clearInterval(exTimer);
+  finishExam();
+};
+$('er-quit').onclick = () => {
+  if (!confirm('要放棄這次閱讀測驗嗎？')) return;
+  clearInterval(exTimer);
+  finishExam();
+};
+
+/* ----- 閱卷與檢討 ----- */
+const est = (c, t) => Math.min(495, Math.max(5, Math.round(c / t * 495 / 5) * 5));
+function finishExam() {
+  exToken++; speechSynthesis.cancel(); clearInterval(exTimer);
+  const withL = exam.type !== 'r', withR = exam.type !== 'l';
+  const lC = withL ? EXL.filter((q, i) => exam.la[i] === q.ans).length : 0;
+  const rC = withR ? EXR.filter((q, i) => exam.ra[i] === q.ans).length : 0;
+  const rec = {t: Date.now(), type: exam.type, lC, lT: withL ? EXL.length : 0, rC, rT: withR ? EXR.length : 0,
+               la: exam.la, ra: exam.ra};
+  exHistory.unshift(rec);
+  exHistory = exHistory.slice(0, 20);
+  localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
+  showExamResult(rec);
+}
+function showExamResult(rec) {
+  examShow('exam-result');
+  const parts = [];
+  if (rec.lT) parts.push(`聽力 ${rec.lC}/${rec.lT}（粗估 ${est(rec.lC, rec.lT)} 分）`);
+  if (rec.rT) parts.push(`閱讀 ${rec.rC}/${rec.rT}（粗估 ${est(rec.rC, rec.rT)} 分）`);
+  const total = (rec.lT ? est(rec.lC, rec.lT) : 0) + (rec.rT ? est(rec.rC, rec.rT) : 0);
+  $('ex-score').textContent = rec.lT && rec.rT ? `粗估 ${total} 分` : parts[0].split('（')[1]?.replace('）', '') || '';
+  $('ex-sub').innerHTML = parts.join('　') + '<br><span style="font-size:.8rem">分數為依答對率換算的粗估值，僅供參考</span>';
+  $('ex-review').innerHTML = '';
+  $('ex-review-btn').onclick = () => renderExamReview(rec);
+}
+function reviewOpts(q, picked) {
+  return `<div class="opts">${q.opts.map((o, i) => {
+    let cls = '';
+    if (i === q.ans) cls = 'rgt';
+    else if (i === picked) cls = 'wrg';
+    return `<label class="${cls}"><b>(${ABCD[i]})</b> ${esc(o)}${i === picked ? '　←你的答案' : ''}</label>`;
+  }).join('')}</div><div class="exp">💡 ${esc(q.exp)}</div>`;
+}
+function renderExamReview(rec) {
+  let html = '';
+  if (rec.lT) {
+    html += '<div class="panel"><h3>聽力檢討</h3>';
+    LUNITS.forEach(u => {
+      const qs = lqOfUnit(u);
+      const g = u.part === 2 ? null : (u.part === 3 ? EXAM_LISTENING.part3 : EXAM_LISTENING.part4)[u.gi];
+      if (u.part === 2) {
+        const it = EXAM_LISTENING.part2[u.gi], q = qs[0];
+        html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(it.q)}${reviewOpts(q, rec.la[q.no - 1])}</div>`;
+      } else {
+        html += `<div class="passage"><span class="ptype">第 ${qs[0].no}–${qs[qs.length - 1].no} 題音檔內容</span>${g.lines.map(l => `${l.s === 'M' ? '男' : '女'}：${esc(l.t)}`).join('\n')}</div>`;
+        qs.forEach(q => {
+          html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(q.q)}${reviewOpts(q, rec.la[q.no - 1])}</div>`;
+        });
+      }
+    });
+    html += '</div>';
+  }
+  if (rec.rT) {
+    html += '<div class="panel"><h3>閱讀檢討</h3>';
+    let lastKey = '';
+    EXR.forEach((q, ri) => {
+      if (q.part === 6 && `6-${q.gi}` !== lastKey) {
+        lastKey = `6-${q.gi}`;
+        const g = EXAM_READING.part6[q.gi];
+        html += `<div class="passage"><span class="ptype">${esc(g.title)}</span>${esc(g.passage)}</div>`;
+      }
+      if (q.part === 7 && `7-${q.gi}` !== lastKey) {
+        lastKey = `7-${q.gi}`;
+        html += EXAM_READING.part7[q.gi].passages.map(p =>
+          `<div class="passage"><span class="ptype">${esc(p.type)}</span>${esc(p.text)}</div>`).join('');
+      }
+      html += `<div class="rq"><span class="qno">${q.no}.</span>${esc(q.q || '')}${reviewOpts(q, rec.ra[ri])}</div>`;
+    });
+    html += '</div>';
+  }
+  $('ex-review').innerHTML = html;
+}
+$('ex-back').onclick = () => { examShow('exam-setup'); renderExamHistory(); };
+function renderExamHistory() {
+  if (!exHistory.length) {
+    $('ex-history').innerHTML = '<p style="color:var(--muted);font-size:.88rem">還沒有考試紀錄</p>';
+    return;
+  }
+  const TYPE = {full: '聽力＋閱讀', l: '聽力', r: '閱讀'};
+  $('ex-history').innerHTML = exHistory.map((h, i) => {
+    const d = new Date(h.t);
+    const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const s = [];
+    if (h.lT) s.push(`聽 ${h.lC}/${h.lT}`);
+    if (h.rT) s.push(`讀 ${h.rC}/${h.rT}`);
+    return `<div class="hist-row"><span class="score">${s.join('・')}</span>
+      <span>${TYPE[h.type]}</span><span class="when">${when}</span>
+      <span class="act"><button data-exrev="${i}">檢討</button><button data-exdel="${i}">刪除</button></span></div>`;
+  }).join('');
+  $('ex-history').querySelectorAll('[data-exrev]').forEach(b => b.onclick = () => {
+    const h = exHistory[+b.dataset.exrev];
+    showExamResult(h); renderExamReview(h);
+  });
+  $('ex-history').querySelectorAll('[data-exdel]').forEach(b => b.onclick = () => {
+    exHistory.splice(+b.dataset.exdel, 1);
+    localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
+    renderExamHistory();
+  });
+}
+
 /* ================= shadowing ================= */
 const audio = $('audio');
 let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
 let curIdx = -1, abA = null, abB = null;
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const META = typeof TEST_META !== 'undefined' ? TEST_META : {};
+const testName = t => META[t]?.name || `模擬考 ${t.replace('Test', '')}`;
+const testSource = t => META[t]?.source || '';
 
 function buildTestTabs() {
   $('testtabs').innerHTML = Object.keys(TESTS).map(t =>
-    `<button data-t="${t}" class="${t === curTest ? 'active' : ''}">模擬考 ${t.replace('Test', '')}</button>`).join('');
+    `<button data-t="${t}" class="${t === curTest ? 'active' : ''}" title="${esc(testSource(t))}">${esc(testName(t))}</button>`).join('') +
+    (testSource(curTest) ? `<span style="align-self:center;color:var(--muted);font-size:.78rem">來源：${esc(testSource(curTest))}（僅供個人學習）</span>` : '');
   $('testtabs').querySelectorAll('button').forEach(b => b.onclick = () => {
     curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest);
     curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
@@ -973,17 +1615,91 @@ function buildList() {
 function load(i, play) {
   const items = TESTS[curTest];
   if (i < 0 || i >= items.length) return;
-  curIdx = i; clearAB();
+  curIdx = i; clearAB(); segLoop = false; curSeg = -1;
+  $('seg-loop').classList.remove('on');
   const it = items[i];
   audio.src = `audio/${curTest}/${it.f}`;
   audio.playbackRate = +$('rate').value;
-  $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>模擬考 ${curTest.replace('Test', '')}</small>`;
-  buildList();
+  $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>${esc(testName(curTest))}</small>`;
+  buildList(); renderTranscript();
   if (play) audio.play();
 }
 function updPlay() {
-  $('play').textContent = audio.paused ? '▶ 播放' : '⏸ 暫停';
+  $('play').textContent = audio.paused ? '▶' : '⏸';
 }
+
+/* ----- transcript & sentence navigation ----- */
+let curSeg = -1, segLoop = false;
+const tset = JSON.parse(localStorage.getItem('toeic-tset') || '{"en":true,"zh":true,"follow":true}');
+
+function segsNow() {
+  if (curIdx < 0) return null;
+  const f = TESTS[curTest][curIdx].f;
+  const t = (typeof TRANSCRIPTS !== 'undefined' && TRANSCRIPTS[curTest]) ? TRANSCRIPTS[curTest][f] : null;
+  return (t && t.length) ? t : null;
+}
+function renderTranscript() {
+  const segs = segsNow();
+  if (!segs) {
+    $('tlist').innerHTML = `<div class="empty">${curIdx < 0 ? '選擇題目後顯示逐字稿與翻譯' : '這一題還沒有逐字稿'}</div>`;
+    return;
+  }
+  $('tlist').innerHTML = segs.map((s, i) => `
+    <div class="tseg" data-i="${i}">
+      <span class="tt">${fmt(s.s)}</span>
+      <span class="txt">
+        <div class="en" style="${tset.en ? '' : 'display:none'}">${esc(s.t)}</div>
+        <div class="zh2" style="${tset.zh ? '' : 'display:none'}">${esc(s.z || '')}</div>
+      </span>
+    </div>`).join('');
+  $('tlist').querySelectorAll('.tseg').forEach(el => el.onclick = () => {
+    const s = segs[+el.dataset.i];
+    audio.currentTime = s.s + 0.01;
+    if (audio.paused) audio.play();
+  });
+  curSeg = -1;
+}
+function updateSeg() {
+  const segs = segsNow();
+  if (!segs) return;
+  const t = audio.currentTime;
+  let i = segs.findIndex(s => t >= s.s && t < s.e);
+  if (i === curSeg) return;
+  if (i === -1) return;         // between segments: keep last highlight
+  curSeg = i;
+  $('tlist').querySelectorAll('.tseg').forEach(el =>
+    el.classList.toggle('cur', +el.dataset.i === i));
+  if (tset.follow && !audio.paused) {
+    const el = $('tlist').querySelector(`.tseg[data-i="${i}"]`);
+    if (el) el.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  }
+}
+function gotoSeg(d) {
+  const segs = segsNow();
+  if (!segs) { audio.currentTime = Math.max(0, audio.currentTime + d * 3); return; }
+  let i = curSeg;
+  if (i < 0) i = segs.findIndex(s => audio.currentTime < s.e);
+  i = Math.min(Math.max((i < 0 ? 0 : i) + d, 0), segs.length - 1);
+  audio.currentTime = segs[i].s + 0.01;
+  if (audio.paused) audio.play();
+}
+$('prev-seg').onclick = () => gotoSeg(-1);
+$('next-seg').onclick = () => gotoSeg(1);
+$('rep-seg').onclick = () => gotoSeg(0);
+$('seg-loop').onclick = () => {
+  segLoop = !segLoop;
+  $('seg-loop').classList.toggle('on', segLoop);
+};
+function tsetBtn(id, key) {
+  $(id).classList.toggle('on', tset[key]);
+  $(id).onclick = () => {
+    tset[key] = !tset[key];
+    localStorage.setItem('toeic-tset', JSON.stringify(tset));
+    $(id).classList.toggle('on', tset[key]);
+    if (key !== 'follow') renderTranscript();
+  };
+}
+tsetBtn('tg-en', 'en'); tsetBtn('tg-zh', 'zh'); tsetBtn('tg-follow', 'follow');
 $('play').onclick = () => {
   if (curIdx < 0) { load(1, true); return; }
   audio.paused ? audio.play() : audio.pause();
@@ -1020,7 +1736,14 @@ audio.addEventListener('timeupdate', () => {
   if (abA !== null && abB !== null && audio.currentTime >= abB) {
     audio.currentTime = abA;
     if (audio.paused) audio.play();
+    return;
   }
+  const segs = segsNow();
+  if (segLoop && segs && curSeg >= 0 && audio.currentTime >= segs[curSeg].e) {
+    audio.currentTime = segs[curSeg].s + 0.01;
+    return;
+  }
+  updateSeg();
 });
 audio.addEventListener('play', updPlay);
 audio.addEventListener('pause', updPlay);
