@@ -304,6 +304,31 @@
     font-size: 1.05rem; padding: 9px 26px; font-weight: 600;
   }
   .controls .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+  /* 電腦版：左側題目 sidebar；手機版：頂部下拉選單 */
+  .shadow-grid { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .qside {
+    position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow-y: auto;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px;
+  }
+  .qside h4 {
+    margin: 10px 6px 4px; font-size: .78rem; color: var(--muted); font-weight: 600;
+    position: sticky; top: -8px; background: var(--card); padding: 6px 0 4px; z-index: 1;
+  }
+  .qside h4:first-child { margin-top: 2px; }
+  .qside button {
+    display: flex; justify-content: space-between; align-items: baseline; width: 100%;
+    border: none; background: none; color: var(--ink); text-align: left;
+    padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: .88rem;
+  }
+  .qside button:hover { background: var(--chip); }
+  .qside button.cur { background: var(--accent); color: var(--accent-ink); }
+  .qside button .d { color: var(--muted); font-size: .74rem; }
+  .qside button.cur .d { color: inherit; opacity: .8; }
+  @media (min-width: 861px) { .qpickrow { display: none; } }
+  @media (max-width: 860px) {
+    .shadow-grid { grid-template-columns: 1fr; }
+    .qside { display: none; }
+  }
   .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; }
   .qpickrow select {
     flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink);
@@ -578,6 +603,9 @@
   <!-- ================= 跟讀 ================= -->
   <section id="view-shadow" class="hidden">
     <div class="testtabs" id="testtabs"></div>
+    <div class="shadow-grid">
+    <aside class="qside" id="qside"></aside>
+    <div class="shadow-main">
     <div class="qpickrow">
       <select id="qsel"></select>
       <button id="qprev" title="上一題">⏮</button>
@@ -627,6 +655,8 @@
       </div>
       <div id="tlist"><div class="empty">選擇題目後顯示逐字稿與翻譯</div></div>
     </div>
+    </div><!-- /shadow-main -->
+    </div><!-- /shadow-grid -->
     <audio id="audio" preload="auto"></audio>
   </section>
 
@@ -1703,6 +1733,20 @@ function buildQSel() {
       `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
         `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
   $('qsel').value = String(curIdx);
+  $('qside').innerHTML = Object.entries(parts).map(([p, arr]) =>
+    `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
+      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${it.label}<span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+  $('qside').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+}
+function updSide() {
+  $('qside').querySelectorAll('button').forEach(b =>
+    b.classList.toggle('cur', +b.dataset.i === curIdx));
+  const cur = $('qside').querySelector('button.cur');
+  if (cur) {
+    const box = $('qside');
+    const y = cur.offsetTop - box.clientHeight / 2;
+    if (Math.abs(box.scrollTop - y) > box.clientHeight / 2) box.scrollTo({top: y, behavior: 'smooth'});
+  }
 }
 $('qsel').onchange = () => load(+$('qsel').value, true);
 $('qprev').onclick = () => load(curIdx - 1, !audio.paused);
@@ -1717,6 +1761,7 @@ function load(i, play) {
   audio.playbackRate = +$('rate').value;
   $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>${esc(testName(curTest))}</small>`;
   $('qsel').value = String(i);
+  updSide();
   $('nowline').classList.add('hidden');
   renderTranscript();
   if (play) audio.play();
