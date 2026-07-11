@@ -8,7 +8,7 @@
   :root {
     --bg: #f5f6f8; --card: #ffffff; --ink: #1c2230; --muted: #66707f;
     --accent: #2f6fed; --accent-ink: #ffffff; --line: #e3e6eb;
-    --good: #1f9d63; --warn: #d9822b; --chip: #eef1f5;
+    --good: #1f9d63; --warn: #d9822b; --bad: #d64545; --chip: #eef1f5;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -29,20 +29,43 @@
     flex-wrap: wrap; position: sticky; top: 0; z-index: 10;
   }
   header h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; }
-  nav { display: flex; gap: 8px; }
+  nav { display: flex; gap: 8px; flex-wrap: wrap; }
   nav button {
     border: 1px solid var(--line); background: transparent; color: var(--ink);
     padding: 7px 18px; border-radius: 999px; font-size: .95rem; cursor: pointer;
   }
   nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  #logout { margin-left: auto; border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; }
   main { max-width: 880px; margin: 0 auto; padding: 22px 16px 60px; }
   .hidden { display: none !important; }
+
+  /* ---------- login gate ---------- */
+  #gate {
+    position: fixed; inset: 0; z-index: 100; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .gatecard {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 40px 34px; width: 100%; max-width: 380px; text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,.1);
+  }
+  .gatecard h2 { margin: 0 0 6px; font-size: 1.3rem; }
+  .gatecard p { color: var(--muted); font-size: .9rem; margin: 0 0 22px; }
+  .gatecard input {
+    width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--bg); color: var(--ink); font-size: 1rem; margin-bottom: 12px;
+  }
+  .gatecard button {
+    width: 100%; padding: 11px; border: none; border-radius: 10px; cursor: pointer;
+    background: var(--accent); color: var(--accent-ink); font-size: 1rem; font-weight: 600;
+  }
+  #gate-err { color: var(--bad); font-size: .85rem; min-height: 1.3em; margin-top: 10px; }
 
   /* ---------- flashcards ---------- */
   .toolbar {
     display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
   }
-  .toolbar select, .toolbar button, .speed select {
+  .toolbar select, .toolbar button, .speed select, .toolbar input {
     border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 7px 12px; border-radius: 8px; font-size: .9rem; cursor: pointer;
   }
@@ -133,17 +156,80 @@
   .chips button.cur { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .chips button .d { color: var(--muted); font-size: .75rem; margin-left: 5px; }
   .chips button.cur .d { color: inherit; opacity: .8; }
+
+  /* ---------- admin ---------- */
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 18px 20px; margin-bottom: 18px;
+  }
+  .panel h3 { margin: 0 0 12px; font-size: 1rem; }
+  .panel .desc { color: var(--muted); font-size: .84rem; margin: 6px 0 12px; }
+  .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .formgrid .full { grid-column: 1 / -1; }
+  .formgrid label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 3px; }
+  .formgrid input, .formgrid textarea, .syncrow input {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px;
+    background: var(--bg); color: var(--ink); font-size: .95rem; font-family: inherit;
+  }
+  .formgrid textarea { resize: vertical; min-height: 44px; }
+  .btnrow { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  .btnrow button, .syncrow button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 9px 18px; border-radius: 9px; cursor: pointer; font-size: .92rem;
+  }
+  .btnrow .primary, .syncrow .primary {
+    background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
+  }
+  .badge {
+    background: var(--warn); color: #fff; border-radius: 999px; font-size: .75rem;
+    padding: 2px 10px; margin-left: 8px; vertical-align: 2px;
+  }
+  .badge.zero { background: var(--good); }
+  .wrow {
+    display: flex; align-items: baseline; gap: 10px; padding: 9px 4px;
+    border-bottom: 1px solid var(--line); flex-wrap: wrap;
+  }
+  .wrow b { font-size: 1.02rem; }
+  .wrow .pos2 { color: var(--muted); font-size: .82rem; }
+  .wrow .zh2 { font-size: .92rem; }
+  .wrow .tag { font-size: .72rem; color: var(--warn); border: 1px solid var(--warn); border-radius: 5px; padding: 0 6px; }
+  .wrow .act { margin-left: auto; display: flex; gap: 6px; }
+  .wrow .act button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 4px 12px; border-radius: 7px; cursor: pointer; font-size: .82rem;
+  }
+  .wrow .act .del { color: var(--bad); border-color: var(--bad); }
+  .syncrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .syncrow input { flex: 1; min-width: 220px; }
+  #sync-status { font-size: .86rem; margin-top: 10px; min-height: 1.3em; }
+  #sync-status.ok { color: var(--good); }
+  #sync-status.err { color: var(--bad); }
+  .morebtn { width: 100%; margin-top: 10px; padding: 9px; border: 1px dashed var(--line);
+    background: none; color: var(--muted); border-radius: 9px; cursor: pointer; }
   footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 0; }
 </style>
 </head>
 <body>
+
+<!-- ================= 登入 ================= -->
+<div id="gate">
+  <div class="gatecard">
+    <h2>📚 多益複習</h2>
+    <p>請輸入密碼進入</p>
+    <input type="password" id="gate-pw" placeholder="密碼" autocomplete="current-password">
+    <button id="gate-go">進入</button>
+    <div id="gate-err"></div>
+  </div>
+</div>
 
 <header>
   <h1>📚 多益複習</h1>
   <nav>
     <button id="tab-cards" class="active">單字卡</button>
     <button id="tab-shadow">聽力跟讀</button>
+    <button id="tab-admin">單字管理</button>
   </nav>
+  <button id="logout" title="登出後需重新輸入密碼">登出</button>
 </header>
 
 <main>
@@ -212,6 +298,55 @@
     <div class="qlist" id="qlist"></div>
     <audio id="audio" preload="auto"></audio>
   </section>
+
+  <!-- ================= 單字管理 ================= -->
+  <section id="view-admin" class="hidden">
+    <div class="panel">
+      <h3 id="form-title">新增單字</h3>
+      <div class="formgrid">
+        <div><label>單字</label><input id="e-w" placeholder="synergy"></div>
+        <div><label>詞性</label><input id="e-pos" placeholder="n."></div>
+        <div class="full"><label>中文釋義</label><input id="e-zh" placeholder="綜效；協同作用"></div>
+        <div class="full"><label>英文例句</label><textarea id="e-ex" placeholder="The merger created synergy between the two teams."></textarea></div>
+        <div class="full"><label>例句翻譯</label><textarea id="e-exzh" placeholder="合併為兩個團隊創造了綜效。"></textarea></div>
+      </div>
+      <div class="btnrow">
+        <button class="primary" id="save-word">💾 儲存單字</button>
+        <button id="cancel-edit" class="hidden">取消編輯</button>
+        <span id="form-msg" style="color:var(--good);font-size:.86rem"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>同步到 GitHub<span class="badge zero" id="pending">無未同步變更</span></h3>
+      <p class="desc">
+        變更會先存在這個瀏覽器裡。按「同步」會把最新單字表 commit 到 GitHub repo，
+        約 1 分鐘後全站（含其他裝置）就會看到新單字。<br>
+        Token 建立方式：GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> →
+        Generate new token → Repository access 只勾 <b>toeic-review</b> → Permissions 給
+        <b>Contents: Read and write</b>。Token 只存在你這台瀏覽器的 localStorage。
+      </p>
+      <div class="syncrow">
+        <input type="password" id="gh-token" placeholder="GitHub fine-grained token（github_pat_…）">
+        <button id="save-token">儲存 Token</button>
+        <button class="primary" id="do-sync">⬆ 同步到 GitHub</button>
+      </div>
+      <div id="sync-status"></div>
+      <div class="btnrow">
+        <button id="export-json">📤 匯出單字備份 (JSON)</button>
+        <button id="discard-edits">🗑 放棄未同步變更</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>單字列表<span class="badge zero" id="wcount"></span></h3>
+      <div class="toolbar" style="margin-bottom:10px">
+        <input id="search" placeholder="🔍 搜尋單字或中文…" style="flex:1;min-width:200px;cursor:text">
+      </div>
+      <div id="wlist"></div>
+      <button class="morebtn hidden" id="more">顯示更多…</button>
+    </div>
+  </section>
 </main>
 
 <footer>TOEIC 模擬試題聽力跟讀 & 刷刷鍋多益 1000 單字</footer>
@@ -222,28 +357,88 @@
 'use strict';
 const $ = id => document.getElementById(id);
 
+/* ================= login gate ================= */
+const PASS_HASH = 'e545931178924da5250a5a34218ab3553302e668ba5378a461da1121bcee314a';
+async function sha256hex(s) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function tryUnlock() {
+  const pw = $('gate-pw').value;
+  if (!pw) return;
+  if (await sha256hex(pw) === PASS_HASH) {
+    localStorage.setItem('toeic-auth', PASS_HASH);
+    $('gate').classList.add('hidden');
+  } else {
+    $('gate-err').textContent = '密碼錯誤';
+    $('gate-pw').select();
+  }
+}
+$('gate-go').onclick = tryUnlock;
+$('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+if (localStorage.getItem('toeic-auth') === PASS_HASH) $('gate').classList.add('hidden');
+$('logout').onclick = () => { localStorage.removeItem('toeic-auth'); location.reload(); };
+
+/* ================= word data with local edits ================= */
+let BASE = WORDS;
+const edits = JSON.parse(localStorage.getItem('toeic-edits') || '{"upsert":{},"del":[]}');
+// drop overlay entries already merged into the deployed base
+for (const [k, v] of Object.entries(edits.upsert)) {
+  const b = BASE.find(w => w.w === k);
+  if (b && JSON.stringify(b) === JSON.stringify(v)) delete edits.upsert[k];
+}
+edits.del = edits.del.filter(k => BASE.some(w => w.w === k));
+
+function getWords() {
+  const del = new Set(edits.del), seen = new Set(), out = [];
+  for (const w of BASE) {
+    if (del.has(w.w)) continue;
+    out.push(edits.upsert[w.w] || w);
+    seen.add(w.w);
+  }
+  for (const k of Object.keys(edits.upsert))
+    if (!seen.has(k) && !del.has(k)) out.push(edits.upsert[k]);
+  return out;
+}
+function pendingCount() { return Object.keys(edits.upsert).length + edits.del.length; }
+function saveEdits() {
+  localStorage.setItem('toeic-edits', JSON.stringify(edits));
+  updPending();
+}
+function updPending() {
+  const n = pendingCount();
+  $('pending').textContent = n ? `${n} 筆未同步` : '無未同步變更';
+  $('pending').classList.toggle('zero', !n);
+}
+
 /* ================= tabs ================= */
 function showView(v) {
-  $('view-cards').classList.toggle('hidden', v !== 'cards');
-  $('view-shadow').classList.toggle('hidden', v !== 'shadow');
-  $('tab-cards').classList.toggle('active', v === 'cards');
-  $('tab-shadow').classList.toggle('active', v === 'shadow');
+  for (const k of ['cards', 'shadow', 'admin']) {
+    $('view-' + k).classList.toggle('hidden', v !== k);
+    $('tab-' + k).classList.toggle('active', v === k);
+  }
   localStorage.setItem('toeic-view', v);
 }
 $('tab-cards').onclick = () => showView('cards');
 $('tab-shadow').onclick = () => showView('shadow');
+$('tab-admin').onclick = () => showView('admin');
 
 /* ================= flashcards ================= */
 const marks = JSON.parse(localStorage.getItem('toeic-marks') || '{}'); // word -> 'known' | 'hard'
 let deck = [], idx = 0, shuffled = false, onlyHard = false;
 
 const rangeSel = $('range');
-rangeSel.innerHTML = '<option value="all">全部 1000 字</option>' +
-  Array.from({length: 10}, (_, i) =>
-    `<option value="${i}">單字 ${i * 100 + 1}–${(i + 1) * 100}</option>`).join('');
-
+function buildRange() {
+  const n = getWords().length;
+  const prev = rangeSel.value;
+  let html = `<option value="all">全部 ${n} 字</option>`;
+  for (let i = 0; i * 100 < n; i++)
+    html += `<option value="${i}">單字 ${i * 100 + 1}–${Math.min((i + 1) * 100, n)}</option>`;
+  rangeSel.innerHTML = html;
+  if ([...rangeSel.options].some(o => o.value === prev)) rangeSel.value = prev;
+}
 function buildDeck() {
-  let pool = WORDS.map((w, i) => ({...w, i}));
+  let pool = getWords();
   const r = rangeSel.value;
   if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
   if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
@@ -257,10 +452,9 @@ function buildDeck() {
   renderCard();
 }
 function renderCard() {
-  const c = $('card');
-  c.classList.remove('flip');
+  $('card').classList.remove('flip');
   if (!deck.length) {
-    $('f-word').textContent = '🎉'; $('f-pos').textContent = '這個範圍沒有標記不熟的單字';
+    $('f-word').textContent = '🎉'; $('f-pos').textContent = '這個範圍沒有符合的單字';
     $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
     $('counter').textContent = '0 / 0';
     $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
@@ -309,7 +503,8 @@ rangeSel.onchange = buildDeck;
 
 document.addEventListener('keydown', e => {
   if ($('view-cards').classList.contains('hidden')) return;
-  if (e.target.tagName === 'SELECT') return;
+  if (!$('gate').classList.contains('hidden')) return;
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
   if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flip'); }
   else if (e.key === 'ArrowLeft') move(-1);
   else if (e.key === 'ArrowRight') move(1);
@@ -362,7 +557,7 @@ function updPlay() {
   $('play').textContent = audio.paused ? '▶ 播放' : '⏸ 暫停';
 }
 $('play').onclick = () => {
-  if (curIdx < 0) { load(1, true); return; }   // 直接從第 1 題開始
+  if (curIdx < 0) { load(1, true); return; }
   audio.paused ? audio.play() : audio.pause();
 };
 $('prev-q').onclick = () => load(curIdx - 1, !audio.paused);
@@ -408,8 +603,155 @@ $('bar').onclick = e => {
   audio.currentTime = (e.clientX - r.left) / r.width * audio.duration;
 };
 
+/* ================= admin: add / edit words ================= */
+let editingKey = null;   // original word spelling when editing an existing entry
+let listLimit = 50;
+
+function refreshWordViews() {
+  buildRange(); buildDeck(); renderList(); updPending();
+}
+function clearForm() {
+  for (const f of ['e-w', 'e-pos', 'e-zh', 'e-ex', 'e-exzh']) $(f).value = '';
+  editingKey = null;
+  $('form-title').textContent = '新增單字';
+  $('cancel-edit').classList.add('hidden');
+}
+$('cancel-edit').onclick = clearForm;
+
+$('save-word').onclick = () => {
+  const entry = {
+    w: $('e-w').value.trim(),
+    pos: $('e-pos').value.trim(),
+    zh: $('e-zh').value.trim(),
+    ex: $('e-ex').value.trim(),
+    exzh: $('e-exzh').value.trim(),
+  };
+  if (!entry.w || !entry.zh) { $('form-msg').textContent = '「單字」和「中文釋義」必填'; return; }
+  if (editingKey && editingKey !== entry.w) {
+    // spelling changed: remove the old entry
+    delete edits.upsert[editingKey];
+    if (BASE.some(w => w.w === editingKey) && !edits.del.includes(editingKey)) edits.del.push(editingKey);
+  }
+  edits.del = edits.del.filter(k => k !== entry.w);
+  edits.upsert[entry.w] = entry;
+  saveEdits();
+  $('form-msg').textContent = `已儲存「${entry.w}」（記得同步到 GitHub）`;
+  setTimeout(() => { $('form-msg').textContent = ''; }, 4000);
+  clearForm();
+  refreshWordViews();
+};
+
+function startEdit(w) {
+  const e = getWords().find(x => x.w === w);
+  if (!e) return;
+  $('e-w').value = e.w; $('e-pos').value = e.pos; $('e-zh').value = e.zh;
+  $('e-ex').value = e.ex; $('e-exzh').value = e.exzh;
+  editingKey = e.w;
+  $('form-title').textContent = `編輯：${e.w}`;
+  $('cancel-edit').classList.remove('hidden');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+function delWord(w) {
+  if (!confirm(`確定刪除「${w}」？`)) return;
+  delete edits.upsert[w];
+  if (BASE.some(x => x.w === w) && !edits.del.includes(w)) edits.del.push(w);
+  saveEdits();
+  refreshWordViews();
+}
+
+function renderList() {
+  const q = $('search').value.trim().toLowerCase();
+  let list = getWords();
+  if (q) list = list.filter(w =>
+    w.w.toLowerCase().includes(q) || w.zh.includes(q) || w.ex.toLowerCase().includes(q));
+  $('wcount').textContent = `${list.length} 筆`;
+  const shown = list.slice(0, listLimit);
+  $('wlist').innerHTML = shown.map(w => {
+    const changed = edits.upsert[w.w] ? '<span class="tag">未同步</span>' : '';
+    return `<div class="wrow"><b>${esc(w.w)}</b><span class="pos2">${esc(w.pos)}</span>
+      <span class="zh2">${esc(w.zh)}</span>${changed}
+      <span class="act"><button data-e="${esc(w.w)}">編輯</button><button class="del" data-d="${esc(w.w)}">刪除</button></span></div>`;
+  }).join('') || '<p style="color:var(--muted)">沒有符合的單字</p>';
+  $('more').classList.toggle('hidden', list.length <= listLimit);
+  $('wlist').querySelectorAll('[data-e]').forEach(b => b.onclick = () => startEdit(b.dataset.e));
+  $('wlist').querySelectorAll('[data-d]').forEach(b => b.onclick = () => delWord(b.dataset.d));
+}
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('search').oninput = () => { listLimit = 50; renderList(); };
+$('more').onclick = () => { listLimit += 100; renderList(); };
+
+$('discard-edits').onclick = () => {
+  if (!pendingCount()) return;
+  if (!confirm(`放棄 ${pendingCount()} 筆未同步的變更？`)) return;
+  edits.upsert = {}; edits.del = [];
+  saveEdits(); refreshWordViews();
+};
+
+$('export-json').onclick = () => {
+  const blob = new Blob([JSON.stringify(getWords(), null, 1)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'toeic-words-backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+/* ================= GitHub sync ================= */
+const GH_API = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/words.js';
+if (localStorage.getItem('toeic-token')) $('gh-token').value = '••••••••（已儲存）';
+$('save-token').onclick = () => {
+  const t = $('gh-token').value.trim();
+  if (!t || t.startsWith('••')) return;
+  localStorage.setItem('toeic-token', t);
+  $('gh-token').value = '••••••••（已儲存）';
+  syncStatus('Token 已儲存在此瀏覽器', 'ok');
+};
+function syncStatus(msg, cls) {
+  $('sync-status').textContent = msg;
+  $('sync-status').className = cls || '';
+}
+function b64utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+$('do-sync').onclick = async () => {
+  const token = localStorage.getItem('toeic-token');
+  if (!token) { syncStatus('請先貼上並儲存 GitHub token', 'err'); return; }
+  if (!pendingCount()) { syncStatus('沒有需要同步的變更', 'ok'); return; }
+  const headers = {
+    'Authorization': 'Bearer ' + token,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  try {
+    syncStatus('同步中…');
+    const cur = await fetch(GH_API + '?ref=main', {headers});
+    if (!cur.ok) throw new Error(`讀取失敗 HTTP ${cur.status}（token 權限或已過期？）`);
+    const sha = (await cur.json()).sha;
+    const merged = getWords();
+    const content = 'const WORDS = ' + JSON.stringify(merged) + ';\n';
+    const put = await fetch(GH_API, {
+      method: 'PUT', headers,
+      body: JSON.stringify({
+        message: `更新單字表（${pendingCount()} 筆變更，共 ${merged.length} 字）`,
+        content: b64utf8(content), sha, branch: 'main',
+      }),
+    });
+    if (!put.ok) throw new Error(`寫入失敗 HTTP ${put.status}`);
+    BASE = merged;
+    edits.upsert = {}; edits.del = [];
+    saveEdits(); refreshWordViews();
+    syncStatus(`✅ 已同步 ${merged.length} 個單字，網站約 1 分鐘後更新`, 'ok');
+  } catch (e) {
+    syncStatus('❌ ' + e.message, 'err');
+  }
+};
+
 /* ================= init ================= */
-buildTestTabs(); buildList(); buildDeck();
+buildTestTabs(); buildList(); buildRange(); buildDeck(); renderList(); updPending();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
 </body>

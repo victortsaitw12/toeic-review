@@ -36,3 +36,32 @@ data/words.js     # 1000 個單字資料
 data/audio.js     # 音檔清單（各模擬考、各題、時長）
 audio/Test1..5/   # 切割好的聽力音檔（每題／每組一個 mp3）
 ```
+
+## 登入密碼
+
+網站有前端密碼閘門，預設密碼：`toeic1000`。
+
+修改密碼：執行 `echo -n '新密碼' | sha256sum`，把結果取代 `index.html` 裡的
+`PASS_HASH` 值後 push。
+（注意：這只是前端保護，擋得住一般訪客，但 repo 是公開的，音檔網址仍可被直接存取。
+需要真正的存取控制請改用 Cloudflare Pages + Cloudflare Access，見下方。）
+
+## 單字管理（新增／修改／刪除）
+
+網站的「單字管理」分頁可以直接新增、編輯、刪除單字與例句：
+
+1. 變更會立刻存在瀏覽器 localStorage（單字卡馬上可用）。
+2. 按「⬆ 同步到 GitHub」會把整份單字表 commit 回 `data/words.js`，
+   網站自動重新部署，其他裝置約 1 分鐘後也會看到。
+3. 同步需要 GitHub fine-grained token：
+   GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token，
+   Repository access 只選 `toeic-review`，Permissions 給 **Contents: Read and write**。
+   Token 只存在瀏覽器 localStorage，不會進入 repo。
+
+## 需要真正的登入保護？改用 Cloudflare Pages（免費）
+
+1. 註冊 Cloudflare → Workers & Pages → Create → Pages → **Connect to Git** → 選這個 repo
+   （Build 設定全部留空，直接 Deploy），會得到 `xxx.pages.dev` 網址。
+2. Zero Trust → Access → Applications → Add application → Self-hosted，
+   Domain 填你的 `xxx.pages.dev`，Policy 設定只允許你的 Email（一次性驗證碼登入）。
+3. 之後每次 push GitHub，Cloudflare 會自動重新部署；「單字管理」同步功能照常可用。
