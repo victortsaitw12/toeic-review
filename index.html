@@ -272,7 +272,7 @@
     padding: 4px 12px; border-radius: 999px; cursor: pointer; font-size: .8rem;
   }
   .thead button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  #tlist { max-height: 320px; overflow-y: auto; }
+  #tlist { max-height: 56vh; overflow-y: auto; position: relative; }
   .tseg {
     display: flex; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer;
     border-left: 3px solid transparent; align-items: baseline;
@@ -304,16 +304,21 @@
     font-size: 1.05rem; padding: 9px 26px; font-weight: 600;
   }
   .controls .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
-  .qlist { display: flex; flex-direction: column; gap: 18px; }
-  .part h3 { margin: 0 0 8px; font-size: .95rem; color: var(--muted); font-weight: 600; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chips button {
-    border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    padding: 8px 13px; border-radius: 9px; cursor: pointer; font-size: .88rem;
+  .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; }
+  .qpickrow select {
+    flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 11px 12px; border-radius: 10px; font-size: 1rem; cursor: pointer;
   }
-  .chips button.cur { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  .chips button .d { color: var(--muted); font-size: .75rem; margin-left: 5px; }
-  .chips button.cur .d { color: inherit; opacity: .8; }
+  .qpickrow button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 0 16px; border-radius: 10px; cursor: pointer; font-size: 1rem; flex: none;
+  }
+  .nowline {
+    margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+    background: var(--chip); border-left: 3px solid var(--accent);
+  }
+  .nowline .nl-en { font-size: 1.02rem; font-weight: 600; }
+  .nowline .nl-zh { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
   /* ---------- admin ---------- */
   .panel {
@@ -394,8 +399,9 @@
     .segctrl .sep { display: none; }
     .tseg { padding: 9px 6px; }
     .tseg .tt { width: 38px; font-size: .7rem; }
-    #tlist { max-height: 42vh; }
-    .chips button { padding: 10px 12px; }
+    #tlist { max-height: 46vh; }
+    .qpickrow select { padding: 12px 10px; }
+    .nowline .nl-en { font-size: .95rem; }
 
     /* 測驗與考試 */
     .modes { grid-template-columns: 1fr 1fr; }
@@ -572,6 +578,11 @@
   <!-- ================= 跟讀 ================= -->
   <section id="view-shadow" class="hidden">
     <div class="testtabs" id="testtabs"></div>
+    <div class="qpickrow">
+      <select id="qsel"></select>
+      <button id="qprev" title="上一題">⏮</button>
+      <button id="qnext" title="下一題">⏭</button>
+    </div>
     <div class="player">
       <div class="playrow">
         <button class="bigplay" id="play">▶</button>
@@ -581,10 +592,11 @@
           <div class="time"><span id="t-cur">0:00</span><span id="t-dur">0:00</span></div>
         </div>
       </div>
+      <div class="nowline hidden" id="nowline">
+        <div class="nl-en" id="nl-en"></div>
+        <div class="nl-zh" id="nl-zh"></div>
+      </div>
       <div class="segctrl">
-        <button id="prev-q" title="上一題">⏮ 題</button>
-        <button id="next-q" title="下一題">題 ⏭</button>
-        <span class="sep"></span>
         <button id="prev-seg" title="上一句">⏮ 句</button>
         <button id="rep-seg" title="重播這一句">↻ 句</button>
         <button id="next-seg" title="下一句">句 ⏭</button>
@@ -615,7 +627,6 @@
       </div>
       <div id="tlist"><div class="empty">選擇題目後顯示逐字稿與翻譯</div></div>
     </div>
-    <div class="qlist" id="qlist"></div>
     <audio id="audio" preload="auto"></audio>
   </section>
 
@@ -1677,21 +1688,25 @@ function buildTestTabs() {
     curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest);
     curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
     $('now').textContent = '請選擇題目';
-    buildTestTabs(); buildList(); updPlay();
+    $('nowline').classList.add('hidden');
+    buildTestTabs(); buildQSel(); renderTranscript(); updPlay();
   });
 }
-function buildList() {
+const PART_DESC = {'Part 1': 'Part 1・照片描述', 'Part 2': 'Part 2・應答問題',
+                   'Part 3': 'Part 3・簡短對話', 'Part 4': 'Part 4・簡短獨白', '說明': '考試說明'};
+function buildQSel() {
   const items = TESTS[curTest];
   const parts = {};
   items.forEach((it, i) => (parts[it.part] ||= []).push([i, it]));
-  $('qlist').innerHTML = Object.entries(parts).map(([p, arr]) => `
-    <div class="part"><h3>${p === '說明' ? '考試說明' : p + (
-      {'Part 1': '・照片描述', 'Part 2': '・應答問題', 'Part 3': '・簡短對話', 'Part 4': '・簡短獨白'}[p] || '')}</h3>
-    <div class="chips">${arr.map(([i, it]) =>
-      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${it.label}<span class="d">${fmt(it.dur)}</span></button>`
-    ).join('')}</div></div>`).join('');
-  $('qlist').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+  $('qsel').innerHTML = '<option value="-1" disabled>— 選擇題目 —</option>' +
+    Object.entries(parts).map(([p, arr]) =>
+      `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
+        `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
+  $('qsel').value = String(curIdx);
 }
+$('qsel').onchange = () => load(+$('qsel').value, true);
+$('qprev').onclick = () => load(curIdx - 1, !audio.paused);
+$('qnext').onclick = () => load(curIdx + 1, !audio.paused);
 function load(i, play) {
   const items = TESTS[curTest];
   if (i < 0 || i >= items.length) return;
@@ -1701,7 +1716,9 @@ function load(i, play) {
   audio.src = `audio/${curTest}/${it.f}`;
   audio.playbackRate = +$('rate').value;
   $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>${esc(testName(curTest))}</small>`;
-  buildList(); renderTranscript();
+  $('qsel').value = String(i);
+  $('nowline').classList.add('hidden');
+  renderTranscript();
   if (play) audio.play();
 }
 function updPlay() {
@@ -1747,11 +1764,17 @@ function updateSeg() {
   if (i === curSeg) return;
   if (i === -1) return;         // between segments: keep last highlight
   curSeg = i;
+  const s = segs[i];
+  $('nl-en').textContent = s.t;
+  $('nl-zh').textContent = s.z || '';
+  $('nl-zh').style.display = s.z ? '' : 'none';
+  $('nowline').classList.remove('hidden');
   $('tlist').querySelectorAll('.tseg').forEach(el =>
     el.classList.toggle('cur', +el.dataset.i === i));
   if (tset.follow && !audio.paused) {
     const el = $('tlist').querySelector(`.tseg[data-i="${i}"]`);
-    if (el) el.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    const box = $('tlist');
+    if (el) box.scrollTo({top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth'});
   }
 }
 function gotoSeg(d) {
@@ -1784,8 +1807,6 @@ $('play').onclick = () => {
   if (curIdx < 0) { load(1, true); return; }
   audio.paused ? audio.play() : audio.pause();
 };
-$('prev-q').onclick = () => load(curIdx - 1, !audio.paused);
-$('next-q').onclick = () => load(curIdx + 1, !audio.paused);
 $('back3').onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 3); };
 $('rate').onchange = () => { audio.playbackRate = +$('rate').value; };
 $('loop').onclick = () => { audio.loop = !audio.loop; $('loop').classList.toggle('on', audio.loop); };
@@ -1985,7 +2006,7 @@ $('do-sync').onclick = async () => {
 };
 
 /* ================= init ================= */
-buildTestTabs(); buildList(); buildRange(); buildDeck(); renderList(); updPending();
+buildTestTabs(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
 buildQRange(); renderHistory(); renderExamHistory();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
