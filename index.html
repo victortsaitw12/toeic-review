@@ -2,7 +2,11 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2f6fed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="多益複習">
 <title>多益複習 TOEIC Review</title>
 <style>
   :root {
@@ -17,6 +21,8 @@
     }
   }
   * { box-sizing: border-box; }
+  button, select, input, textarea, label { touch-action: manipulation; }
+  button { -webkit-tap-highlight-color: transparent; }
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -25,18 +31,29 @@
   }
   header {
     background: var(--card); border-bottom: 1px solid var(--line);
-    padding: 14px 20px; display: flex; align-items: center; gap: 20px;
-    flex-wrap: wrap; position: sticky; top: 0; z-index: 10;
+    padding: 10px 16px; padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    display: flex; align-items: center; gap: 14px;
+    flex-wrap: nowrap; position: sticky; top: 0; z-index: 10;
   }
-  header h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; }
-  nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  header h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; white-space: nowrap; }
+  nav {
+    display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1;
+  }
+  nav::-webkit-scrollbar { display: none; }
   nav button {
     border: 1px solid var(--line); background: transparent; color: var(--ink);
-    padding: 7px 18px; border-radius: 999px; font-size: .95rem; cursor: pointer;
+    padding: 8px 16px; border-radius: 999px; font-size: .95rem; cursor: pointer;
+    white-space: nowrap; flex: none;
   }
   nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  #logout { margin-left: auto; border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; }
-  main { max-width: 880px; margin: 0 auto; padding: 22px 16px 60px; }
+  #logout { border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; white-space: nowrap; }
+  main {
+    max-width: 880px; margin: 0 auto; padding: 22px 16px 60px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
   .hidden { display: none !important; }
 
   /* ---------- login gate ---------- */
@@ -347,7 +364,57 @@
   #sync-status.err { color: var(--bad); }
   .morebtn { width: 100%; margin-top: 10px; padding: 9px; border: 1px dashed var(--line);
     background: none; color: var(--muted); border-radius: 9px; cursor: pointer; }
-  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 0; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 12px; }
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 700px) {
+    header { padding-top: 8px; padding-bottom: 8px; gap: 10px; }
+    header .ttl { display: none; }
+    nav button { padding: 8px 13px; font-size: .9rem; }
+    main { padding-top: 14px; padding-bottom: 48px; }
+
+    /* 觸控目標與 iOS 聚焦縮放：輸入類字級固定 ≥16px */
+    input, select, textarea { font-size: 16px !important; }
+
+    /* 單字卡 */
+    .face { padding: 26px 18px; }
+    .word { font-size: 2rem; }
+    .zh { font-size: 1.3rem; }
+    .flashcard { min-height: 300px; }
+    .cardnav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cardnav button { min-width: 0; padding: 13px 8px; }
+    .kbd-tip { display: none; }
+    .hint { font-size: .72rem; }
+
+    /* 聽力解析播放器 */
+    .player { padding: 12px 14px; top: 54px; border-radius: 14px; }
+    .bigplay { width: 46px; height: 46px; font-size: 1.1rem; }
+    .segctrl { gap: 6px; margin-top: 8px; }
+    .segctrl button { padding: 9px 11px; font-size: .86rem; }
+    .segctrl .sep { display: none; }
+    .tseg { padding: 9px 6px; }
+    .tseg .tt { width: 38px; font-size: .7rem; }
+    #tlist { max-height: 42vh; }
+    .chips button { padding: 10px 12px; }
+
+    /* 測驗與考試 */
+    .modes { grid-template-columns: 1fr 1fr; }
+    .modes button { padding: 13px 8px; font-size: .9rem; }
+    .panel { padding: 14px 14px; border-radius: 14px; }
+    .qprompt .big { font-size: 1.6rem; }
+    .exambar { top: 54px; padding: 8px 10px; gap: 8px; }
+    .exambar button { padding: 8px 11px; font-size: .84rem; }
+    .exam-timer { font-size: 1.2rem; }
+    .abc button { width: 58px; height: 50px; }
+    .rq .opts label { padding: 10px 10px; }
+    .wrow .act { width: 100%; margin-left: 0; }
+    .hist-row .act { width: 100%; margin-left: 0; }
+    .hist-row .act button, .wrow .act button { padding: 8px 14px; }
+  }
+  /* 進度條加大觸控範圍（視覺高度不變） */
+  .bar { height: 22px; padding: 6px 0; background-clip: content-box; }
+  .bar .fill { border-radius: 999px; }
+  .bar .ab { top: 3px; bottom: 3px; }
 </style>
 </head>
 <body>
@@ -364,7 +431,7 @@
 </div>
 
 <header>
-  <h1>📚 多益複習</h1>
+  <h1>📚<span class="ttl"> 多益複習</span></h1>
   <nav>
     <button id="tab-cards" class="active">單字卡</button>
     <button id="tab-quiz">單字測驗</button>
@@ -829,6 +896,18 @@ function speak(text) {
   speechSynthesis.speak(u);
 }
 $('card').onclick = () => $('card').classList.toggle('flip');
+// 手機滑動手勢：左右滑切換單字
+let swipeX = null, swipeY = null;
+$('card').addEventListener('touchstart', e => {
+  swipeX = e.touches[0].clientX; swipeY = e.touches[0].clientY;
+}, {passive: true});
+$('card').addEventListener('touchend', e => {
+  if (swipeX === null) return;
+  const dx = e.changedTouches[0].clientX - swipeX;
+  const dy = e.changedTouches[0].clientY - swipeY;
+  swipeX = swipeY = null;
+  if (Math.abs(dx) > 60 && Math.abs(dy) < 50) move(dx < 0 ? 1 : -1);
+}, {passive: true});
 $('prev-card').onclick = () => move(-1);
 $('next-card').onclick = () => move(1);
 $('mark-known').onclick = () => mark('known');
