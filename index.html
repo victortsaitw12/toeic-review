@@ -188,6 +188,31 @@
   .resultbig { text-align: center; font-size: 2.2rem; font-weight: 800; margin: 6px 0 2px; }
   .resultsub { text-align: center; color: var(--muted); margin-bottom: 14px; }
 
+  /* ---------- speaking practice ---------- */
+  .clipcard {
+    display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px;
+    cursor: pointer; background: var(--card);
+  }
+  .clipcard:hover { border-color: var(--accent); }
+  .clipcard .ttl2 { flex: 1; min-width: 0; }
+  .clipcard .ttl2 b { display: block; font-size: .98rem; }
+  .clipcard .ttl2 small { color: var(--muted); font-size: .78rem; }
+  .accent-badge { flex: none; font-size: .75rem; padding: 3px 10px; border-radius: 999px; color: #fff; font-weight: 600; }
+  .accent-us { background: #2f6fed; }
+  .accent-uk { background: #d64545; }
+  .sp-now {
+    margin: 12px 0; padding: 14px 16px; border-radius: 12px;
+    background: var(--chip); border-left: 4px solid var(--accent); min-height: 76px;
+  }
+  .sp-now .sp-en { font-size: 1.15rem; font-weight: 650; line-height: 1.5; }
+  .sp-now .sp-zh { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+  #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { opacity: .6; } }
+  .recdot { color: var(--good); font-size: .7rem; margin-left: 6px; }
+  #sp-back { border: none; background: none; color: var(--muted); cursor: pointer; padding: 0 0 8px; font-size: .88rem; }
+  .sp-tip { color: var(--muted); font-size: .82rem; margin-top: 10px; line-height: 1.6; }
+
   /* ---------- exam ---------- */
   .exam-timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
   .exam-timer.low { color: var(--bad); }
@@ -479,6 +504,7 @@
     <button id="tab-cards" class="active">單字卡</button>
     <button id="tab-quiz">單字測驗</button>
     <button id="tab-shadow">EZ模擬考聽力解析</button>
+    <button id="tab-speak">口說跟讀</button>
     <button id="tab-exam">模擬考試</button>
     <button id="tab-admin">單字管理</button>
   </nav>
@@ -661,6 +687,7 @@
           </select>
         </span>
         <button id="loop" title="整段循環">🔁 整段</button>
+        <button id="auto-next" title="這一題播完後自動播放下一題">▶▶ 自動下一題</button>
         <button id="set-a">A</button>
         <button id="set-b">B</button>
         <button id="clear-ab">清 A-B</button>
@@ -678,6 +705,55 @@
     </div>
     </div><!-- /shadow-grid -->
     <audio id="audio" preload="auto"></audio>
+  </section>
+
+  <!-- ================= 口說跟讀 ================= -->
+  <section id="view-speak" class="hidden">
+
+    <div id="speak-list">
+      <div class="panel">
+        <h3>選擇練習音檔</h3>
+        <p class="desc">🇺🇸 VOA＝美國口音・慢速清晰（入門）｜🇬🇧 BBC＝英國口音・自然對話（進階）。
+        逐句播放 → 按錄音跟讀 → 比對自己和原音的差異。</p>
+        <div id="clip-list"><p style="color:var(--muted)">資料準備中…</p></div>
+      </div>
+    </div>
+
+    <div id="speak-run" class="hidden">
+      <div class="panel">
+        <button id="sp-back">← 返回音檔列表</button>
+        <h3 id="sp-title"></h3>
+        <div class="sp-now">
+          <div class="sp-en" id="sp-en">點下方任一句開始練習</div>
+          <div class="sp-zh" id="sp-zh"></div>
+        </div>
+        <div class="controls">
+          <button class="play" id="sp-play">▶ 原音</button>
+          <button id="sp-loop">🔂 循環</button>
+          <button id="sp-rec">⏺ 錄音</button>
+          <button id="sp-mine" disabled>▶ 我的錄音</button>
+          <button id="sp-prev">⏮ 句</button>
+          <button id="sp-next">句 ⏭</button>
+          <span class="speed">
+            <select id="sp-rate">
+              <option value="0.6">0.6×</option>
+              <option value="0.75">0.75×</option>
+              <option value="0.85">0.85×</option>
+              <option value="1" selected>1.0×</option>
+            </select>
+          </span>
+          <button id="sp-auto">🎙 自動跟讀模式</button>
+          <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
+        </div>
+        <p class="sp-tip">跟讀方法：先聽原音 → 按「⏺ 錄音」複誦一次 → 按「▶ 我的錄音」和原音比對。
+        「自動跟讀模式」會播一句、留時間讓你複誦、再自動播下一句。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
+      </div>
+      <div class="tpanel">
+        <div class="thead"><h3>句子列表</h3></div>
+        <div id="sp-list" style="max-height:48vh;overflow-y:auto;position:relative"></div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ================= 模擬考試 ================= -->
@@ -807,6 +883,7 @@
 <script src="data/transcripts.js"></script>
 <script src="data/exam_l.js"></script>
 <script src="data/exam_r.js"></script>
+<script src="data/speak.js"></script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -871,7 +948,7 @@ function updPending() {
 
 /* ================= tabs ================= */
 function showView(v) {
-  for (const k of ['cards', 'quiz', 'shadow', 'exam', 'admin']) {
+  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'exam', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
@@ -881,6 +958,7 @@ function showView(v) {
 $('tab-cards').onclick = () => showView('cards');
 $('tab-quiz').onclick = () => showView('quiz');
 $('tab-shadow').onclick = () => showView('shadow');
+$('tab-speak').onclick = () => showView('speak');
 $('tab-exam').onclick = () => showView('exam');
 $('tab-admin').onclick = () => showView('admin');
 
@@ -1376,6 +1454,133 @@ document.addEventListener('keydown', e => {
   }
 });
 
+/* ================= speaking practice ================= */
+const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
+const spAudio = new Audio(), spMine = new Audio();
+let spClip = null, spIdx = -1, spLoopOn = false, spAutoOn = false, spAutoTimer = null;
+let spRecorder = null, spChunks = [], spStream = null;
+const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
+
+function renderClipList() {
+  if (!SPEAK_DATA.length) return;
+  $('clip-list').innerHTML = SPEAK_DATA.map((c, i) => `
+    <div class="clipcard" data-i="${i}">
+      <span class="accent-badge ${c.accent === '英' ? 'accent-uk' : 'accent-us'}">${c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'}</span>
+      <span class="ttl2"><b>${esc(c.title)}</b><small>${esc(c.source)}・${c.segs.length} 句・${fmt(c.dur)}</small></span>
+    </div>`).join('');
+  $('clip-list').querySelectorAll('.clipcard').forEach(el => el.onclick = () => openClip(+el.dataset.i));
+}
+function openClip(i) {
+  spStopAll();
+  spClip = SPEAK_DATA[i]; spIdx = -1;
+  spRecs.forEach(u => URL.revokeObjectURL(u)); spRecs.clear();
+  spAudio.src = spClip.src;
+  $('sp-title').textContent = spClip.title;
+  $('sp-en').textContent = '點下方任一句開始練習'; $('sp-zh').textContent = '';
+  $('sp-prog').textContent = `共 ${spClip.segs.length} 句`;
+  $('speak-list').classList.add('hidden');
+  $('speak-run').classList.remove('hidden');
+  renderSpList();
+}
+function renderSpList() {
+  $('sp-list').innerHTML = spClip.segs.map((s, i) => `
+    <div class="tseg ${i === spIdx ? 'cur' : ''}" data-i="${i}">
+      <span class="tt">${fmt(s.s)}</span>
+      <span class="txt"><div class="en">${esc(s.t)}${spRecs.has(i) ? '<span class="recdot">●已錄</span>' : ''}</div>
+      <div class="zh2">${esc(s.z || '')}</div></span>
+    </div>`).join('');
+  $('sp-list').querySelectorAll('.tseg').forEach(el => el.onclick = () => spPlaySeg(+el.dataset.i));
+}
+function spMarkCur() {
+  $('sp-list').querySelectorAll('.tseg').forEach(el =>
+    el.classList.toggle('cur', +el.dataset.i === spIdx));
+  const el = $('sp-list').querySelector('.tseg.cur'), box = $('sp-list');
+  if (el) box.scrollTo({top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth'});
+  const s = spClip.segs[spIdx];
+  if (s) {
+    $('sp-en').textContent = s.t;
+    $('sp-zh').textContent = s.z || '';
+    $('sp-prog').textContent = `第 ${spIdx + 1} / ${spClip.segs.length} 句`;
+  }
+  $('sp-mine').disabled = !spRecs.has(spIdx);
+}
+function spPlaySeg(i) {
+  if (!spClip || i < 0 || i >= spClip.segs.length) return;
+  clearTimeout(spAutoTimer);
+  spIdx = i; spMarkCur();
+  const s = spClip.segs[i];
+  spAudio.playbackRate = +$('sp-rate').value;
+  const go = () => { spAudio.currentTime = s.s + 0.01; spAudio.play(); };
+  if (spAudio.readyState >= 1) go();
+  else spAudio.addEventListener('loadedmetadata', go, {once: true});
+}
+spAudio.addEventListener('timeupdate', () => {
+  if (!spClip || spIdx < 0) return;
+  const s = spClip.segs[spIdx];
+  if (spAudio.currentTime < s.e) return;
+  if (spLoopOn) { spAudio.currentTime = s.s + 0.01; return; }
+  spAudio.pause();
+  if (spAutoOn) {
+    const gap = Math.max(1500, (s.e - s.s) * 1250 / (+$('sp-rate').value));
+    spAutoTimer = setTimeout(() => {
+      if (spAutoOn && spIdx + 1 < spClip.segs.length) spPlaySeg(spIdx + 1);
+      else spSetAuto(false);
+    }, gap);
+  }
+});
+function spStopAll() {
+  spAudio.pause(); spMine.pause();
+  clearTimeout(spAutoTimer);
+  if (spRecorder && spRecorder.state === 'recording') spRecorder.stop();
+  spSetAuto(false);
+}
+function spSetAuto(on) {
+  spAutoOn = on;
+  $('sp-auto').classList.toggle('on', on);
+  if (!on) clearTimeout(spAutoTimer);
+}
+$('sp-back').onclick = () => { spStopAll(); $('speak-run').classList.add('hidden'); $('speak-list').classList.remove('hidden'); };
+$('sp-play').onclick = () => { if (spIdx < 0) spPlaySeg(0); else spPlaySeg(spIdx); };
+$('sp-prev').onclick = () => spPlaySeg(spIdx - 1);
+$('sp-next').onclick = () => spPlaySeg(spIdx + 1);
+$('sp-loop').onclick = () => { spLoopOn = !spLoopOn; $('sp-loop').classList.toggle('on', spLoopOn); };
+$('sp-auto').onclick = () => {
+  spSetAuto(!spAutoOn);
+  if (spAutoOn) spPlaySeg(spIdx < 0 ? 0 : spIdx);
+};
+$('sp-rate').onchange = () => { spAudio.playbackRate = +$('sp-rate').value; };
+$('sp-mine').onclick = () => {
+  if (!spRecs.has(spIdx)) return;
+  spMine.src = spRecs.get(spIdx);
+  spMine.play();
+};
+$('sp-rec').onclick = async () => {
+  if (spRecorder && spRecorder.state === 'recording') { spRecorder.stop(); return; }
+  if (spIdx < 0) { alert('請先選一個句子'); return; }
+  try {
+    spStream = spStream || await navigator.mediaDevices.getUserMedia({audio: true});
+  } catch (e) {
+    alert('無法取得麥克風權限：' + e.message); return;
+  }
+  spAudio.pause(); clearTimeout(spAutoTimer);
+  spChunks = [];
+  spRecorder = new MediaRecorder(spStream);
+  const recIdx = spIdx;
+  spRecorder.ondataavailable = e => spChunks.push(e.data);
+  spRecorder.onstop = () => {
+    const url = URL.createObjectURL(new Blob(spChunks, {type: spRecorder.mimeType || 'audio/webm'}));
+    if (spRecs.has(recIdx)) URL.revokeObjectURL(spRecs.get(recIdx));
+    spRecs.set(recIdx, url);
+    $('sp-rec').textContent = '⏺ 錄音';
+    $('sp-rec').classList.remove('recording');
+    renderSpList(); spMarkCur();
+    spMine.src = url; spMine.play();   // 錄完立刻回放
+  };
+  spRecorder.start();
+  $('sp-rec').textContent = '⏹ 停止';
+  $('sp-rec').classList.add('recording');
+};
+
 /* ================= mock exam ================= */
 // 攤平題目：聽力 1–94、閱讀 101–168
 const EXL = [], EXR = [];
@@ -1800,6 +2005,13 @@ function updPlay() {
 let curSeg = -1, segLoop = false;
 const tset = JSON.parse(localStorage.getItem('toeic-tset') || '{"en":true,"zh":true,"follow":true}');
 if (tset.now === undefined) tset.now = true;
+if (tset.autonext === undefined) tset.autonext = false;
+$('auto-next').classList.toggle('on', tset.autonext);
+$('auto-next').onclick = () => {
+  tset.autonext = !tset.autonext;
+  localStorage.setItem('toeic-tset', JSON.stringify(tset));
+  $('auto-next').classList.toggle('on', tset.autonext);
+};
 function updNowline() {
   $('nowline').classList.toggle('hidden', !(tset.now && curSeg >= 0 && segsNow()));
 }
@@ -1932,7 +2144,10 @@ audio.addEventListener('timeupdate', () => {
 });
 audio.addEventListener('play', updPlay);
 audio.addEventListener('pause', updPlay);
-audio.addEventListener('ended', updPlay);
+audio.addEventListener('ended', () => {
+  updPlay();
+  if (tset.autonext && curIdx >= 0 && curIdx + 1 < TESTS[curTest].length) load(curIdx + 1, true);
+});
 $('bar').onclick = e => {
   if (!audio.duration) return;
   const r = $('bar').getBoundingClientRect();
@@ -2091,7 +2306,7 @@ $('do-sync').onclick = async () => {
 
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
-buildQRange(); renderHistory(); renderExamHistory();
+buildQRange(); renderHistory(); renderExamHistory(); renderClipList();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
 </body>
