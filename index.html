@@ -334,7 +334,6 @@
   .qside button.cur { background: var(--accent); color: var(--accent-ink); }
   .qside button .d { color: var(--muted); font-size: .74rem; }
   .qside button.cur .d { color: inherit; opacity: .8; }
-  @media (min-width: 861px) { .qpickrow { display: none; } }
   @media (max-width: 860px) {
     .shadow-grid { grid-template-columns: 1fr; }
     .qside { display: none; }
@@ -342,6 +341,7 @@
   }
   .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
   .qpickrow .tsel { flex: 1 1 100%; }
+  @media (min-width: 861px) { .qpickrow { display: none; } }
   .qpickrow select {
     flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 11px 12px; border-radius: 10px; font-size: 1rem; cursor: pointer;
