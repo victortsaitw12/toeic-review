@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多益複習 TOEIC Review</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --ink: #1c2230; --muted: #66707f;
+    --accent: #2f6fed; --accent-ink: #ffffff; --line: #e3e6eb;
+    --good: #1f9d63; --warn: #d9822b; --chip: #eef1f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14171d; --card: #1e232c; --ink: #e8ebf0; --muted: #9aa4b2;
+      --accent: #5b8def; --accent-ink: #0e1218; --line: #2c333f; --chip: #262d38;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    line-height: 1.55;
+  }
+  header {
+    background: var(--card); border-bottom: 1px solid var(--line);
+    padding: 14px 20px; display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap; position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; }
+  nav { display: flex; gap: 8px; }
+  nav button {
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    padding: 7px 18px; border-radius: 999px; font-size: .95rem; cursor: pointer;
+  }
+  nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  main { max-width: 880px; margin: 0 auto; padding: 22px 16px 60px; }
+  .hidden { display: none !important; }
+
+  /* ---------- flashcards ---------- */
+  .toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
+  }
+  .toolbar select, .toolbar button, .speed select {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 7px 12px; border-radius: 8px; font-size: .9rem; cursor: pointer;
+  }
+  .toolbar .on { border-color: var(--accent); color: var(--accent); }
+  .counter { margin-left: auto; color: var(--muted); font-size: .9rem; }
+
+  .cardwrap { perspective: 1200px; }
+  .flashcard {
+    position: relative; width: 100%; min-height: 320px; cursor: pointer;
+    transform-style: preserve-3d; transition: transform .45s;
+  }
+  .flashcard.flip { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 34px 30px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    box-shadow: 0 4px 18px rgba(0,0,0,.06);
+  }
+  .face.back { transform: rotateY(180deg); justify-content: center; gap: 14px; }
+  .word { font-size: 2.5rem; font-weight: 700; letter-spacing: .01em; }
+  .pos { color: var(--muted); margin-top: 6px; font-size: 1.05rem; }
+  .zh { font-size: 1.5rem; font-weight: 600; }
+  .ex { font-size: 1.05rem; max-width: 62ch; }
+  .exzh { color: var(--muted); font-size: .98rem; max-width: 62ch; }
+  .hint { position: absolute; bottom: 12px; left: 0; right: 0; color: var(--muted); font-size: .78rem; }
+  .speak {
+    border: 1px solid var(--line); background: var(--chip); color: var(--ink);
+    border-radius: 999px; padding: 6px 16px; margin-top: 14px; cursor: pointer; font-size: .9rem;
+  }
+  .cardnav { display: flex; gap: 10px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+  .cardnav button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 12px 22px; border-radius: 12px; font-size: 1rem; cursor: pointer; min-width: 110px;
+  }
+  .cardnav .know { border-color: var(--good); color: var(--good); }
+  .cardnav .dontknow { border-color: var(--warn); color: var(--warn); }
+  .cardnav .know.marked { background: var(--good); color: #fff; }
+  .cardnav .dontknow.marked { background: var(--warn); color: #fff; }
+  .kbd-tip { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 14px; }
+  kbd {
+    background: var(--chip); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; font-size: .78rem;
+  }
+
+  /* ---------- shadowing ---------- */
+  .testtabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .testtabs button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 18px; border-radius: 10px; cursor: pointer; font-size: .95rem;
+  }
+  .testtabs button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  .player {
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 20px 22px; margin-bottom: 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    position: sticky; top: 64px; z-index: 5;
+  }
+  .now { font-size: 1.05rem; font-weight: 650; margin-bottom: 4px; }
+  .now small { color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .bar {
+    height: 10px; background: var(--chip); border-radius: 999px; cursor: pointer;
+    position: relative; margin: 12px 0 6px;
+  }
+  .bar .fill { height: 100%; width: 0; background: var(--accent); border-radius: 999px; }
+  .bar .ab {
+    position: absolute; top: -3px; bottom: -3px; background: rgba(217,130,43,.25);
+    border-left: 2px solid var(--warn); border-right: 2px solid var(--warn); pointer-events: none;
+  }
+  .time { color: var(--muted); font-size: .82rem; display: flex; justify-content: space-between; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .controls button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 9px 14px; border-radius: 10px; cursor: pointer; font-size: .92rem;
+  }
+  .controls .play {
+    background: var(--accent); color: var(--accent-ink); border-color: var(--accent);
+    font-size: 1.05rem; padding: 9px 26px; font-weight: 600;
+  }
+  .controls .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+  .qlist { display: flex; flex-direction: column; gap: 18px; }
+  .part h3 { margin: 0 0 8px; font-size: .95rem; color: var(--muted); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 13px; border-radius: 9px; cursor: pointer; font-size: .88rem;
+  }
+  .chips button.cur { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .chips button .d { color: var(--muted); font-size: .75rem; margin-left: 5px; }
+  .chips button.cur .d { color: inherit; opacity: .8; }
+  footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 多益複習</h1>
+  <nav>
+    <button id="tab-cards" class="active">單字卡</button>
+    <button id="tab-shadow">聽力跟讀</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= 單字卡 ================= -->
+  <section id="view-cards">
+    <div class="toolbar">
+      <select id="range"></select>
+      <button id="shuffle">🔀 隨機</button>
+      <button id="only-hard">只看不熟</button>
+      <span class="counter" id="counter"></span>
+    </div>
+    <div class="cardwrap">
+      <div class="flashcard" id="card">
+        <div class="face front">
+          <div class="word" id="f-word"></div>
+          <div class="pos" id="f-pos"></div>
+          <button class="speak" id="speak-word">🔊 發音</button>
+          <div class="hint">點擊卡片翻面（空白鍵）</div>
+        </div>
+        <div class="face back">
+          <div class="zh" id="b-zh"></div>
+          <div class="ex" id="b-ex"></div>
+          <div class="exzh" id="b-exzh"></div>
+          <button class="speak" id="speak-ex">🔊 朗讀例句</button>
+        </div>
+      </div>
+    </div>
+    <div class="cardnav">
+      <button id="prev-card">← 上一張</button>
+      <button class="dontknow" id="mark-hard">不熟</button>
+      <button class="know" id="mark-known">認識 ✓</button>
+      <button id="next-card">下一張 →</button>
+    </div>
+    <p class="kbd-tip">
+      <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
+    </p>
+  </section>
+
+  <!-- ================= 跟讀 ================= -->
+  <section id="view-shadow" class="hidden">
+    <div class="testtabs" id="testtabs"></div>
+    <div class="player">
+      <div class="now" id="now">請選擇題目</div>
+      <div class="bar" id="bar"><div class="ab hidden" id="abzone"></div><div class="fill" id="fill"></div></div>
+      <div class="time"><span id="t-cur">0:00</span><span id="t-dur">0:00</span></div>
+      <div class="controls">
+        <button id="prev-q">⏮</button>
+        <button class="play" id="play">▶ 播放</button>
+        <button id="next-q">⏭</button>
+        <button id="back3">↺ 3 秒</button>
+        <span class="speed">語速
+          <select id="rate">
+            <option value="0.6">0.6×</option>
+            <option value="0.75">0.75×</option>
+            <option value="0.85">0.85×</option>
+            <option value="1" selected>1.0×</option>
+            <option value="1.15">1.15×</option>
+          </select>
+        </span>
+        <button id="loop">🔁 循環</button>
+        <button id="set-a">A</button>
+        <button id="set-b">B</button>
+        <button id="clear-ab">清除 A-B</button>
+      </div>
+    </div>
+    <div class="qlist" id="qlist"></div>
+    <audio id="audio" preload="auto"></audio>
+  </section>
+</main>
+
+<footer>TOEIC 模擬試題聽力跟讀 & 刷刷鍋多益 1000 單字</footer>
+
+<script src="data/words.js"></script>
+<script src="data/audio.js"></script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+
+/* ================= tabs ================= */
+function showView(v) {
+  $('view-cards').classList.toggle('hidden', v !== 'cards');
+  $('view-shadow').classList.toggle('hidden', v !== 'shadow');
+  $('tab-cards').classList.toggle('active', v === 'cards');
+  $('tab-shadow').classList.toggle('active', v === 'shadow');
+  localStorage.setItem('toeic-view', v);
+}
+$('tab-cards').onclick = () => showView('cards');
+$('tab-shadow').onclick = () => showView('shadow');
+
+/* ================= flashcards ================= */
+const marks = JSON.parse(localStorage.getItem('toeic-marks') || '{}'); // word -> 'known' | 'hard'
+let deck = [], idx = 0, shuffled = false, onlyHard = false;
+
+const rangeSel = $('range');
+rangeSel.innerHTML = '<option value="all">全部 1000 字</option>' +
+  Array.from({length: 10}, (_, i) =>
+    `<option value="${i}">單字 ${i * 100 + 1}–${(i + 1) * 100}</option>`).join('');
+
+function buildDeck() {
+  let pool = WORDS.map((w, i) => ({...w, i}));
+  const r = rangeSel.value;
+  if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
+  if (shuffled) {
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+  }
+  deck = pool; idx = 0;
+  renderCard();
+}
+function renderCard() {
+  const c = $('card');
+  c.classList.remove('flip');
+  if (!deck.length) {
+    $('f-word').textContent = '🎉'; $('f-pos').textContent = '這個範圍沒有標記不熟的單字';
+    $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
+    $('counter').textContent = '0 / 0';
+    $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
+    return;
+  }
+  const w = deck[idx];
+  $('f-word').textContent = w.w;
+  $('f-pos').textContent = w.pos;
+  $('b-zh').textContent = w.zh;
+  $('b-ex').textContent = w.ex;
+  $('b-exzh').textContent = w.exzh;
+  $('counter').textContent = `${idx + 1} / ${deck.length}`;
+  $('mark-known').classList.toggle('marked', marks[w.w] === 'known');
+  $('mark-hard').classList.toggle('marked', marks[w.w] === 'hard');
+}
+function move(d) {
+  if (!deck.length) return;
+  idx = (idx + d + deck.length) % deck.length;
+  renderCard();
+}
+function mark(kind) {
+  if (!deck.length) return;
+  const w = deck[idx].w;
+  marks[w] = marks[w] === kind ? undefined : kind;
+  if (!marks[w]) delete marks[w];
+  localStorage.setItem('toeic-marks', JSON.stringify(marks));
+  renderCard();
+}
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.92;
+  speechSynthesis.speak(u);
+}
+$('card').onclick = () => $('card').classList.toggle('flip');
+$('prev-card').onclick = () => move(-1);
+$('next-card').onclick = () => move(1);
+$('mark-known').onclick = () => mark('known');
+$('mark-hard').onclick = () => mark('hard');
+$('speak-word').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].w); };
+$('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].ex); };
+$('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
+$('only-hard').onclick = () => { onlyHard = !onlyHard; $('only-hard').classList.toggle('on', onlyHard); buildDeck(); };
+rangeSel.onchange = buildDeck;
+
+document.addEventListener('keydown', e => {
+  if ($('view-cards').classList.contains('hidden')) return;
+  if (e.target.tagName === 'SELECT') return;
+  if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flip'); }
+  else if (e.key === 'ArrowLeft') move(-1);
+  else if (e.key === 'ArrowRight') move(1);
+  else if (e.key === '1') mark('hard');
+  else if (e.key === '2') mark('known');
+  else if (e.key === 's' || e.key === 'S') { if (deck.length) speak(deck[idx].w); }
+});
+
+/* ================= shadowing ================= */
+const audio = $('audio');
+let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
+let curIdx = -1, abA = null, abB = null;
+
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+function buildTestTabs() {
+  $('testtabs').innerHTML = Object.keys(TESTS).map(t =>
+    `<button data-t="${t}" class="${t === curTest ? 'active' : ''}">模擬考 ${t.replace('Test', '')}</button>`).join('');
+  $('testtabs').querySelectorAll('button').forEach(b => b.onclick = () => {
+    curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest);
+    curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
+    $('now').textContent = '請選擇題目';
+    buildTestTabs(); buildList(); updPlay();
+  });
+}
+function buildList() {
+  const items = TESTS[curTest];
+  const parts = {};
+  items.forEach((it, i) => (parts[it.part] ||= []).push([i, it]));
+  $('qlist').innerHTML = Object.entries(parts).map(([p, arr]) => `
+    <div class="part"><h3>${p === '說明' ? '考試說明' : p + (
+      {'Part 1': '・照片描述', 'Part 2': '・應答問題', 'Part 3': '・簡短對話', 'Part 4': '・簡短獨白'}[p] || '')}</h3>
+    <div class="chips">${arr.map(([i, it]) =>
+      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${it.label}<span class="d">${fmt(it.dur)}</span></button>`
+    ).join('')}</div></div>`).join('');
+  $('qlist').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+}
+function load(i, play) {
+  const items = TESTS[curTest];
+  if (i < 0 || i >= items.length) return;
+  curIdx = i; clearAB();
+  const it = items[i];
+  audio.src = `audio/${curTest}/${it.f}`;
+  audio.playbackRate = +$('rate').value;
+  $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>模擬考 ${curTest.replace('Test', '')}</small>`;
+  buildList();
+  if (play) audio.play();
+}
+function updPlay() {
+  $('play').textContent = audio.paused ? '▶ 播放' : '⏸ 暫停';
+}
+$('play').onclick = () => {
+  if (curIdx < 0) { load(1, true); return; }   // 直接從第 1 題開始
+  audio.paused ? audio.play() : audio.pause();
+};
+$('prev-q').onclick = () => load(curIdx - 1, !audio.paused);
+$('next-q').onclick = () => load(curIdx + 1, !audio.paused);
+$('back3').onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 3); };
+$('rate').onchange = () => { audio.playbackRate = +$('rate').value; };
+$('loop').onclick = () => { audio.loop = !audio.loop; $('loop').classList.toggle('on', audio.loop); };
+
+function drawAB() {
+  const z = $('abzone'), d = audio.duration;
+  if (abA !== null && abB !== null && d) {
+    z.classList.remove('hidden');
+    z.style.left = (abA / d * 100) + '%';
+    z.style.width = ((abB - abA) / d * 100) + '%';
+  } else z.classList.add('hidden');
+  $('set-a').classList.toggle('on', abA !== null);
+  $('set-b').classList.toggle('on', abB !== null);
+}
+function clearAB() { abA = abB = null; drawAB(); }
+$('set-a').onclick = () => { abA = audio.currentTime; if (abB !== null && abB <= abA) abB = null; drawAB(); };
+$('set-b').onclick = () => {
+  if (audio.currentTime > (abA ?? 0)) { abB = audio.currentTime; if (abA === null) abA = 0; }
+  drawAB();
+};
+$('clear-ab').onclick = clearAB;
+
+audio.addEventListener('timeupdate', () => {
+  const d = audio.duration || TESTS[curTest]?.[curIdx]?.dur || 0;
+  $('fill').style.width = d ? (audio.currentTime / d * 100) + '%' : '0';
+  $('t-cur').textContent = fmt(audio.currentTime);
+  $('t-dur').textContent = fmt(d);
+  if (abA !== null && abB !== null && audio.currentTime >= abB) {
+    audio.currentTime = abA;
+    if (audio.paused) audio.play();
+  }
+});
+audio.addEventListener('play', updPlay);
+audio.addEventListener('pause', updPlay);
+audio.addEventListener('ended', updPlay);
+$('bar').onclick = e => {
+  if (!audio.duration) return;
+  const r = $('bar').getBoundingClientRect();
+  audio.currentTime = (e.clientX - r.left) / r.width * audio.duration;
+};
+
+/* ================= init ================= */
+buildTestTabs(); buildList(); buildDeck();
+showView(localStorage.getItem('toeic-view') || 'cards');
+</script>
+</body>
+</html>
