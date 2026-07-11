@@ -433,6 +433,40 @@
     background: none; color: var(--muted); border-radius: 9px; cursor: pointer; }
   footer { text-align: center; color: var(--muted); font-size: .8rem; padding: 30px 12px; }
 
+  /* ---------- 單字本 ---------- */
+  .modalwrap {
+    position: fixed; inset: 0; z-index: 60; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center; padding: 18px;
+  }
+  .modal-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 20px; width: 100%; max-width: 420px; max-height: 80vh; overflow-y: auto;
+  }
+  .bookrow {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 11px 14px; border-radius: 10px; cursor: pointer; font-size: .95rem;
+    margin-bottom: 8px; text-align: left;
+  }
+  .bookrow.inbook { border-color: var(--good); }
+  .bookrow .bn { flex: 1; }
+  .bookrow .bc { color: var(--muted); font-size: .8rem; }
+  .bookrow .ck { color: var(--good); font-weight: 700; width: 1.2em; }
+  .badmin { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 10px; }
+  .badmin .bhead { display: flex; align-items: center; gap: 10px; }
+  .badmin .bhead b { flex: 1; }
+  .badmin .bhead button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 4px 12px; border-radius: 7px; cursor: pointer; font-size: .82rem;
+  }
+  .badmin .bhead .del { color: var(--bad); border-color: var(--bad); }
+  .bwords { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .bwords span {
+    background: var(--chip); border: 1px solid var(--line); border-radius: 999px;
+    padding: 3px 10px; font-size: .82rem; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .bwords span b { cursor: pointer; color: var(--bad); font-weight: 700; }
+
   /* ---------- mobile ---------- */
   @media (max-width: 700px) {
     header { padding-top: 8px; padding-bottom: 8px; gap: 10px; }
@@ -515,6 +549,7 @@
   <!-- ================= 單字卡 ================= -->
   <section id="view-cards">
     <div class="toolbar">
+      <select id="bookfilter"></select>
       <select id="range"></select>
       <select id="lvfilter">
         <option value="0">全部級距</option>
@@ -549,6 +584,7 @@
       <button class="dontknow" id="mark-hard">不熟</button>
       <button class="know" id="mark-known">認識 ✓</button>
       <button id="next-card">下一張 →</button>
+      <button id="add-book">📓 加入單字本</button>
     </div>
     <p class="kbd-tip">
       <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
@@ -577,6 +613,7 @@
             <option value="Part3">Part 3</option>
             <option value="Part4">Part 4</option>
           </select>
+          <select id="q-book"></select>
           <select id="q-lv">
             <option value="0">全部級距</option>
             <option value="1">基礎 250–545</option>
@@ -866,6 +903,16 @@
     </div>
 
     <div class="panel">
+      <h3>單字本管理<span class="badge zero" id="bcount"></span></h3>
+      <p class="desc">單字本可在「單字卡」頁把單字加入；這裡可以建立、刪除單字本或移除裡面的單字。單字本會隨「同步到 GitHub」一起保存。</p>
+      <div class="btnrow" style="margin-top:0">
+        <input id="nb-name" placeholder="新單字本名稱（如：常錯字）" style="flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)">
+        <button id="nb-create">＋ 建立單字本</button>
+      </div>
+      <div id="books-admin"></div>
+    </div>
+
+    <div class="panel">
       <h3>單字列表<span class="badge zero" id="wcount"></span></h3>
       <div class="toolbar" style="margin-bottom:10px">
         <input id="search" placeholder="🔍 搜尋單字或中文…" style="flex:1;min-width:200px;cursor:text">
@@ -876,6 +923,21 @@
   </section>
 </main>
 
+<div id="bookmodal" class="modalwrap hidden">
+  <div class="modal-card">
+    <h3 style="margin:0 0 4px">📓 加入單字本</h3>
+    <p id="bm-word" style="margin:0 0 12px;color:var(--muted);font-size:.9rem"></p>
+    <div id="bm-list"></div>
+    <div class="btnrow">
+      <input id="bm-new" placeholder="新單字本名稱" style="flex:1;min-width:120px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)">
+      <button id="bm-create">建立並加入</button>
+    </div>
+    <div class="btnrow" style="justify-content:flex-end">
+      <button id="bm-close">完成</button>
+    </div>
+  </div>
+</div>
+
 <footer>聽力音檔：EZ出版社 NEW TOEIC 模擬試題・單字：刷刷鍋多益 1000 單<br>內容版權屬原出版社所有，本站僅供個人學習複習使用</footer>
 
 <script src="data/words.js"></script>
@@ -884,6 +946,7 @@
 <script src="data/exam_l.js"></script>
 <script src="data/exam_r.js"></script>
 <script src="data/speak.js"></script>
+<script src="data/books.js"></script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -941,10 +1004,113 @@ function saveEdits() {
   updPending();
 }
 function updPending() {
-  const n = pendingCount();
+  const n = pendingCount() + (booksDirty ? 1 : 0);
   $('pending').textContent = n ? `${n} 筆未同步` : '無未同步變更';
   $('pending').classList.toggle('zero', !n);
 }
+
+/* ================= 單字本 ================= */
+const BOOKS_BASE = typeof BOOKS !== 'undefined' ? BOOKS : [];
+let booksDirty = localStorage.getItem('toeic-books-dirty') === '1';
+let books = booksDirty
+  ? JSON.parse(localStorage.getItem('toeic-books-local') || '[]')
+  : JSON.parse(JSON.stringify(BOOKS_BASE));
+
+function saveBooks(dirty = true) {
+  localStorage.setItem('toeic-books-local', JSON.stringify(books));
+  booksDirty = dirty;
+  localStorage.setItem('toeic-books-dirty', dirty ? '1' : '0');
+  buildBookSels(); renderBooksAdmin(); updPending();
+}
+function getBook(name) { return books.find(b => b.name === name); }
+function createBook(name) {
+  name = name.trim();
+  if (!name) return null;
+  if (getBook(name)) { alert('已有同名的單字本'); return null; }
+  const b = {name, words: []};
+  books.push(b); saveBooks();
+  return b;
+}
+function toggleBookWord(name, w) {
+  const b = getBook(name);
+  if (!b) return;
+  const i = b.words.indexOf(w);
+  i >= 0 ? b.words.splice(i, 1) : b.words.push(w);
+  saveBooks();
+}
+function bookWords(name) {
+  const b = getBook(name);
+  if (!b) return [];
+  const map = new Map(getWords().map(w => [w.w, w]));
+  return b.words.map(k => map.get(k)).filter(Boolean);
+}
+function buildBookSels() {
+  const opts = books.map(b => `<option value="${esc(b.name)}">📓 ${esc(b.name)}（${b.words.length}）</option>`).join('');
+  for (const [id, allLabel] of [['bookfilter', '全部單字'], ['q-book', '全部單字']]) {
+    const el = $(id), prev = el.value;
+    el.innerHTML = `<option value="">${allLabel}</option>` + opts;
+    if ([...el.options].some(o => o.value === prev)) el.value = prev;
+  }
+}
+
+/* ---- 加入單字本 modal ---- */
+let bmWord = null;
+function openBookModal(w) {
+  bmWord = w;
+  $('bm-word').textContent = `單字：${w}`;
+  renderBmList();
+  $('bookmodal').classList.remove('hidden');
+}
+function renderBmList() {
+  $('bm-list').innerHTML = books.length ? books.map(b => {
+    const inb = b.words.includes(bmWord);
+    return `<button class="bookrow ${inb ? 'inbook' : ''}" data-b="${esc(b.name)}">
+      <span class="ck">${inb ? '✓' : ''}</span><span class="bn">${esc(b.name)}</span>
+      <span class="bc">${b.words.length} 字</span></button>`;
+  }).join('') : '<p style="color:var(--muted);font-size:.88rem">還沒有單字本，先在下方建立一個吧！</p>';
+  $('bm-list').querySelectorAll('.bookrow').forEach(el => el.onclick = () => {
+    toggleBookWord(el.dataset.b, bmWord);
+    renderBmList();
+  });
+}
+$('add-book').onclick = () => { if (deck.length) openBookModal(deck[idx].w); };
+$('bm-close').onclick = () => $('bookmodal').classList.add('hidden');
+$('bookmodal').onclick = e => { if (e.target === $('bookmodal')) $('bookmodal').classList.add('hidden'); };
+$('bm-create').onclick = () => {
+  const b = createBook($('bm-new').value);
+  if (!b) return;
+  b.words.push(bmWord); saveBooks();
+  $('bm-new').value = '';
+  renderBmList();
+};
+
+/* ---- 管理頁的單字本管理 ---- */
+function renderBooksAdmin() {
+  $('bcount').textContent = `${books.length} 本`;
+  $('books-admin').innerHTML = books.length ? books.map((b, bi) => `
+    <div class="badmin">
+      <div class="bhead"><b>📓 ${esc(b.name)}</b><span style="color:var(--muted);font-size:.82rem">${b.words.length} 字</span>
+        <button data-open="${bi}">${b._open ? '收合' : '展開'}</button>
+        <button class="del" data-delb="${bi}">刪除</button></div>
+      ${b._open ? `<div class="bwords">${b.words.map(w =>
+        `<span>${esc(w)}<b data-rm="${esc(w)}" data-bi="${bi}" title="移出單字本">×</b></span>`).join('') || '<span style="border:none;background:none;color:var(--muted)">（空）</span>'}</div>` : ''}
+    </div>`).join('') : '';
+  $('books-admin').querySelectorAll('[data-open]').forEach(el => el.onclick = () => {
+    books[+el.dataset.open]._open = !books[+el.dataset.open]._open;
+    renderBooksAdmin();
+  });
+  $('books-admin').querySelectorAll('[data-delb]').forEach(el => el.onclick = () => {
+    const b = books[+el.dataset.delb];
+    if (!confirm(`刪除單字本「${b.name}」？（單字本身不會被刪除）`)) return;
+    books.splice(+el.dataset.delb, 1); saveBooks();
+  });
+  $('books-admin').querySelectorAll('[data-rm]').forEach(el => el.onclick = () => {
+    toggleBookWord(books[+el.dataset.bi].name, el.dataset.rm);
+  });
+}
+$('nb-create').onclick = () => {
+  if (createBook($('nb-name').value)) $('nb-name').value = '';
+};
 
 /* ================= tabs ================= */
 function showView(v) {
@@ -978,9 +1144,17 @@ function buildRange() {
   if ([...rangeSel.options].some(o => o.value === prev)) rangeSel.value = prev;
 }
 function buildDeck() {
-  let pool = getWords();
-  const r = rangeSel.value;
-  if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  const bk = $('bookfilter').value;
+  let pool;
+  if (bk) {
+    pool = bookWords(bk);
+    rangeSel.classList.add('hidden');
+  } else {
+    pool = getWords();
+    rangeSel.classList.remove('hidden');
+    const r = rangeSel.value;
+    if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  }
   const lv = +$('lvfilter').value;
   if (lv) pool = pool.filter(w => w.lv === lv);
   if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
@@ -1058,6 +1232,7 @@ $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.togg
 $('only-hard').onclick = () => { onlyHard = !onlyHard; $('only-hard').classList.toggle('on', onlyHard); buildDeck(); };
 rangeSel.onchange = buildDeck;
 $('lvfilter').onchange = buildDeck;
+$('bookfilter').onchange = buildDeck;
 
 document.addEventListener('keydown', e => {
   if ($('view-cards').classList.contains('hidden')) return;
@@ -1082,7 +1257,7 @@ document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.modes button').forEach(x => x.classList.toggle('sel', x === b));
   const dict = qMode === 'dict';
   document.querySelectorAll('.dictopt').forEach(el => el.classList.toggle('hidden', !dict));
-  for (const id of ['q-lv', 'q-range', 'q-onlyhard']) $(id).classList.toggle('hidden', dict);
+  for (const id of ['q-lv', 'q-range', 'q-onlyhard', 'q-book']) $(id).classList.toggle('hidden', dict);
 });
 $('q-dtest').innerHTML = Object.keys(TESTS).map(t =>
   `<option value="${t}">${testName(t)}</option>`).join('');
@@ -1141,9 +1316,15 @@ function buildQRange() {
 }
 
 function quizPool() {
-  let pool = getWords();
-  const r = $('q-range').value;
-  if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  const bk = $('q-book').value;
+  let pool;
+  if (bk) {
+    pool = bookWords(bk);
+  } else {
+    pool = getWords();
+    const r = $('q-range').value;
+    if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  }
   const lv = +$('q-lv').value;
   if (lv) pool = pool.filter(w => w.lv === lv);
   if (qOnlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
@@ -2252,6 +2433,7 @@ $('export-json').onclick = () => {
 
 /* ================= GitHub sync ================= */
 const GH_API = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/words.js';
+const GH_API_BOOKS = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/books.js';
 if (localStorage.getItem('toeic-token')) $('gh-token').value = '••••••••（已儲存）';
 $('save-token').onclick = () => {
   const t = $('gh-token').value.trim();
@@ -2274,31 +2456,39 @@ function b64utf8(str) {
 $('do-sync').onclick = async () => {
   const token = localStorage.getItem('toeic-token');
   if (!token) { syncStatus('請先貼上並儲存 GitHub token', 'err'); return; }
-  if (!pendingCount()) { syncStatus('沒有需要同步的變更', 'ok'); return; }
+  if (!pendingCount() && !booksDirty) { syncStatus('沒有需要同步的變更', 'ok'); return; }
   const headers = {
     'Authorization': 'Bearer ' + token,
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   };
-  try {
-    syncStatus('同步中…');
-    const cur = await fetch(GH_API + '?ref=main', {headers});
+  const putFile = async (api, content, message) => {
+    const cur = await fetch(api + '?ref=main', {headers});
     if (!cur.ok) throw new Error(`讀取失敗 HTTP ${cur.status}（token 權限或已過期？）`);
     const sha = (await cur.json()).sha;
-    const merged = getWords();
-    const content = 'const WORDS = ' + JSON.stringify(merged) + ';\n';
-    const put = await fetch(GH_API, {
+    const put = await fetch(api, {
       method: 'PUT', headers,
-      body: JSON.stringify({
-        message: `更新單字表（${pendingCount()} 筆變更，共 ${merged.length} 字）`,
-        content: b64utf8(content), sha, branch: 'main',
-      }),
+      body: JSON.stringify({message, content: b64utf8(content), sha, branch: 'main'}),
     });
     if (!put.ok) throw new Error(`寫入失敗 HTTP ${put.status}`);
-    BASE = merged;
-    edits.upsert = {}; edits.del = [];
-    saveEdits(); refreshWordViews();
-    syncStatus(`✅ 已同步 ${merged.length} 個單字，網站約 1 分鐘後更新`, 'ok');
+  };
+  try {
+    syncStatus('同步中…');
+    if (pendingCount()) {
+      const merged = getWords();
+      await putFile(GH_API, 'const WORDS = ' + JSON.stringify(merged) + ';\n',
+        `更新單字表（${pendingCount()} 筆變更，共 ${merged.length} 字）`);
+      BASE = merged;
+      edits.upsert = {}; edits.del = [];
+      saveEdits(); refreshWordViews();
+    }
+    if (booksDirty) {
+      const clean = books.map(({name, words}) => ({name, words}));
+      await putFile(GH_API_BOOKS, 'const BOOKS = ' + JSON.stringify(clean) + ';\n',
+        `更新單字本（${clean.length} 本）`);
+      saveBooks(false);
+    }
+    syncStatus('✅ 同步完成，網站約 1 分鐘後更新', 'ok');
   } catch (e) {
     syncStatus('❌ ' + e.message, 'err');
   }
@@ -2307,6 +2497,7 @@ $('do-sync').onclick = async () => {
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
 buildQRange(); renderHistory(); renderExamHistory(); renderClipList();
+buildBookSels(); renderBooksAdmin();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
 </body>
