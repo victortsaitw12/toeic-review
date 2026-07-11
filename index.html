@@ -92,6 +92,13 @@
   .ex { font-size: 1.05rem; max-width: 62ch; }
   .exzh { color: var(--muted); font-size: .98rem; max-width: 62ch; }
   .hint { position: absolute; bottom: 12px; left: 0; right: 0; color: var(--muted); font-size: .78rem; }
+  .lvchip {
+    position: absolute; top: 14px; right: 16px; font-size: .75rem;
+    border-radius: 999px; padding: 2px 11px; color: #fff; font-weight: 600;
+  }
+  .lvtag { font-size: .72rem; border-radius: 5px; padding: 0 7px; color: #fff; white-space: nowrap; }
+  .lv1 { background: #1f9d63; } .lv2 { background: #2f6fed; }
+  .lv3 { background: #d9822b; } .lv4 { background: #d64545; }
   .speak {
     border: 1px solid var(--line); background: var(--chip); color: var(--ink);
     border-radius: 999px; padding: 6px 16px; margin-top: 14px; cursor: pointer; font-size: .9rem;
@@ -167,7 +174,7 @@
   .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .formgrid .full { grid-column: 1 / -1; }
   .formgrid label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 3px; }
-  .formgrid input, .formgrid textarea, .syncrow input {
+  .formgrid input, .formgrid textarea, .formgrid select, .syncrow input {
     width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px;
     background: var(--bg); color: var(--ink); font-size: .95rem; font-family: inherit;
   }
@@ -237,6 +244,13 @@
   <section id="view-cards">
     <div class="toolbar">
       <select id="range"></select>
+      <select id="lvfilter">
+        <option value="0">全部級距</option>
+        <option value="1">基礎 250–545</option>
+        <option value="2">中級 550–780</option>
+        <option value="3">中高 785–940</option>
+        <option value="4">高階 945+</option>
+      </select>
       <button id="shuffle">🔀 隨機</button>
       <button id="only-hard">只看不熟</button>
       <span class="counter" id="counter"></span>
@@ -244,6 +258,7 @@
     <div class="cardwrap">
       <div class="flashcard" id="card">
         <div class="face front">
+          <span class="lvchip hidden" id="f-lv"></span>
           <div class="word" id="f-word"></div>
           <div class="pos" id="f-pos"></div>
           <button class="speak" id="speak-word">🔊 發音</button>
@@ -306,6 +321,12 @@
       <div class="formgrid">
         <div><label>單字</label><input id="e-w" placeholder="synergy"></div>
         <div><label>詞性</label><input id="e-pos" placeholder="n."></div>
+        <div><label>多益級距</label><select id="e-lv">
+          <option value="1">基礎 250–545</option>
+          <option value="2">中級 550–780</option>
+          <option value="3" selected>中高 785–940</option>
+          <option value="4">高階 945+</option>
+        </select></div>
         <div class="full"><label>中文釋義</label><input id="e-zh" placeholder="綜效；協同作用"></div>
         <div class="full"><label>英文例句</label><textarea id="e-ex" placeholder="The merger created synergy between the two teams."></textarea></div>
         <div class="full"><label>例句翻譯</label><textarea id="e-exzh" placeholder="合併為兩個團隊創造了綜效。"></textarea></div>
@@ -426,6 +447,7 @@ $('tab-admin').onclick = () => showView('admin');
 /* ================= flashcards ================= */
 const marks = JSON.parse(localStorage.getItem('toeic-marks') || '{}'); // word -> 'known' | 'hard'
 let deck = [], idx = 0, shuffled = false, onlyHard = false;
+const LV = {1: '基礎 250–545', 2: '中級 550–780', 3: '中高 785–940', 4: '高階 945+'};
 
 const rangeSel = $('range');
 function buildRange() {
@@ -441,6 +463,8 @@ function buildDeck() {
   let pool = getWords();
   const r = rangeSel.value;
   if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  const lv = +$('lvfilter').value;
+  if (lv) pool = pool.filter(w => w.lv === lv);
   if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
   if (shuffled) {
     for (let i = pool.length - 1; i > 0; i--) {
@@ -457,12 +481,15 @@ function renderCard() {
     $('f-word').textContent = '🎉'; $('f-pos').textContent = '這個範圍沒有符合的單字';
     $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
     $('counter').textContent = '0 / 0';
+    $('f-lv').classList.add('hidden');
     $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
     return;
   }
   const w = deck[idx];
   $('f-word').textContent = w.w;
   $('f-pos').textContent = w.pos;
+  $('f-lv').classList.toggle('hidden', !w.lv);
+  if (w.lv) { $('f-lv').textContent = LV[w.lv]; $('f-lv').className = 'lvchip lv' + w.lv; }
   $('b-zh').textContent = w.zh;
   $('b-ex').textContent = w.ex;
   $('b-exzh').textContent = w.exzh;
@@ -500,6 +527,7 @@ $('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[
 $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
 $('only-hard').onclick = () => { onlyHard = !onlyHard; $('only-hard').classList.toggle('on', onlyHard); buildDeck(); };
 rangeSel.onchange = buildDeck;
+$('lvfilter').onchange = buildDeck;
 
 document.addEventListener('keydown', e => {
   if ($('view-cards').classList.contains('hidden')) return;
@@ -612,6 +640,7 @@ function refreshWordViews() {
 }
 function clearForm() {
   for (const f of ['e-w', 'e-pos', 'e-zh', 'e-ex', 'e-exzh']) $(f).value = '';
+  $('e-lv').value = '3';
   editingKey = null;
   $('form-title').textContent = '新增單字';
   $('cancel-edit').classList.add('hidden');
@@ -625,6 +654,7 @@ $('save-word').onclick = () => {
     zh: $('e-zh').value.trim(),
     ex: $('e-ex').value.trim(),
     exzh: $('e-exzh').value.trim(),
+    lv: +$('e-lv').value,
   };
   if (!entry.w || !entry.zh) { $('form-msg').textContent = '「單字」和「中文釋義」必填'; return; }
   if (editingKey && editingKey !== entry.w) {
@@ -646,6 +676,7 @@ function startEdit(w) {
   if (!e) return;
   $('e-w').value = e.w; $('e-pos').value = e.pos; $('e-zh').value = e.zh;
   $('e-ex').value = e.ex; $('e-exzh').value = e.exzh;
+  $('e-lv').value = String(e.lv || 3);
   editingKey = e.w;
   $('form-title').textContent = `編輯：${e.w}`;
   $('cancel-edit').classList.remove('hidden');
@@ -668,8 +699,9 @@ function renderList() {
   const shown = list.slice(0, listLimit);
   $('wlist').innerHTML = shown.map(w => {
     const changed = edits.upsert[w.w] ? '<span class="tag">未同步</span>' : '';
+    const lv = w.lv ? `<span class="lvtag lv${w.lv}">${LV[w.lv].split(' ')[1]}</span>` : '';
     return `<div class="wrow"><b>${esc(w.w)}</b><span class="pos2">${esc(w.pos)}</span>
-      <span class="zh2">${esc(w.zh)}</span>${changed}
+      ${lv}<span class="zh2">${esc(w.zh)}</span>${changed}
       <span class="act"><button data-e="${esc(w.w)}">編輯</button><button class="del" data-d="${esc(w.w)}">刪除</button></span></div>`;
   }).join('') || '<p style="color:var(--muted)">沒有符合的單字</p>';
   $('more').classList.toggle('hidden', list.length <= listLimit);
