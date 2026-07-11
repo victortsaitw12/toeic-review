@@ -118,6 +118,59 @@
     border-radius: 5px; padding: 1px 6px; font-size: .78rem;
   }
 
+  /* ---------- quiz ---------- */
+  .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .modes button {
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 16px 10px; border-radius: 12px; cursor: pointer; font-size: .95rem; line-height: 1.3;
+  }
+  .modes button small { display: block; color: var(--muted); font-size: .76rem; margin-top: 4px; }
+  .modes button.sel { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .qmeta { display: flex; justify-content: space-between; color: var(--muted); font-size: .88rem; margin-bottom: 14px; }
+  .qprompt { text-align: center; margin: 8px 0 20px; }
+  .qprompt .big { font-size: 2rem; font-weight: 700; }
+  .qprompt .sub { color: var(--muted); margin-top: 4px; }
+  .qprompt .speak { margin-top: 10px; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .choices { grid-template-columns: 1fr; } }
+  .choices button {
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 14px 14px; border-radius: 11px; cursor: pointer; font-size: 1rem; text-align: left;
+  }
+  .choices button:disabled { cursor: default; opacity: .92; }
+  .choices button .no { color: var(--muted); font-size: .8rem; margin-right: 8px; }
+  .choices button.right { border-color: var(--good); background: rgba(31,157,99,.12); }
+  .choices button.wrongpick { border-color: var(--bad); background: rgba(214,69,69,.12); }
+  .spellrow { display: flex; gap: 10px; }
+  .spellrow input {
+    flex: 1; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--bg); color: var(--ink); font-size: 1.1rem; letter-spacing: .03em;
+  }
+  .feedback { text-align: center; min-height: 1.6em; margin-top: 14px; font-size: 1rem; font-weight: 600; }
+  .feedback.good { color: var(--good); }
+  .feedback.bad { color: var(--bad); }
+  .qnext { display: flex; justify-content: center; margin-top: 12px; }
+  .hist-row {
+    display: flex; align-items: center; gap: 10px; padding: 9px 4px;
+    border-bottom: 1px solid var(--line); flex-wrap: wrap; font-size: .9rem;
+  }
+  .hist-row .score { font-weight: 700; }
+  .hist-row .score.pass { color: var(--good); }
+  .hist-row .score.fail { color: var(--bad); }
+  .hist-row .when { color: var(--muted); font-size: .8rem; }
+  .hist-row .act { margin-left: auto; display: flex; gap: 6px; }
+  .hist-row .act button, .wreview .act button {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 4px 12px; border-radius: 7px; cursor: pointer; font-size: .82rem;
+  }
+  .wreview { border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px 10px; margin-top: 10px; background: var(--bg); }
+  .wreview .item { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .wreview .item:last-child { border-bottom: none; }
+  .wreview .item b { font-size: 1.05rem; margin-right: 8px; }
+  .wreview .item .m { color: var(--muted); font-size: .86rem; }
+  .resultbig { text-align: center; font-size: 2.2rem; font-weight: 800; margin: 6px 0 2px; }
+  .resultsub { text-align: center; color: var(--muted); margin-bottom: 14px; }
+
   /* ---------- shadowing ---------- */
   .testtabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
   .testtabs button {
@@ -233,6 +286,7 @@
   <h1>📚 多益複習</h1>
   <nav>
     <button id="tab-cards" class="active">單字卡</button>
+    <button id="tab-quiz">單字測驗</button>
     <button id="tab-shadow">聽力跟讀</button>
     <button id="tab-admin">單字管理</button>
   </nav>
@@ -281,6 +335,80 @@
     <p class="kbd-tip">
       <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
     </p>
+  </section>
+
+  <!-- ================= 單字測驗 ================= -->
+  <section id="view-quiz" class="hidden">
+
+    <div id="quiz-setup">
+      <div class="panel">
+        <h3>選擇測驗模式</h3>
+        <div class="modes">
+          <button data-m="e2z" class="sel">英翻中<small>看英文選中文意思</small></button>
+          <button data-m="z2e">中翻英<small>看中文選英文單字</small></button>
+          <button data-m="spell">拼字測驗<small>看中文拼出英文</small></button>
+          <button data-m="listen">聽力測驗<small>聽發音選中文意思</small></button>
+        </div>
+        <div class="toolbar" style="margin-top:14px">
+          <select id="q-lv">
+            <option value="0">全部級距</option>
+            <option value="1">基礎 250–545</option>
+            <option value="2">中級 550–780</option>
+            <option value="3">中高 785–940</option>
+            <option value="4">高階 945+</option>
+          </select>
+          <select id="q-range"></select>
+          <select id="q-count">
+            <option value="10">10 題</option>
+            <option value="20" selected>20 題</option>
+            <option value="50">50 題</option>
+          </select>
+          <button id="q-onlyhard">只考不熟</button>
+          <button id="q-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始測驗</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>測驗紀錄與錯題複習</h3>
+        <p class="desc">每一回測驗都會保留紀錄，答錯的單字可以隨時「複習」或「重測」。</p>
+        <div id="q-history"></div>
+      </div>
+    </div>
+
+    <div id="quiz-run" class="hidden">
+      <div class="panel">
+        <div class="qmeta"><span id="q-progress"></span><span id="q-score"></span></div>
+        <div class="qprompt">
+          <div class="big" id="q-big"></div>
+          <div class="sub" id="q-sub"></div>
+          <button class="speak hidden" id="q-speak">🔊 再聽一次</button>
+        </div>
+        <div class="choices hidden" id="q-choices"></div>
+        <div class="spellrow hidden" id="q-spell">
+          <input id="q-input" placeholder="輸入英文單字後按 Enter" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button id="q-submit" style="border:1px solid var(--line);background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:0 20px;cursor:pointer">作答</button>
+        </div>
+        <div class="feedback" id="q-fb"></div>
+        <div class="qnext">
+          <button id="q-next" class="hidden" style="border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 30px;border-radius:10px;cursor:pointer">下一題 →</button>
+          <button id="q-quit" style="border:none;background:none;color:var(--muted);cursor:pointer;margin-left:14px">結束測驗</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-result" class="hidden">
+      <div class="panel">
+        <div class="resultbig" id="r-score"></div>
+        <div class="resultsub" id="r-sub"></div>
+        <div class="btnrow" style="justify-content:center">
+          <button id="r-retry" class="primary">🔁 重測錯題</button>
+          <button id="r-again">再測一回</button>
+          <button id="r-back">回測驗首頁</button>
+        </div>
+        <div id="r-wrong"></div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ================= 跟讀 ================= -->
@@ -434,13 +562,14 @@ function updPending() {
 
 /* ================= tabs ================= */
 function showView(v) {
-  for (const k of ['cards', 'shadow', 'admin']) {
+  for (const k of ['cards', 'quiz', 'shadow', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
   localStorage.setItem('toeic-view', v);
 }
 $('tab-cards').onclick = () => showView('cards');
+$('tab-quiz').onclick = () => showView('quiz');
 $('tab-shadow').onclick = () => showView('shadow');
 $('tab-admin').onclick = () => showView('admin');
 
@@ -541,6 +670,277 @@ document.addEventListener('keydown', e => {
   else if (e.key === 's' || e.key === 'S') { if (deck.length) speak(deck[idx].w); }
 });
 
+/* ================= quiz ================= */
+const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '聽力測驗'};
+let qMode = 'e2z', qOnlyHard = false;
+let quiz = null;   // {mode, words:[entry], i, correct, wrong:[w], answered}
+let qHistory = JSON.parse(localStorage.getItem('toeic-quiz-history') || '[]');
+
+document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
+  qMode = b.dataset.m;
+  document.querySelectorAll('.modes button').forEach(x => x.classList.toggle('sel', x === b));
+});
+$('q-onlyhard').onclick = () => { qOnlyHard = !qOnlyHard; $('q-onlyhard').classList.toggle('on', qOnlyHard); };
+
+function buildQRange() {
+  const n = getWords().length;
+  const prev = $('q-range').value;
+  let html = `<option value="all">全部單字</option>`;
+  for (let i = 0; i * 100 < n; i++)
+    html += `<option value="${i}">單字 ${i * 100 + 1}–${Math.min((i + 1) * 100, n)}</option>`;
+  $('q-range').innerHTML = html;
+  if ([...$('q-range').options].some(o => o.value === prev)) $('q-range').value = prev;
+}
+
+function quizPool() {
+  let pool = getWords();
+  const r = $('q-range').value;
+  if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+  const lv = +$('q-lv').value;
+  if (lv) pool = pool.filter(w => w.lv === lv);
+  if (qOnlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
+  return pool;
+}
+function sample(arr, n) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
+function startQuiz(mode, wordList) {
+  if ((mode === 'listen' || mode === 'spell') && !('speechSynthesis' in window) && mode === 'listen') {
+    alert('這個瀏覽器不支援語音合成，無法進行聽力測驗'); return;
+  }
+  if (!wordList.length) { alert('這個範圍沒有可測驗的單字'); return; }
+  quiz = {mode, words: wordList, i: 0, correct: 0, wrong: [], answered: false};
+  $('quiz-setup').classList.add('hidden');
+  $('quiz-result').classList.add('hidden');
+  $('quiz-run').classList.remove('hidden');
+  showQuestion();
+}
+$('q-start').onclick = () => {
+  const pool = quizPool();
+  startQuiz(qMode, sample(pool, Math.min(+$('q-count').value, pool.length)));
+};
+
+function makeChoices(entry, field) {
+  // 3 distractors, prefer same level, must have distinct display text
+  const all = getWords().filter(w => w.w !== entry.w && w[field] !== entry[field]);
+  const same = sample(all.filter(w => w.lv === entry.lv), 40);
+  const rest = sample(all, 40);
+  const opts = [entry];
+  const used = new Set([entry[field]]);
+  for (const w of [...same, ...rest]) {
+    if (opts.length >= 4) break;
+    if (!used.has(w[field])) { used.add(w[field]); opts.push(w); }
+  }
+  return sample(opts, opts.length);
+}
+
+function showQuestion() {
+  const q = quiz, e = q.words[q.i];
+  q.answered = false;
+  $('q-progress').textContent = `第 ${q.i + 1} / ${q.words.length} 題・${MODE_NAME[q.mode]}`;
+  $('q-score').textContent = `答對 ${q.correct}｜答錯 ${q.wrong.length}`;
+  $('q-fb').textContent = ''; $('q-fb').className = 'feedback';
+  $('q-next').classList.add('hidden');
+  $('q-speak').classList.add('hidden');
+  $('q-choices').classList.add('hidden');
+  $('q-spell').classList.add('hidden');
+
+  if (q.mode === 'e2z') {
+    $('q-big').textContent = e.w;
+    $('q-sub').textContent = e.pos;
+    renderChoices(makeChoices(e, 'zh'), 'zh', e);
+  } else if (q.mode === 'z2e') {
+    $('q-big').textContent = e.zh;
+    $('q-sub').textContent = e.pos;
+    renderChoices(makeChoices(e, 'w'), 'w', e);
+  } else if (q.mode === 'spell') {
+    $('q-big').textContent = e.zh;
+    $('q-sub').textContent = e.pos + (e.w.length > 2 ? `（${e.w.length} 個字母，開頭 ${e.w[0]}）` : '');
+    $('q-spell').classList.remove('hidden');
+    $('q-input').value = ''; $('q-input').disabled = false;
+    setTimeout(() => $('q-input').focus(), 50);
+  } else if (q.mode === 'listen') {
+    $('q-big').textContent = '🎧';
+    $('q-sub').textContent = '聽發音，選出正確的中文意思';
+    $('q-speak').classList.remove('hidden');
+    renderChoices(makeChoices(e, 'zh'), 'zh', e);
+    speak(e.w);
+  }
+}
+$('q-speak').onclick = () => { if (quiz) speak(quiz.words[quiz.i].w); };
+
+function renderChoices(opts, field, entry) {
+  const box = $('q-choices');
+  box.classList.remove('hidden');
+  box.innerHTML = opts.map((o, i) =>
+    `<button data-w="${esc(o.w)}"><span class="no">${i + 1}</span>${esc(o[field])}</button>`).join('');
+  box.querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (quiz.answered) return;
+    answer(b.dataset.w === entry.w, entry, b);
+  });
+}
+
+function answer(ok, entry, pickedBtn) {
+  const q = quiz;
+  q.answered = true;
+  if (ok) q.correct++; else q.wrong.push(entry.w);
+
+  $('q-choices').querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.w === entry.w) b.classList.add('right');
+    else if (b === pickedBtn) b.classList.add('wrongpick');
+  });
+  $('q-input').disabled = true;
+
+  if (ok) {
+    $('q-fb').textContent = '✅ 答對了！';
+    $('q-fb').className = 'feedback good';
+    setTimeout(nextQuestion, 900);
+  } else {
+    $('q-fb').textContent = `❌ 正確答案：${entry.w}（${entry.pos}）${entry.zh}`;
+    $('q-fb').className = 'feedback bad';
+    if (q.mode !== 'listen') speak(entry.w);
+    $('q-next').classList.remove('hidden');
+    $('q-next').focus();
+  }
+}
+function submitSpell() {
+  if (!quiz || quiz.answered || $('q-spell').classList.contains('hidden')) return;
+  const e = quiz.words[quiz.i];
+  const val = $('q-input').value.trim().toLowerCase();
+  if (!val) return;
+  answer(val === e.w.toLowerCase(), e, null);
+}
+$('q-submit').onclick = submitSpell;
+$('q-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitSpell(); });
+
+function nextQuestion() {
+  if (!quiz || !quiz.answered) return;
+  if (quiz.i + 1 >= quiz.words.length) { finishQuiz(); return; }
+  quiz.i++;
+  showQuestion();
+}
+$('q-next').onclick = nextQuestion;
+$('q-quit').onclick = () => {
+  if (quiz && quiz.i + (quiz.answered ? 1 : 0) > 0 &&
+      !confirm('要結束這回測驗嗎？已作答的部分會存入紀錄。')) return;
+  if (quiz && (quiz.correct + quiz.wrong.length) > 0) {
+    quiz.words = quiz.words.slice(0, quiz.correct + quiz.wrong.length);
+    finishQuiz();
+  } else {
+    quiz = null;
+    $('quiz-run').classList.add('hidden');
+    $('quiz-setup').classList.remove('hidden');
+  }
+};
+
+function finishQuiz() {
+  const q = quiz;
+  const total = q.correct + q.wrong.length;
+  qHistory.unshift({t: Date.now(), mode: q.mode, total, correct: q.correct, wrong: q.wrong});
+  qHistory = qHistory.slice(0, 50);
+  localStorage.setItem('toeic-quiz-history', JSON.stringify(qHistory));
+
+  $('quiz-run').classList.add('hidden');
+  $('quiz-result').classList.remove('hidden');
+  const pct = total ? Math.round(q.correct / total * 100) : 0;
+  $('r-score').textContent = `${q.correct} / ${total}`;
+  $('r-sub').textContent = `${MODE_NAME[q.mode]}・答對率 ${pct}%` + (q.wrong.length ? `・答錯 ${q.wrong.length} 個字` : '・全對，太強了！');
+  $('r-retry').classList.toggle('hidden', !q.wrong.length);
+  $('r-wrong').innerHTML = q.wrong.length ? wrongListHTML(q.wrong) : '';
+  bindSpeakBtns($('r-wrong'));
+  renderHistory();
+}
+function wrongListHTML(words) {
+  const map = new Map(getWords().map(w => [w.w, w]));
+  return '<div class="wreview">' + words.map(k => {
+    const e = map.get(k);
+    if (!e) return '';
+    return `<div class="item"><b>${esc(e.w)}</b><span class="m">${esc(e.pos)}</span> ${esc(e.zh)}
+      <button class="speak" data-s="${esc(e.w)}" style="margin:0 0 0 8px;padding:2px 10px">🔊</button>
+      <div class="m">${esc(e.ex)}<br>${esc(e.exzh)}</div></div>`;
+  }).join('') + '</div>';
+}
+function bindSpeakBtns(root) {
+  root.querySelectorAll('[data-s]').forEach(b => b.onclick = () => speak(b.dataset.s));
+}
+$('r-retry').onclick = () => {
+  const map = new Map(getWords().map(w => [w.w, w]));
+  const list = quiz.wrong.map(k => map.get(k)).filter(Boolean);
+  startQuiz(quiz.mode, sample(list, list.length));
+};
+$('r-again').onclick = () => {
+  const pool = quizPool();
+  startQuiz(qMode, sample(pool, Math.min(+$('q-count').value, pool.length)));
+};
+$('r-back').onclick = () => {
+  $('quiz-result').classList.add('hidden');
+  $('quiz-setup').classList.remove('hidden');
+  renderHistory();
+};
+
+/* ----- history & review ----- */
+let openHist = -1;
+function renderHistory() {
+  if (!qHistory.length) {
+    $('q-history').innerHTML = '<p style="color:var(--muted);font-size:.88rem">還沒有測驗紀錄，開始第一回吧！</p>';
+    return;
+  }
+  $('q-history').innerHTML = qHistory.map((h, i) => {
+    const d = new Date(h.t);
+    const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const pct = h.total ? Math.round(h.correct / h.total * 100) : 0;
+    return `<div class="hist-row">
+      <span class="score ${pct >= 80 ? 'pass' : 'fail'}">${h.correct}/${h.total}</span>
+      <span>${MODE_NAME[h.mode]}</span><span class="when">${when}</span>
+      ${h.wrong.length ? `<span style="color:var(--bad);font-size:.82rem">錯 ${h.wrong.length} 字</span>` : '<span style="color:var(--good);font-size:.82rem">全對</span>'}
+      <span class="act">
+        ${h.wrong.length ? `<button data-rev="${i}">${openHist === i ? '收合' : '複習錯題'}</button>
+        <button data-ret="${i}">重測錯題</button>` : ''}
+        <button data-del="${i}">刪除</button>
+      </span></div>
+      ${openHist === i && h.wrong.length ? wrongListHTML(h.wrong) : ''}`;
+  }).join('');
+  $('q-history').querySelectorAll('[data-rev]').forEach(b => b.onclick = () => {
+    openHist = openHist === +b.dataset.rev ? -1 : +b.dataset.rev;
+    renderHistory();
+  });
+  $('q-history').querySelectorAll('[data-ret]').forEach(b => b.onclick = () => {
+    const h = qHistory[+b.dataset.ret];
+    const map = new Map(getWords().map(w => [w.w, w]));
+    const list = h.wrong.map(k => map.get(k)).filter(Boolean);
+    if (!list.length) { alert('這些單字已不在單字表中'); return; }
+    startQuiz(h.mode, sample(list, list.length));
+  });
+  $('q-history').querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    qHistory.splice(+b.dataset.del, 1);
+    localStorage.setItem('toeic-quiz-history', JSON.stringify(qHistory));
+    openHist = -1;
+    renderHistory();
+  });
+  bindSpeakBtns($('q-history'));
+}
+
+document.addEventListener('keydown', e => {
+  if ($('view-quiz').classList.contains('hidden') || !quiz) return;
+  if ($('quiz-run').classList.contains('hidden')) return;
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+  if (['1', '2', '3', '4'].includes(e.key) && !quiz.answered) {
+    const btns = $('q-choices').querySelectorAll('button');
+    if (btns[+e.key - 1]) btns[+e.key - 1].click();
+  } else if ((e.key === 'Enter' || e.code === 'Space') && quiz.answered) {
+    e.preventDefault(); nextQuestion();
+  } else if ((e.key === 'r' || e.key === 'R') && quiz.mode === 'listen') {
+    speak(quiz.words[quiz.i].w);
+  }
+});
+
 /* ================= shadowing ================= */
 const audio = $('audio');
 let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
@@ -636,7 +1036,7 @@ let editingKey = null;   // original word spelling when editing an existing entr
 let listLimit = 50;
 
 function refreshWordViews() {
-  buildRange(); buildDeck(); renderList(); updPending();
+  buildRange(); buildDeck(); renderList(); updPending(); buildQRange();
 }
 function clearForm() {
   for (const f of ['e-w', 'e-pos', 'e-zh', 'e-ex', 'e-exzh']) $(f).value = '';
@@ -784,6 +1184,7 @@ $('do-sync').onclick = async () => {
 
 /* ================= init ================= */
 buildTestTabs(); buildList(); buildRange(); buildDeck(); renderList(); updPending();
+buildQRange(); renderHistory();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
 </body>
