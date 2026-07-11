@@ -682,6 +682,10 @@
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const META = typeof TEST_META !== 'undefined' ? TEST_META : {};
+const testName = t => META[t]?.name || `模擬考 ${t.replace('Test', '')}`;
+const testSource = t => META[t]?.source || '';
 
 /* ================= login gate ================= */
 const PASS_HASH = 'e545931178924da5250a5a34218ab3553302e668ba5378a461da1121bcee314a';
@@ -1585,9 +1589,6 @@ let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
 let curIdx = -1, abA = null, abB = null;
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-const META = typeof TEST_META !== 'undefined' ? TEST_META : {};
-const testName = t => META[t]?.name || `模擬考 ${t.replace('Test', '')}`;
-const testSource = t => META[t]?.source || '';
 
 function buildTestTabs() {
   $('testtabs').innerHTML = Object.keys(TESTS).map(t =>
@@ -1831,7 +1832,6 @@ function renderList() {
   $('wlist').querySelectorAll('[data-e]').forEach(b => b.onclick = () => startEdit(b.dataset.e));
   $('wlist').querySelectorAll('[data-d]').forEach(b => b.onclick = () => delWord(b.dataset.d));
 }
-const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('search').oninput = () => { listLimit = 50; renderList(); };
 $('more').onclick = () => { listLimit += 100; renderList(); };
 
@@ -1907,7 +1907,7 @@ $('do-sync').onclick = async () => {
 
 /* ================= init ================= */
 buildTestTabs(); buildList(); buildRange(); buildDeck(); renderList(); updPending();
-buildQRange(); renderHistory();
+buildQRange(); renderHistory(); renderExamHistory();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
 </body>
