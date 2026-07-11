@@ -232,12 +232,11 @@
   .examnote { color: var(--muted); font-size: .85rem; line-height: 1.7; }
 
   /* ---------- shadowing ---------- */
-  .testtabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .testtabs button {
-    border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    padding: 8px 18px; border-radius: 10px; cursor: pointer; font-size: .95rem;
+  .tsel {
+    width: 100%; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    padding: 10px 12px; border-radius: 9px; font-size: .95rem; cursor: pointer;
   }
-  .testtabs button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .src-note { color: var(--muted); font-size: .72rem; margin: 6px 6px 4px; line-height: 1.4; }
 
   .player {
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
@@ -341,7 +340,8 @@
     .qside { display: none; }
     .tpanel { position: static; max-height: none; }
   }
-  .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; }
+  .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .qpickrow .tsel { flex: 1 1 100%; }
   .qpickrow select {
     flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 11px 12px; border-radius: 10px; font-size: 1rem; cursor: pointer;
@@ -614,11 +614,15 @@
 
   <!-- ================= 跟讀 ================= -->
   <section id="view-shadow" class="hidden">
-    <div class="testtabs" id="testtabs"></div>
     <div class="shadow-grid">
-    <aside class="qside" id="qside"></aside>
+    <aside class="qside" id="qside">
+      <select id="tsel-side" class="tsel"></select>
+      <div class="src-note" id="src-note"></div>
+      <div id="qside-list"></div>
+    </aside>
     <div class="shadow-main">
     <div class="qpickrow">
+      <select id="tsel-m" class="tsel"></select>
       <select id="qsel"></select>
       <button id="qprev" title="上一題">⏮</button>
       <button id="qnext" title="下一題">⏭</button>
@@ -1723,18 +1727,23 @@ let curIdx = -1, abA = null, abB = null;
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-function buildTestTabs() {
-  $('testtabs').innerHTML = Object.keys(TESTS).map(t =>
-    `<button data-t="${t}" class="${t === curTest ? 'active' : ''}" title="${esc(testSource(t))}">${esc(testName(t))}</button>`).join('') +
-    (testSource(curTest) ? `<span style="align-self:center;color:var(--muted);font-size:.78rem">來源：${esc(testSource(curTest))}（僅供個人學習）</span>` : '');
-  $('testtabs').querySelectorAll('button').forEach(b => b.onclick = () => {
-    curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest);
-    curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
-    $('now').textContent = '請選擇題目';
-    $('nowline').classList.add('hidden');
-    buildTestTabs(); buildQSel(); renderTranscript(); updPlay();
-  });
+function buildTestSel() {
+  const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
+  $('tsel-side').innerHTML = opts;
+  $('tsel-m').innerHTML = opts;
+  $('tsel-side').value = curTest;
+  $('tsel-m').value = curTest;
+  $('src-note').textContent = testSource(curTest) ? `來源：${testSource(curTest)}（僅供個人學習）` : '';
 }
+function switchTest(t) {
+  curTest = t; localStorage.setItem('toeic-test', curTest);
+  curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
+  $('now').textContent = '請選擇題目';
+  $('nowline').classList.add('hidden');
+  buildTestSel(); buildQSel(); renderTranscript(); updPlay();
+}
+$('tsel-side').onchange = () => switchTest($('tsel-side').value);
+$('tsel-m').onchange = () => switchTest($('tsel-m').value);
 const PART_DESC = {'Part 1': 'Part 1・照片描述', 'Part 2': 'Part 2・應答問題',
                    'Part 3': 'Part 3・簡短對話', 'Part 4': 'Part 4・簡短獨白', '說明': '考試說明'};
 function buildQSel() {
@@ -1746,15 +1755,15 @@ function buildQSel() {
       `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
         `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
   $('qsel').value = String(curIdx);
-  $('qside').innerHTML = Object.entries(parts).map(([p, arr]) =>
+  $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
     `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
       `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${it.label}<span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
-  $('qside').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+  $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
 }
 function updSide() {
-  $('qside').querySelectorAll('button').forEach(b =>
+  $('qside-list').querySelectorAll('button').forEach(b =>
     b.classList.toggle('cur', +b.dataset.i === curIdx));
-  const cur = $('qside').querySelector('button.cur');
+  const cur = $('qside-list').querySelector('button.cur');
   if (cur) {
     const box = $('qside');
     const y = cur.offsetTop - box.clientHeight / 2;
@@ -2064,7 +2073,7 @@ $('do-sync').onclick = async () => {
 };
 
 /* ================= init ================= */
-buildTestTabs(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
+buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
 buildQRange(); renderHistory(); renderExamHistory();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
