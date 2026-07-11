@@ -1091,6 +1091,7 @@ function renderBooksAdmin() {
     <div class="badmin">
       <div class="bhead"><b>📓 ${esc(b.name)}</b><span style="color:var(--muted);font-size:.82rem">${b.words.length} 字</span>
         <button data-open="${bi}">${b._open ? '收合' : '展開'}</button>
+        <button data-expb="${bi}">匯出 .md</button>
         <button class="del" data-delb="${bi}">刪除</button></div>
       ${b._open ? `<div class="bwords">${b.words.map(w =>
         `<span>${esc(w)}<b data-rm="${esc(w)}" data-bi="${bi}" title="移出單字本">×</b></span>`).join('') || '<span style="border:none;background:none;color:var(--muted)">（空）</span>'}</div>` : ''}
@@ -1106,6 +1107,15 @@ function renderBooksAdmin() {
   });
   $('books-admin').querySelectorAll('[data-rm]').forEach(el => el.onclick = () => {
     toggleBookWord(books[+el.dataset.bi].name, el.dataset.rm);
+  });
+  $('books-admin').querySelectorAll('[data-expb]').forEach(el => el.onclick = () => {
+    const b = books[+el.dataset.expb];
+    const md = `# ${b.name}\n\n` + b.words.map(w => `- ${w}`).join('\n') + '\n';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([md], {type: 'text/markdown'}));
+    a.download = `${b.name}.md`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   });
 }
 $('nb-create').onclick = () => {
