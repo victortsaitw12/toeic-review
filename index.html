@@ -641,10 +641,14 @@
         <div class="nl-zh" id="nl-zh"></div>
       </div>
       <div class="segctrl">
+        <button id="prev-q" title="上一題">⏮ 題</button>
+        <button id="next-q" title="下一題">題 ⏭</button>
+        <span class="sep"></span>
         <button id="prev-seg" title="上一句">⏮ 句</button>
         <button id="rep-seg" title="重播這一句">↻ 句</button>
         <button id="next-seg" title="下一句">句 ⏭</button>
         <button id="seg-loop" title="單句循環（跟讀）">🔂 單句循環</button>
+        <button id="tg-now" class="on" title="顯示/隱藏正在播放的句子">💬 目前句</button>
         <span class="sep"></span>
         <button id="back3">↺ 3 秒</button>
         <span class="speed">
@@ -1795,6 +1799,19 @@ function updPlay() {
 /* ----- transcript & sentence navigation ----- */
 let curSeg = -1, segLoop = false;
 const tset = JSON.parse(localStorage.getItem('toeic-tset') || '{"en":true,"zh":true,"follow":true}');
+if (tset.now === undefined) tset.now = true;
+function updNowline() {
+  $('nowline').classList.toggle('hidden', !(tset.now && curSeg >= 0 && segsNow()));
+}
+$('tg-now').onclick = () => {
+  tset.now = !tset.now;
+  localStorage.setItem('toeic-tset', JSON.stringify(tset));
+  $('tg-now').classList.toggle('on', tset.now);
+  updNowline();
+};
+$('tg-now').classList.toggle('on', tset.now);
+$('prev-q').onclick = () => load(curIdx - 1, !audio.paused);
+$('next-q').onclick = () => load(curIdx + 1, !audio.paused);
 
 function segsNow() {
   if (curIdx < 0) return null;
@@ -1835,7 +1852,7 @@ function updateSeg() {
   $('nl-en').textContent = s.t;
   $('nl-zh').textContent = s.z || '';
   $('nl-zh').style.display = s.z ? '' : 'none';
-  $('nowline').classList.remove('hidden');
+  updNowline();
   $('tlist').querySelectorAll('.tseg').forEach(el =>
     el.classList.toggle('cur', +el.dataset.i === i));
   if (tset.follow && !audio.paused) {
