@@ -1843,13 +1843,16 @@ function bindFavStars(box, onToggle) {
 const practiceDone = JSON.parse(localStorage.getItem('toeic-practice-done') || '{"sp":{},"dt":{}}');
 const doneBadge = (p, c) => {
   const r = practiceDone[p][c.src];
-  if (!r || !r.d.length) return '';
-  return r.d.length >= r.t ? '<span class="pdone all">✓ 練完</span>'
-    : `<span class="pdone">✓ ${r.d.length}/${r.t}</span>`;
+  if (!r || (!r.d.length && !r.n)) return '';
+  const rounds = r.n || 0;                    // 已完整練完的輪數
+  if (r.d.length >= r.t)                      // 這一輪也練完了
+    return `<span class="pdone all">✓ 練完${rounds ? ` ×${rounds + 1}` : ''}</span>`;
+  return `<span class="pdone" title="${rounds ? `已練完 ${rounds} 輪，` : ''}這一輪練了 ${r.d.length}/${r.t} 句">✓ ${r.d.length}/${r.t}${rounds ? ` ×${rounds}` : ''}</span>`;
 };
 function markPracticed(p, clip, clipIdx, idx) {
   const rec = practiceDone[p][clip.src] ||= {d: [], t: clip.segs.length};
   rec.t = clip.segs.length;
+  if (rec.d.length >= rec.t) { rec.n = (rec.n || 0) + 1; rec.d = []; }   // 練完再練＝開始新的一輪
   if (rec.d.includes(idx)) return;
   rec.d.push(idx);
   localStorage.setItem('toeic-practice-done', JSON.stringify(practiceDone));
