@@ -353,6 +353,27 @@
     position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow-y: auto;
     background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px;
   }
+  /* 上方固定的模擬考選項＋下方可捲動的題目列表 */
+  .qcol {
+    position: sticky; top: 78px; max-height: calc(100vh - 96px);
+    display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  }
+  .qcol .qside { position: static; max-height: none; flex: 0 1 auto; min-height: 0; }
+  .qpick {
+    flex: none; background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px;
+  }
+  .qpick h4 { margin: 10px 2px 6px; font-size: .78rem; color: var(--muted); font-weight: 600; }
+  .qpick .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qpick .chips button {
+    border: 1px solid var(--line); background: none; color: var(--ink);
+    padding: 5px 11px; border-radius: 8px; cursor: pointer; font-size: .86rem;
+  }
+  .qpick .chips button:hover { background: var(--chip); }
+  .qpick .chips button.cur {
+    background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
+  }
+  .qpick .src-note { margin: 8px 2px 0; }
   .qside h4 {
     margin: 10px 6px 4px; font-size: .78rem; color: var(--muted); font-weight: 600;
     position: sticky; top: -8px; background: var(--card); padding: 6px 0 4px; z-index: 1;
@@ -369,7 +390,7 @@
   .qside button.cur .d { color: inherit; opacity: .8; }
   @media (max-width: 860px) {
     .shadow-grid { grid-template-columns: 1fr; }
-    .qside { display: none; }
+    .qside, .qcol { display: none; }
     .tpanel { position: static; max-height: none; }
   }
   .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -687,10 +708,16 @@
   <!-- ================= 跟讀 ================= -->
   <section id="view-shadow" class="hidden">
     <div class="shadow-grid">
-    <aside class="qside" id="qside">
-      <select id="tsel-side" class="tsel"></select>
-      <div class="src-note" id="src-note"></div>
-      <div id="qside-list"></div>
+    <aside class="qcol">
+      <div class="qpick">
+        <div class="chips" id="series-row"></div>
+        <h4>模擬考選項</h4>
+        <div class="chips" id="testnum-row"></div>
+        <div class="src-note" id="src-note"></div>
+      </div>
+      <div class="qside" id="qside">
+        <div id="qside-list"></div>
+      </div>
     </aside>
     <div class="shadow-main">
     <div class="qpickrow">
@@ -2475,12 +2502,25 @@ let curIdx = -1, abA = null, abB = null;
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
+const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}, {k: 'C', n: '國學藍'}];
+const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
+const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
+  .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
 function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
-  $('tsel-side').innerHTML = opts;
   $('tsel-m').innerHTML = opts;
-  $('tsel-side').value = curTest;
   $('tsel-m').value = curTest;
+  const cs = seriesOf(curTest);
+  $('series-row').innerHTML = SERIES.filter(s => seriesTests(s.k).length)
+    .map(s => `<button data-s="${s.k}" class="${s.k === cs ? 'cur' : ''}">${s.n}</button>`).join('');
+  $('series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.s !== cs) switchTest(seriesTests(b.dataset.s)[0]);
+  });
+  $('testnum-row').innerHTML = seriesTests(cs)
+    .map(t => `<button data-t="${t}" class="${t === curTest ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
+  $('testnum-row').querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.t !== curTest) switchTest(b.dataset.t);
+  });
   $('src-note').textContent = testSource(curTest) ? `來源：${testSource(curTest)}（僅供個人學習）` : '';
 }
 function switchTest(t) {
@@ -2490,7 +2530,6 @@ function switchTest(t) {
   $('nowline').classList.add('hidden');
   buildTestSel(); buildQSel(); renderTranscript(); updPlay();
 }
-$('tsel-side').onchange = () => switchTest($('tsel-side').value);
 $('tsel-m').onchange = () => switchTest($('tsel-m').value);
 const PART_DESC = {'Part 1': 'Part 1・照片描述', 'Part 2': 'Part 2・應答問題',
                    'Part 3': 'Part 3・簡短對話', 'Part 4': 'Part 4・簡短獨白', '說明': '考試說明'};
