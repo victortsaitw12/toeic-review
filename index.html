@@ -1205,7 +1205,18 @@ $('nb-create').onclick = () => {
 };
 
 /* ================= tabs ================= */
+/* 切換功能分頁時停掉所有正在播放的音檔（各音源定義在後面的區段，呼叫時都已存在） */
+function stopAllPlayback() {
+  audio.pause();      // EZ 聽力解析
+  spStopAll();        // 口說跟讀（含錄音、自動跟讀計時器、我的錄音）
+  dtAudio.pause();    // 聽寫練習
+  qaudio.pause();     // 單字測驗的聽寫片段
+  // 單字卡/單字測驗的語音發音；模擬考聽力進行中不取消（它有自己的暫停/結束流程）
+  if ('speechSynthesis' in window && !(exam && !$('exam-listen').classList.contains('hidden')))
+    speechSynthesis.cancel();
+}
 function showView(v) {
+  if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
   for (const k of ['cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
