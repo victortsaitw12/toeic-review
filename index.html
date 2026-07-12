@@ -542,15 +542,43 @@
     /* 觸控目標與 iOS 聚焦縮放：輸入類字級固定 ≥16px */
     input, select, textarea { font-size: 16px !important; }
 
-    /* 單字卡 */
+    /* 單字卡：導航鈕固定底部拇指區，不熟/認識最大顆 */
     .face { padding: 26px 18px; }
     .word { font-size: 2rem; }
     .zh { font-size: 1.3rem; }
     .flashcard { min-height: 300px; }
-    .cardnav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .cardnav button { min-width: 0; padding: 13px 8px; }
     .kbd-tip { display: none; }
     .hint { font-size: .72rem; }
+    body[data-view="cards"] main { padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
+    #view-cards .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    #view-cards .toolbar select, #view-cards .toolbar button { width: 100%; padding: 10px 8px; margin: 0; }
+    #view-cards .toolbar #bookfilter { grid-column: 1 / -1; }
+    #view-cards .counter { grid-column: 1 / -1; text-align: center; margin-left: 0; }
+    #view-cards .cardnav {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin-top: 0;
+      background: var(--card); border-top: 1px solid var(--line);
+      box-shadow: 0 -4px 18px rgba(0,0,0,.12);
+      padding: 8px max(10px, env(safe-area-inset-right))
+               calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+    }
+    #view-cards .cardnav button { min-width: 0; margin: 0; padding: 10px 4px; }
+    #mark-hard  { grid-area: 1 / 1 / 2 / 4; min-height: 50px; font-size: 1.02rem; }
+    #mark-known { grid-area: 1 / 4 / 2 / 7; min-height: 50px; font-size: 1.02rem; }
+    #prev-card  { grid-area: 2 / 1 / 3 / 3; }
+    #add-book   { grid-area: 2 / 3 / 3 / 5; }
+    #next-card  { grid-area: 2 / 5 / 3 / 7; }
+
+    /* 單字測驗：設定選單網格化、主要按鈕加大 */
+    #view-quiz .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #view-quiz .toolbar select, #view-quiz .toolbar button { width: 100%; margin: 0; }
+    #q-onlyhard { grid-column: 1 / -1; padding: 11px 8px; }
+    #q-start { grid-column: 1 / -1; padding: 13px !important; font-size: 1rem; }
+    .choices button { padding: 13px 12px; font-size: 1rem; }
+    .qnext { flex-wrap: wrap; gap: 10px; }
+    #q-next { flex: 1 1 100%; padding: 14px !important; font-size: 1rem; }
+    #q-quit { margin-left: 0 !important; }
+    #quiz-result .btnrow button { flex: 1 1 45%; padding: 12px 8px; }
 
     /* 聽力解析播放器 */
     .player { padding: 12px 14px; top: 54px; border-radius: 14px; }
