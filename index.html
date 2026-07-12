@@ -202,15 +202,17 @@
   }
   .sp-tabs button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
   .segctrl.sp-primary button { padding: 10px 16px; font-size: .95rem; }
-  #sp-dictbox { margin-top: 12px; }
-  #sp-dresult {
+  /* ---------- dictation ---------- */
+  #dt-dictbox { margin-top: 12px; }
+  #dt-result {
     margin-top: 10px; padding: 10px 14px; border-radius: 10px;
     background: var(--chip); font-size: 1.02rem; line-height: 1.7;
   }
-  #sp-dresult .score { font-weight: 700; margin-right: 10px; }
-  #sp-dresult .zh2 { color: var(--muted); font-size: .9rem; margin-top: 4px; }
-  #sp-list.dictmask .tseg:not(.done) .en,
-  #sp-list.dictmask .tseg:not(.done) .zh2 { filter: blur(5px); }
+  #dt-result .score { font-weight: 700; margin-right: 10px; }
+  #dt-result .zh2 { color: var(--muted); font-size: .9rem; margin-top: 4px; }
+  #dt-list { max-height: 56vh; overflow-y: auto; position: relative; }
+  #dt-list .tseg:not(.done) .en,
+  #dt-list .tseg:not(.done) .zh2 { filter: blur(5px); }
   #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .6; } }
   .recdot { color: var(--good); font-size: .7rem; margin-left: 6px; }
@@ -322,7 +324,7 @@
   }
   .time { color: var(--muted); font-size: .82rem; display: flex; justify-content: space-between; }
   /* 電腦版：左側題目 sidebar＋右側逐字稿；手機版：單欄＋頂部下拉選單 */
-  body[data-view="shadow"] main, body[data-view="speak"] main { max-width: 1380px; }
+  body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1380px; }
   .shadow-grid {
     display: grid; grid-template-columns: 220px minmax(0, 1fr) minmax(280px, 430px);
     gap: 18px; align-items: start;
@@ -332,7 +334,7 @@
       position: sticky; top: 78px; margin-bottom: 0;
       max-height: calc(100vh - 96px); display: flex; flex-direction: column;
     }
-    .tpanel #tlist, .tpanel #sp-list { max-height: none; flex: 1; }
+    .tpanel #tlist, .tpanel #sp-list, .tpanel #dt-list { max-height: none; flex: 1; }
   }
   .qside {
     position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow-y: auto;
@@ -532,6 +534,7 @@
     <button id="tab-quiz">單字測驗</button>
     <button id="tab-shadow">EZ模擬考聽力解析</button>
     <button id="tab-speak">口說跟讀</button>
+    <button id="tab-dict">聽寫練習</button>
     <button id="tab-exam">模擬考試</button>
     <button id="tab-admin">單字管理</button>
   </nav>
@@ -766,7 +769,6 @@
       </div>
       <div class="sp-tabs">
         <button id="sp-tab-shadow" class="on">🎙 跟讀功能</button>
-        <button id="sp-tab-dict">✍️ 聽寫</button>
         <button id="sp-tab-player">🎧 播放器</button>
       </div>
       <div class="segctrl sp-primary" id="sp-ctrl-shadow">
@@ -802,24 +804,6 @@
         <button id="sp-setb">B</button>
         <button id="sp-clearab">清 A-B</button>
       </div>
-      <div class="segctrl sp-primary hidden" id="sp-ctrl-dict">
-        <button id="sp-dprev" title="上一句">⏮ 句</button>
-        <button id="sp-drep" title="再聽一次這一句">↻ 再聽</button>
-        <button id="sp-dnext" title="下一句">句 ⏭</button>
-        <span class="sep"></span>
-        <span id="sp-dstat" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
-      </div>
-      <div class="hidden" id="sp-dictbox">
-        <div class="spellrow">
-          <input id="sp-dinput" placeholder="聽完這一句，把聽到的英文打出來，按 Enter 對答案" autocomplete="off" autocapitalize="off" spellcheck="false">
-          <button id="sp-dcheck" style="border:1px solid var(--line);background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:0 20px;cursor:pointer">對答案</button>
-          <button id="sp-dshow" style="border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 14px;cursor:pointer">顯示答案</button>
-        </div>
-        <div id="sp-dresult" class="hidden"></div>
-      </div>
-      <p class="sp-tip hidden" id="sp-dtip">聽寫方法：點句子列表任一句（英文已遮住）→ 聽原音後把聽到的英文打出來 → Enter 對答案，
-      <span style="color:var(--good)">綠色</span>＝答對的字、<span style="color:var(--bad);text-decoration:underline">紅色底線</span>＝漏掉或拼錯的字；
-      答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或到播放器 Tab 調慢語速。</p>
       <p class="sp-tip" id="sp-tip">跟讀方法：點句子列表任一句 → 播完該句會<b>自動停</b>，按「⏺ 錄音」複誦 →
       「▶ 我的錄音」和原音比對 → 「句 ⏭」練下一句；「🎙 自動跟讀模式」會自動播一句、留時間複誦、再播下一句。
       想連續聽整段就按左上大播放鍵 ▶。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
@@ -828,6 +812,66 @@
     <div class="tpanel">
       <div class="thead"><h3>句子列表</h3></div>
       <div id="sp-list"><div class="empty">選擇音檔後顯示句子列表</div></div>
+    </div>
+    </div><!-- /shadow-grid -->
+  </section>
+
+  <!-- ================= 聽寫練習 ================= -->
+  <section id="view-dict" class="hidden">
+    <div class="shadow-grid">
+    <aside class="qside" id="dt-side">
+      <div class="src-note">音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），
+      語速清晰、適合聽寫。</div>
+      <div id="dt-side-list"></div>
+    </aside>
+    <div class="shadow-main">
+    <div class="qpickrow">
+      <select id="dt-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
+      <button id="dt-cprev" title="上一段音檔">⏮</button>
+      <button id="dt-cnext" title="下一段音檔">⏭</button>
+    </div>
+    <div class="player">
+      <div class="playrow">
+        <button class="bigplay" id="dt-play" title="播放目前句">▶</button>
+        <div class="grow">
+          <div class="now" id="dt-title">請選擇音檔</div>
+          <div class="bar" id="dt-bar"><div class="fill" id="dt-fill"></div></div>
+          <div class="time"><span id="dt-tcur">0:00</span><span id="dt-tdur">0:00</span></div>
+        </div>
+      </div>
+      <div class="segctrl sp-primary">
+        <button id="dt-prev" title="上一句">⏮ 句</button>
+        <button id="dt-rep" title="再聽一次這一句">↻ 再聽</button>
+        <button id="dt-next" title="下一句">句 ⏭</button>
+        <span class="sep"></span>
+        <span class="speed">
+          <select id="dt-rate" title="語速">
+            <option value="0.6">0.6×</option>
+            <option value="0.75">0.75×</option>
+            <option value="0.85">0.85×</option>
+            <option value="1" selected>1.0×</option>
+            <option value="1.15">1.15×</option>
+          </select>
+        </span>
+        <span id="dt-stat" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
+      </div>
+      <div id="dt-dictbox">
+        <div class="spellrow">
+          <input id="dt-input" placeholder="聽完這一句，把聽到的英文打出來，按 Enter 對答案" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button id="dt-check" style="border:1px solid var(--line);background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:0 20px;cursor:pointer">對答案</button>
+          <button id="dt-show" style="border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 14px;cursor:pointer">顯示答案</button>
+        </div>
+        <div id="dt-result" class="hidden"></div>
+      </div>
+      <p class="sp-tip">聽寫方法：點右側句子列表任一句（內容已遮住）→ 聽原音（播完該句<b>自動停</b>，不會自動播下一句）→
+      把聽到的英文打出來 → Enter 對答案，<span style="color:var(--good)">綠色</span>＝答對的字、
+      <span style="color:var(--bad);text-decoration:underline">紅色底線</span>＝漏掉或拼錯的字；
+      答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或調慢語速，練完一句自己按「句 ⏭」。</p>
+    </div>
+    </div><!-- /shadow-main -->
+    <div class="tpanel">
+      <div class="thead"><h3>句子列表（已遮住，答對後解除）</h3></div>
+      <div id="dt-list"><div class="empty">選擇音檔後顯示句子列表</div></div>
     </div>
     </div><!-- /shadow-grid -->
   </section>
@@ -1163,7 +1207,7 @@ $('nb-create').onclick = () => {
 
 /* ================= tabs ================= */
 function showView(v) {
-  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'exam', 'admin']) {
+  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
@@ -1174,6 +1218,7 @@ $('tab-cards').onclick = () => showView('cards');
 $('tab-quiz').onclick = () => showView('quiz');
 $('tab-shadow').onclick = () => showView('shadow');
 $('tab-speak').onclick = () => showView('speak');
+$('tab-dict').onclick = () => showView('dict');
 $('tab-exam').onclick = () => showView('exam');
 $('tab-admin').onclick = () => showView('admin');
 
@@ -1691,7 +1736,6 @@ let spClip = null, spClipIdx = -1, spIdx = -1, spLoopOn = false, spAutoOn = fals
 let spA = null, spB = null, spSegMode = false;   // spSegMode：跟讀模式，句尾自動停
 let spRecorder = null, spChunks = [], spStream = null;
 const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
-const spDict = new Map();   // sentence idx -> 聽寫結果 {ans, pct?, revealed?, html}
 const spset = JSON.parse(localStorage.getItem('toeic-spset') || '{"now":true,"autonext":false}');
 const saveSpset = () => localStorage.setItem('toeic-spset', JSON.stringify(spset));
 
@@ -1717,7 +1761,6 @@ function openClip(i, play) {
   spClip = SPEAK_DATA[i]; spIdx = -1;
   spA = spB = null; spDrawAB();
   spRecs.forEach(u => URL.revokeObjectURL(u)); spRecs.clear();
-  spDict.clear();
   spAudio.src = spClip.src;
   spAudio.playbackRate = +$('sp-rate').value;
   $('sp-title').innerHTML = `${esc(spClip.title)}<small>${esc(spClip.source)}</small>`;
@@ -1733,18 +1776,13 @@ function openClip(i, play) {
     b.classList.toggle('cur', +b.dataset.i === i));
   $('sp-mine').disabled = true;
   renderSpList();
-  spDictShow();
   if (play) spAudio.play();
 }
 function renderSpList() {
-  const dbadge = i => {
-    const r = spDict.get(i);
-    return r ? `<span class="recdot">✍ ${r.revealed ? '已看' : r.pct + '%'}</span>` : '';
-  };
   $('sp-list').innerHTML = spClip.segs.map((s, i) => `
-    <div class="tseg ${i === spIdx ? 'cur' : ''} ${spDict.has(i) ? 'done' : ''}" data-i="${i}">
+    <div class="tseg ${i === spIdx ? 'cur' : ''}" data-i="${i}">
       <span class="tt">${fmt(s.s)}</span>
-      <span class="txt"><div class="en">${esc(s.t)}${spRecs.has(i) ? '<span class="recdot">●已錄</span>' : ''}${dbadge(i)}</div>
+      <span class="txt"><div class="en">${esc(s.t)}${spRecs.has(i) ? '<span class="recdot">●已錄</span>' : ''}</div>
       <div class="zh2">${esc(s.z || '')}</div></span>
     </div>`).join('');
   $('sp-list').querySelectorAll('.tseg').forEach(el => el.onclick = () => spPlaySeg(+el.dataset.i));
@@ -1755,8 +1793,7 @@ function spSeek(t, play) {
   else spAudio.addEventListener('loadedmetadata', go, {once: true});
 }
 function spUpdNowline() {
-  // 聽寫 Tab 一律隱藏目前句，避免直接看到答案
-  $('sp-nowline').classList.toggle('hidden', !spset.now || spset.tab === 'dict');
+  $('sp-nowline').classList.toggle('hidden', !spset.now);
 }
 function spMarkCur() {
   $('sp-list').querySelectorAll('.tseg').forEach(el =>
@@ -1771,7 +1808,6 @@ function spMarkCur() {
   }
   spUpdNowline();
   $('sp-mine').disabled = !spRecs.has(spIdx);
-  spDictShow();
 }
 function spUpdateSeg() {
   const t = spAudio.currentTime;
@@ -1880,57 +1916,14 @@ $('sp-loopall').onclick = () => { spAudio.loop = !spAudio.loop; $('sp-loopall').
 function spShowCtrl(t) {
   spset.tab = t; saveSpset();
   $('sp-tab-shadow').classList.toggle('on', t === 'shadow');
-  $('sp-tab-dict').classList.toggle('on', t === 'dict');
   $('sp-tab-player').classList.toggle('on', t === 'player');
   $('sp-ctrl-shadow').classList.toggle('hidden', t !== 'shadow');
-  $('sp-ctrl-dict').classList.toggle('hidden', t !== 'dict');
   $('sp-ctrl-player').classList.toggle('hidden', t !== 'player');
-  $('sp-dictbox').classList.toggle('hidden', t !== 'dict');
   $('sp-tip').classList.toggle('hidden', t !== 'shadow');
-  $('sp-dtip').classList.toggle('hidden', t !== 'dict');
-  $('sp-list').classList.toggle('dictmask', t === 'dict');
-  spUpdNowline();
-  spDictShow();
 }
-function spDictShow() {
-  $('sp-dstat').textContent = spClip ? `已聽寫 ${spDict.size} / ${spClip.segs.length} 句` : '';
-  const r = spIdx >= 0 ? spDict.get(spIdx) : null;
-  $('sp-dinput').value = r && r.ans ? r.ans : '';
-  $('sp-dresult').innerHTML = r ? r.html : '';
-  $('sp-dresult').classList.toggle('hidden', !r);
-}
-function spDictCheck(reveal) {
-  if (!spClip) return;
-  if (spIdx < 0) {
-    $('sp-dresult').innerHTML = '請先點句子列表選一句（或按「句 ⏭」從第一句開始）';
-    $('sp-dresult').classList.remove('hidden');
-    return;
-  }
-  const s = spClip.segs[spIdx];
-  let entry;
-  if (reveal) {
-    entry = {ans: $('sp-dinput').value.trim(), revealed: true,
-      html: `<span class="score" style="color:var(--muted)">原文</span>${esc(s.t)}<div class="zh2">${esc(s.z || '')}</div>`};
-  } else {
-    const val = $('sp-dinput').value.trim();
-    if (!val) return;
-    const d = dictDiffHTML(s, val);
-    entry = {ans: val, pct: d.pct,
-      html: `<span class="score" style="color:${d.pct >= 80 ? 'var(--good)' : 'var(--bad)'}">${d.pct}%</span>${d.html}<div class="zh2">${esc(s.z || '')}</div>`};
-  }
-  spDict.set(spIdx, entry);
-  renderSpList(); spMarkCur();
-}
-$('sp-dcheck').onclick = () => spDictCheck(false);
-$('sp-dshow').onclick = () => spDictCheck(true);
-$('sp-dinput').addEventListener('keydown', e => { if (e.key === 'Enter') spDictCheck(false); });
-$('sp-dprev').onclick = () => spSegNav(-1);
-$('sp-drep').onclick = () => spSegNav(0);
-$('sp-dnext').onclick = () => spSegNav(1);
 $('sp-tab-shadow').onclick = () => spShowCtrl('shadow');
-$('sp-tab-dict').onclick = () => spShowCtrl('dict');
 $('sp-tab-player').onclick = () => spShowCtrl('player');
-spShowCtrl(spset.tab || 'shadow');
+spShowCtrl(spset.tab === 'player' ? 'player' : 'shadow');
 $('sp-tgnow').classList.toggle('on', spset.now);
 spUpdNowline();
 $('sp-tgnow').onclick = () => {
@@ -1980,6 +1973,134 @@ $('sp-rec').onclick = async () => {
   $('sp-rec').textContent = '⏹ 停止';
   $('sp-rec').classList.add('recording');
 };
+
+/* ================= dictation practice ================= */
+const dtAudio = new Audio();
+let dtClip = null, dtClipIdx = -1, dtIdx = -1;
+const dtRes = new Map();   // sentence idx -> 聽寫結果 {ans, pct?, revealed?, html}（只存在記憶體）
+
+function renderDtSide() {
+  if (!SPEAK_DATA.length) return;
+  const groups = {};
+  SPEAK_DATA.forEach((c, i) => (groups[c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'] ||= []).push(i));
+  $('dt-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
+    `<h4>${g}</h4>` + arr.map(i => {
+      const c = SPEAK_DATA[i];
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
+    }).join('')).join('');
+  $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
+  $('dt-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
+    SPEAK_DATA.map((c, i) =>
+      `<option value="${i}">${c.accent === '英' ? '🇬🇧' : '🇺🇸'} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
+  $('dt-sel').value = String(dtClipIdx);
+}
+function dtOpen(i) {
+  if (i < 0 || i >= SPEAK_DATA.length) return;
+  dtAudio.pause();
+  dtClipIdx = i; dtClip = SPEAK_DATA[i]; dtIdx = -1;
+  dtRes.clear();
+  dtAudio.src = dtClip.src;
+  dtAudio.playbackRate = +$('dt-rate').value;
+  $('dt-title').innerHTML = `${esc(dtClip.title)}<small>${esc(dtClip.source)}</small>`;
+  $('dt-fill').style.width = '0';
+  $('dt-tcur').textContent = '0:00';
+  $('dt-tdur').textContent = fmt(dtClip.dur);
+  $('dt-sel').value = String(i);
+  $('dt-side-list').querySelectorAll('button').forEach(b =>
+    b.classList.toggle('cur', +b.dataset.i === i));
+  renderDtList();
+  dtShowRes();
+}
+function renderDtList() {
+  const badge = i => {
+    const r = dtRes.get(i);
+    return r ? `<span class="recdot">✍ ${r.revealed ? '已看' : r.pct + '%'}</span>` : '';
+  };
+  $('dt-list').innerHTML = dtClip.segs.map((s, i) => `
+    <div class="tseg ${i === dtIdx ? 'cur' : ''} ${dtRes.has(i) ? 'done' : ''}" data-i="${i}">
+      <span class="tt">${fmt(s.s)}</span>
+      <span class="txt"><div class="en">${esc(s.t)}${badge(i)}</div>
+      <div class="zh2">${esc(s.z || '')}</div></span>
+    </div>`).join('');
+  $('dt-list').querySelectorAll('.tseg').forEach(el => el.onclick = () => dtPlaySeg(+el.dataset.i));
+}
+function dtMarkCur() {
+  $('dt-list').querySelectorAll('.tseg').forEach(el =>
+    el.classList.toggle('cur', +el.dataset.i === dtIdx));
+  const el = $('dt-list').querySelector('.tseg.cur'), box = $('dt-list');
+  if (el) box.scrollTo({top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth'});
+  dtShowRes();
+}
+function dtPlaySeg(i) {
+  if (!dtClip || i < 0 || i >= dtClip.segs.length) return;
+  dtIdx = i; dtMarkCur();
+  $('dt-input').focus();
+  dtAudio.playbackRate = +$('dt-rate').value;
+  const go = () => { dtAudio.currentTime = dtClip.segs[i].s + 0.01; dtAudio.play(); };
+  if (dtAudio.readyState >= 1) go();
+  else dtAudio.addEventListener('loadedmetadata', go, {once: true});
+}
+dtAudio.addEventListener('timeupdate', () => {
+  if (!dtClip) return;
+  const d = dtAudio.duration || dtClip.dur || 0;
+  $('dt-fill').style.width = d ? (dtAudio.currentTime / d * 100) + '%' : '0';
+  $('dt-tcur').textContent = fmt(dtAudio.currentTime);
+  $('dt-tdur').textContent = fmt(d);
+  // 聽寫只播目前句：句尾一律停，絕不自動播下一句
+  if (dtIdx >= 0 && dtAudio.currentTime >= dtClip.segs[dtIdx].e) dtAudio.pause();
+});
+function dtUpdPlay() { $('dt-play').textContent = dtAudio.paused ? '▶' : '⏸'; }
+dtAudio.addEventListener('play', dtUpdPlay);
+dtAudio.addEventListener('pause', dtUpdPlay);
+function dtShowRes() {
+  $('dt-stat').textContent = dtClip
+    ? `已聽寫 ${dtRes.size} / ${dtClip.segs.length} 句${dtIdx >= 0 ? `・第 ${dtIdx + 1} 句` : ''}` : '';
+  const r = dtIdx >= 0 ? dtRes.get(dtIdx) : null;
+  $('dt-input').value = r && r.ans ? r.ans : '';
+  $('dt-result').innerHTML = r ? r.html : '';
+  $('dt-result').classList.toggle('hidden', !r);
+}
+function dtCheck(reveal) {
+  if (!dtClip) return;
+  if (dtIdx < 0) {
+    $('dt-result').innerHTML = '請先點右側句子列表選一句（或按「句 ⏭」從第一句開始）';
+    $('dt-result').classList.remove('hidden');
+    return;
+  }
+  const s = dtClip.segs[dtIdx];
+  let entry;
+  if (reveal) {
+    entry = {ans: $('dt-input').value.trim(), revealed: true,
+      html: `<span class="score" style="color:var(--muted)">原文</span>${esc(s.t)}<div class="zh2">${esc(s.z || '')}</div>`};
+  } else {
+    const val = $('dt-input').value.trim();
+    if (!val) return;
+    const d = dictDiffHTML(s, val);
+    entry = {ans: val, pct: d.pct,
+      html: `<span class="score" style="color:${d.pct >= 80 ? 'var(--good)' : 'var(--bad)'}">${d.pct}%</span>${d.html}<div class="zh2">${esc(s.z || '')}</div>`};
+  }
+  dtRes.set(dtIdx, entry);
+  renderDtList(); dtMarkCur();
+}
+function dtNav(d) {
+  if (!dtClip) return;
+  dtPlaySeg(Math.min(Math.max(dtIdx < 0 ? 0 : dtIdx + d, 0), dtClip.segs.length - 1));
+}
+$('dt-check').onclick = () => dtCheck(false);
+$('dt-show').onclick = () => dtCheck(true);
+$('dt-input').addEventListener('keydown', e => { if (e.key === 'Enter') dtCheck(false); });
+$('dt-prev').onclick = () => dtNav(-1);
+$('dt-rep').onclick = () => dtNav(0);
+$('dt-next').onclick = () => dtNav(1);
+$('dt-play').onclick = () => {
+  if (!dtClip) { dtOpen(0); return; }
+  if (!dtAudio.paused) { dtAudio.pause(); return; }
+  dtPlaySeg(dtIdx < 0 ? 0 : dtIdx);
+};
+$('dt-sel').onchange = () => dtOpen(+$('dt-sel').value);
+$('dt-cprev').onclick = () => dtOpen(dtClipIdx - 1);
+$('dt-cnext').onclick = () => dtOpen(dtClipIdx + 1);
+$('dt-rate').onchange = () => { dtAudio.playbackRate = +$('dt-rate').value; };
 
 /* ================= mock exam ================= */
 // 攤平題目：聽力 1–94、閱讀 101–168
@@ -2715,7 +2836,7 @@ $('do-sync').onclick = async () => {
 
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
-buildQRange(); renderHistory(); renderExamHistory(); renderClipList();
+buildQRange(); renderHistory(); renderExamHistory(); renderClipList(); renderDtSide();
 buildBookSels(); renderBooksAdmin();
 showView(localStorage.getItem('toeic-view') || 'cards');
 </script>
