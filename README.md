@@ -72,6 +72,8 @@ audio/Test1..5/   # 切割好的聽力音檔（每題／每組一個 mp3）
 - 國學A 模擬考 1–6（`TestA1..A6`）、國學B 模擬考 1–6（`TestB1..B6`）：
   **國學多益模擬題 A本/B本**，來源已切好單題 MP3（`03_單題分割MP3`），
   用 `tools/import_gx.py` 轉 64kbps 單聲道並統一檔名後匯入
+- 國學藍 模擬考 1–10（`TestC1..C10`）：**國學多益聽力藍本**（`02單題分割音檔`，
+  扁平檔名 TestNN_XX.mp3，Part 由題號推導），用 `tools/import_blue.py` 匯入
 - 來源註記在 `data/audio.js` 的 `TEST_META`，網站的跟讀頁會顯示
 
 ## 未來新增其他出版社的考題（SOP）
