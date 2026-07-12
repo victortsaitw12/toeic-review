@@ -744,12 +744,13 @@
   <section id="view-speak" class="hidden">
     <div class="shadow-grid">
     <aside class="qside" id="sp-side">
-      <div class="src-note">音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），
-      語速清晰、適合跟讀。</div>
+      <select id="sp-src" class="tsel"></select>
+      <div class="src-note" id="sp-note"></div>
       <div id="sp-side-list"></div>
     </aside>
     <div class="shadow-main">
     <div class="qpickrow">
+      <select id="sp-src-m" class="tsel"></select>
       <select id="sp-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
       <button id="sp-cprev" title="上一段音檔">⏮</button>
       <button id="sp-cnext" title="下一段音檔">⏭</button>
@@ -820,12 +821,13 @@
   <section id="view-dict" class="hidden">
     <div class="shadow-grid">
     <aside class="qside" id="dt-side">
-      <div class="src-note">音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），
-      語速清晰、適合聽寫。</div>
+      <select id="dt-src" class="tsel"></select>
+      <div class="src-note" id="dt-note"></div>
       <div id="dt-side-list"></div>
     </aside>
     <div class="shadow-main">
     <div class="qpickrow">
+      <select id="dt-src-m" class="tsel"></select>
       <select id="dt-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
       <button id="dt-cprev" title="上一段音檔">⏮</button>
       <button id="dt-cnext" title="下一段音檔">⏭</button>
@@ -1731,6 +1733,23 @@ document.addEventListener('keydown', e => {
 
 /* ================= speaking practice ================= */
 const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
+/* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋EZ 模擬考聽力題 */
+const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'},
+  ...Object.keys(TESTS).map(t => ({key: t, name: `${testName(t)} 聽力`}))];
+function practiceClips(srcKey) {
+  if (srcKey === 'voa')
+    return SPEAK_DATA.map(c => ({...c, group: c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音',
+                                 flag: c.accent === '英' ? '🇬🇧' : '🇺🇸'}));
+  const T = (typeof TRANSCRIPTS !== 'undefined' && TRANSCRIPTS[srcKey]) || {};
+  return (TESTS[srcKey] || [])
+    .filter(it => it.part !== '說明' && T[it.f] && T[it.f].length)
+    .map(it => ({src: `audio/${srcKey}/${it.f}`, title: it.label,
+      group: PART_DESC[it.part] || it.part, flag: '🎧',
+      source: `${testName(srcKey)}・${it.part}`, dur: it.dur, segs: T[it.f]}));
+}
+const srcNoteText = k => k === 'voa'
+  ? '音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），語速清晰。'
+  : `來源：${testSource(k) || testName(k)}（僅供個人學習）`;
 const spAudio = new Audio(), spMine = new Audio();
 let spClip = null, spClipIdx = -1, spIdx = -1, spLoopOn = false, spAutoOn = false, spAutoTimer = null;
 let spA = null, spB = null, spSegMode = false;   // spSegMode：跟讀模式，句尾自動停
@@ -1739,26 +1758,46 @@ const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
 const spset = JSON.parse(localStorage.getItem('toeic-spset') || '{"now":true,"autonext":false}');
 const saveSpset = () => localStorage.setItem('toeic-spset', JSON.stringify(spset));
 
+let spSrc = (spset.src === 'voa' || (spset.src && TESTS[spset.src])) ? spset.src : 'voa';
 function renderClipList() {
-  if (!SPEAK_DATA.length) return;
+  const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
+  $('sp-src').innerHTML = opts; $('sp-src-m').innerHTML = opts;
+  $('sp-src').value = spSrc; $('sp-src-m').value = spSrc;
+  $('sp-note').textContent = srcNoteText(spSrc);
+  const clips = practiceClips(spSrc);
   const groups = {};
-  SPEAK_DATA.forEach((c, i) => (groups[c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'] ||= []).push(i));
+  clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
   $('sp-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
-      const c = SPEAK_DATA[i];
+      const c = clips[i];
       return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
   $('sp-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
-    SPEAK_DATA.map((c, i) =>
-      `<option value="${i}">${c.accent === '英' ? '🇬🇧' : '🇺🇸'} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
+    clips.map((c, i) =>
+      `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('sp-sel').value = String(spClipIdx);
 }
+function spSwitchSrc(k) {
+  spSrc = k; spset.src = k; saveSpset();
+  spStopAll();
+  spClip = null; spClipIdx = -1; spIdx = -1;
+  spA = spB = null; spDrawAB();
+  spAudio.removeAttribute('src');
+  $('sp-title').textContent = '請選擇音檔';
+  $('sp-en').textContent = '從清單選擇音檔，點句子列表任一句開始練習'; $('sp-zh').textContent = '';
+  $('sp-fill').style.width = '0'; $('sp-tcur').textContent = '0:00'; $('sp-tdur').textContent = '0:00';
+  $('sp-prog').textContent = '';
+  $('sp-mine').disabled = true;
+  $('sp-list').innerHTML = '<div class="empty">選擇音檔後顯示句子列表</div>';
+  renderClipList();
+}
 function openClip(i, play) {
-  if (i < 0 || i >= SPEAK_DATA.length) return;
+  const clips = practiceClips(spSrc);
+  if (i < 0 || i >= clips.length) return;
   spStopAll();
   spClipIdx = i;
-  spClip = SPEAK_DATA[i]; spIdx = -1;
+  spClip = clips[i]; spIdx = -1;
   spA = spB = null; spDrawAB();
   spRecs.forEach(u => URL.revokeObjectURL(u)); spRecs.clear();
   spAudio.src = spClip.src;
@@ -1862,7 +1901,7 @@ spAudio.addEventListener('play', spUpdPlay);
 spAudio.addEventListener('pause', spUpdPlay);
 spAudio.addEventListener('ended', () => {
   spUpdPlay();
-  if (spset.autonext && spClipIdx >= 0 && spClipIdx + 1 < SPEAK_DATA.length) openClip(spClipIdx + 1, true);
+  if (spset.autonext && spClipIdx >= 0 && spClipIdx + 1 < practiceClips(spSrc).length) openClip(spClipIdx + 1, true);
 });
 $('sp-bar').onclick = e => {
   if (!spAudio.duration) return;
@@ -1897,6 +1936,8 @@ function spSetAuto(on) {
   $('sp-auto').classList.toggle('on', on);
   if (!on) clearTimeout(spAutoTimer);
 }
+$('sp-src').onchange = () => spSwitchSrc($('sp-src').value);
+$('sp-src-m').onchange = () => spSwitchSrc($('sp-src-m').value);
 $('sp-sel').onchange = () => openClip(+$('sp-sel').value, true);
 $('sp-cprev').onclick = () => openClip(spClipIdx - 1, !spAudio.paused);
 $('sp-cnext').onclick = () => openClip(spClipIdx + 1, !spAudio.paused);
@@ -1978,26 +2019,48 @@ $('sp-rec').onclick = async () => {
 const dtAudio = new Audio();
 let dtClip = null, dtClipIdx = -1, dtIdx = -1;
 const dtRes = new Map();   // sentence idx -> 聽寫結果 {ans, pct?, revealed?, html}（只存在記憶體）
+const dtset = JSON.parse(localStorage.getItem('toeic-dtset') || '{}');
+const saveDtset = () => localStorage.setItem('toeic-dtset', JSON.stringify(dtset));
+let dtSrc = (dtset.src === 'voa' || (dtset.src && TESTS[dtset.src])) ? dtset.src : 'voa';
 
 function renderDtSide() {
-  if (!SPEAK_DATA.length) return;
+  const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
+  $('dt-src').innerHTML = opts; $('dt-src-m').innerHTML = opts;
+  $('dt-src').value = dtSrc; $('dt-src-m').value = dtSrc;
+  $('dt-note').textContent = srcNoteText(dtSrc);
+  const clips = practiceClips(dtSrc);
   const groups = {};
-  SPEAK_DATA.forEach((c, i) => (groups[c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'] ||= []).push(i));
+  clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
   $('dt-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
-      const c = SPEAK_DATA[i];
+      const c = clips[i];
       return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
   $('dt-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
-    SPEAK_DATA.map((c, i) =>
-      `<option value="${i}">${c.accent === '英' ? '🇬🇧' : '🇺🇸'} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
+    clips.map((c, i) =>
+      `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('dt-sel').value = String(dtClipIdx);
 }
-function dtOpen(i) {
-  if (i < 0 || i >= SPEAK_DATA.length) return;
+function dtSwitchSrc(k) {
+  dtSrc = k; dtset.src = k; saveDtset();
   dtAudio.pause();
-  dtClipIdx = i; dtClip = SPEAK_DATA[i]; dtIdx = -1;
+  dtClip = null; dtClipIdx = -1; dtIdx = -1;
+  dtRes.clear();
+  dtAudio.removeAttribute('src');
+  $('dt-title').textContent = '請選擇音檔';
+  $('dt-fill').style.width = '0'; $('dt-tcur').textContent = '0:00'; $('dt-tdur').textContent = '0:00';
+  $('dt-stat').textContent = '';
+  $('dt-input').value = '';
+  $('dt-result').classList.add('hidden');
+  $('dt-list').innerHTML = '<div class="empty">選擇音檔後顯示句子列表</div>';
+  renderDtSide();
+}
+function dtOpen(i) {
+  const clips = practiceClips(dtSrc);
+  if (i < 0 || i >= clips.length) return;
+  dtAudio.pause();
+  dtClipIdx = i; dtClip = clips[i]; dtIdx = -1;
   dtRes.clear();
   dtAudio.src = dtClip.src;
   dtAudio.playbackRate = +$('dt-rate').value;
@@ -2097,6 +2160,8 @@ $('dt-play').onclick = () => {
   if (!dtAudio.paused) { dtAudio.pause(); return; }
   dtPlaySeg(dtIdx < 0 ? 0 : dtIdx);
 };
+$('dt-src').onchange = () => dtSwitchSrc($('dt-src').value);
+$('dt-src-m').onchange = () => dtSwitchSrc($('dt-src-m').value);
 $('dt-sel').onchange = () => dtOpen(+$('dt-sel').value);
 $('dt-cprev').onclick = () => dtOpen(dtClipIdx - 1);
 $('dt-cnext').onclick = () => dtOpen(dtClipIdx + 1);
