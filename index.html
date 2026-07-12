@@ -1983,7 +1983,7 @@ function dtSwitchSrc(k) {
   $('dt-title').textContent = '請選擇音檔';
   $('dt-fill').style.width = '0'; $('dt-tcur').textContent = '0:00'; $('dt-tdur').textContent = '0:00';
   $('dt-stat').textContent = '';
-  $('dt-input').value = '';
+  $('dt-input').value = ''; dtInputIdx = -1;
   $('dt-result').classList.add('hidden');
   $('dt-list').innerHTML = '<div class="empty">選擇音檔後顯示句子列表</div>';
   renderDtSide();
@@ -2047,11 +2047,15 @@ dtAudio.addEventListener('timeupdate', () => {
 function dtUpdPlay() { $('dt-play').textContent = dtAudio.paused ? '▶' : '⏸'; }
 dtAudio.addEventListener('play', dtUpdPlay);
 dtAudio.addEventListener('pause', dtUpdPlay);
+let dtInputIdx = -1;   // 輸入框目前對應的句子
 function dtShowRes() {
   $('dt-stat').textContent = dtClip
     ? `已聽寫 ${dtRes.size} / ${dtClip.segs.length} 句${dtIdx >= 0 ? `・第 ${dtIdx + 1} 句` : ''}` : '';
   const r = dtIdx >= 0 ? dtRes.get(dtIdx) : null;
-  $('dt-input').value = r && r.ans ? r.ans : '';
+  if (dtIdx !== dtInputIdx) {   // 換句才重設輸入框；重聽同一句保留已打的字
+    $('dt-input').value = r && r.ans ? r.ans : '';
+    dtInputIdx = dtIdx;
+  }
   $('dt-result').innerHTML = r ? r.html : '';
   $('dt-result').classList.toggle('hidden', !r);
 }
