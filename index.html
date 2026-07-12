@@ -390,6 +390,13 @@
   .qside button.cur .d { color: inherit; opacity: .8; }
   .qside button .pdone { color: var(--good); font-weight: 600; margin-right: 8px; }
   .qside button.cur .pdone { color: inherit; }
+  .qside button .lbl { flex: 1; min-width: 0; }
+  .qside button .favstar { flex: none; margin-right: 7px; color: var(--line); cursor: pointer; }
+  .qside button .favstar:hover { color: var(--warn); }
+  .qside button .favstar.on { color: var(--warn); }
+  .qside button.cur .favstar { color: inherit; opacity: .45; }
+  .qside button.cur .favstar.on { opacity: 1; }
+  .qside .empty { color: var(--muted); font-size: .85rem; padding: 10px 8px; line-height: 1.6; }
   @media (max-width: 860px) {
     .shadow-grid { grid-template-columns: 1fr; }
     .qside, .qcol { display: none; }
@@ -713,8 +720,10 @@
     <aside class="qcol">
       <div class="qpick">
         <div class="chips" id="series-row"></div>
-        <h4>模擬考選項</h4>
-        <div class="chips" id="testnum-row"></div>
+        <div id="sh-pick-exams">
+          <h4>模擬考選項</h4>
+          <div class="chips" id="testnum-row"></div>
+        </div>
         <div class="src-note" id="src-note"></div>
       </div>
       <div class="qside" id="qside">
@@ -1795,23 +1804,39 @@ const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}
 const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
 const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
   .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
-/* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋模擬考聽力題 */
-const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'},
+/* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋模擬考聽力題＋我的最愛 */
+const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'}, {key: 'fav', name: '★ 我的最愛'},
   ...Object.keys(TESTS).map(t => ({key: t, name: `${testName(t)} 聽力`}))];
-/* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…）＋模擬考回數 */
+/* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…/最愛）＋模擬考回數 */
 function buildPracticePick(p, cur, onSwitch) {
-  const curS = cur === 'voa' ? 'voa' : seriesOf(cur);
-  $(p + '-series-row').innerHTML = [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length)]
+  const curS = (cur === 'voa' || cur === 'fav') ? cur : seriesOf(cur);
+  $(p + '-series-row').innerHTML =
+    [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length), {k: 'fav', n: '★ 最愛'}]
     .map(s => `<button data-s="${s.k}" class="${s.k === curS ? 'cur' : ''}">${s.n}</button>`).join('');
   $(p + '-series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.s === curS) return;
-    onSwitch(b.dataset.s === 'voa' ? 'voa' : seriesTests(b.dataset.s)[0]);
+    onSwitch((b.dataset.s === 'voa' || b.dataset.s === 'fav') ? b.dataset.s : seriesTests(b.dataset.s)[0]);
   });
-  $(p + '-pick-exams').classList.toggle('hidden', cur === 'voa');
-  $(p + '-num-row').innerHTML = cur === 'voa' ? '' : seriesTests(curS)
+  $(p + '-pick-exams').classList.toggle('hidden', cur === 'voa' || cur === 'fav');
+  $(p + '-num-row').innerHTML = (cur === 'voa' || cur === 'fav') ? '' : seriesTests(curS)
     .map(t => `<button data-t="${t}" class="${t === cur ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
   $(p + '-num-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.t !== cur) onSwitch(b.dataset.t);
+  });
+}
+/* 我的最愛：以音檔路徑為 key，聽力解析/跟讀/聽寫三頁共用，存 localStorage */
+const FAVS = new Set(JSON.parse(localStorage.getItem('toeic-favs') || '[]'));
+function toggleFav(key) {
+  FAVS.has(key) ? FAVS.delete(key) : FAVS.add(key);
+  localStorage.setItem('toeic-favs', JSON.stringify([...FAVS]));
+}
+const favStar = key => `<span class="favstar ${FAVS.has(key) ? 'on' : ''}" data-fav="${key}" title="加入/移除我的最愛">★</span>`;
+function bindFavStars(box, onToggle) {
+  box.querySelectorAll('.favstar').forEach(el => el.onclick = e => {
+    e.stopPropagation();
+    toggleFav(el.dataset.fav);
+    el.classList.toggle('on', FAVS.has(el.dataset.fav));
+    if (onToggle) onToggle();
   });
 }
 /* 練習紀錄：每個音檔練過哪幾句（跟讀＝播放過該句、聽寫＝對過答案），存 localStorage */
@@ -1832,6 +1857,10 @@ function markPracticed(p, clip, clipIdx, idx) {
   if (d) d.innerHTML = doneBadge(p, clip) + fmt(clip.dur);
 }
 function practiceClips(srcKey) {
+  if (srcKey === 'fav')
+    return ['voa', ...Object.keys(TESTS)].flatMap(k =>
+      practiceClips(k).filter(c => FAVS.has(c.src))
+        .map(c => ({...c, group: k === 'voa' ? 'VOA 跟讀教材' : testName(k)})));
   if (srcKey === 'voa')
     return SPEAK_DATA.map(c => ({...c, group: c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音',
                                  flag: c.accent === '英' ? '🇬🇧' : '🇺🇸'}));
@@ -1844,6 +1873,7 @@ function practiceClips(srcKey) {
 }
 const srcNoteText = k => k === 'voa'
   ? '音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），語速清晰。'
+  : k === 'fav' ? '★ 你標記的最愛題目（點 ★ 可移除）'
   : `來源：${testSource(k) || testName(k)}（僅供個人學習）`;
 /* 純跟讀播放器：一次只播「目前句」，句尾自動停，沒有連續播放模式 */
 const spAudio = new Audio(), spMine = new Audio();
@@ -1853,7 +1883,7 @@ const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
 const spset = JSON.parse(localStorage.getItem('toeic-spset') || '{}');
 const saveSpset = () => localStorage.setItem('toeic-spset', JSON.stringify(spset));
 
-let spSrc = (spset.src === 'voa' || (spset.src && TESTS[spset.src])) ? spset.src : 'voa';
+let spSrc = (spset.src === 'voa' || spset.src === 'fav' || (spset.src && TESTS[spset.src])) ? spset.src : 'voa';
 if ([0.6, 0.75, 0.85, 1, 1.15].includes(+spset.rate)) $('sp-rate').value = String(+spset.rate);
 if (spset.blind === undefined) spset.blind = true;   // 預設盲聽：先聽跟唸、最後才看句子
 const spRev = new Set();   // 這個音檔裡已「顯示句子」過的句子
@@ -1866,12 +1896,19 @@ function renderClipList() {
   const clips = practiceClips(spSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
-  $('sp-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
+  $('sp-side-list').innerHTML = !clips.length
+    ? '<div class="empty">還沒有最愛，在各清單點 ★ 加入</div>'
+    : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
+  bindFavStars($('sp-side-list'), () => {
+    if (spSrc !== 'fav') return;
+    if (spClip) spClipIdx = practiceClips('fav').findIndex(c => c.src === spClip.src);
+    renderClipList();
+  });
   $('sp-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
@@ -2052,7 +2089,7 @@ let dtClip = null, dtClipIdx = -1, dtIdx = -1;
 const dtRes = new Map();   // sentence idx -> 聽寫結果 {ans, pct?, revealed?, html}（只存在記憶體）
 const dtset = JSON.parse(localStorage.getItem('toeic-dtset') || '{}');
 const saveDtset = () => localStorage.setItem('toeic-dtset', JSON.stringify(dtset));
-let dtSrc = (dtset.src === 'voa' || (dtset.src && TESTS[dtset.src])) ? dtset.src : 'voa';
+let dtSrc = (dtset.src === 'voa' || dtset.src === 'fav' || (dtset.src && TESTS[dtset.src])) ? dtset.src : 'voa';
 
 function renderDtSide() {
   const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
@@ -2063,12 +2100,19 @@ function renderDtSide() {
   const clips = practiceClips(dtSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
-  $('dt-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
+  $('dt-side-list').innerHTML = !clips.length
+    ? '<div class="empty">還沒有最愛，在各清單點 ★ 加入</div>'
+    : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
+  bindFavStars($('dt-side-list'), () => {
+    if (dtSrc !== 'fav') return;
+    if (dtClip) dtClipIdx = practiceClips('fav').findIndex(c => c.src === dtClip.src);
+    renderDtSide();
+  });
   $('dt-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
@@ -2557,6 +2601,7 @@ function renderExamHistory() {
 const audio = $('audio');
 let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
 let curIdx = -1, abA = null, abB = null;
+let shFav = false;   // 側邊欄是否顯示「我的最愛」清單（跨模擬考）
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
@@ -2564,20 +2609,28 @@ function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
   $('tsel-m').innerHTML = opts;
   $('tsel-m').value = curTest;
-  const cs = seriesOf(curTest);
-  $('series-row').innerHTML = SERIES.filter(s => seriesTests(s.k).length)
+  const cs = shFav ? 'fav' : seriesOf(curTest);
+  $('series-row').innerHTML =
+    [...SERIES.filter(s => seriesTests(s.k).length), {k: 'fav', n: '★ 最愛'}]
     .map(s => `<button data-s="${s.k}" class="${s.k === cs ? 'cur' : ''}">${s.n}</button>`).join('');
   $('series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (b.dataset.s !== cs) switchTest(seriesTests(b.dataset.s)[0]);
+    if (b.dataset.s === cs) return;
+    if (b.dataset.s === 'fav') { shFav = true; buildTestSel(); buildQSel(); return; }
+    shFav = false;
+    if (b.dataset.s === seriesOf(curTest)) { buildTestSel(); buildQSel(); }
+    else switchTest(seriesTests(b.dataset.s)[0]);
   });
-  $('testnum-row').innerHTML = seriesTests(cs)
+  $('sh-pick-exams').classList.toggle('hidden', shFav);
+  $('testnum-row').innerHTML = shFav ? '' : seriesTests(cs)
     .map(t => `<button data-t="${t}" class="${t === curTest ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
   $('testnum-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.t !== curTest) switchTest(b.dataset.t);
   });
-  $('src-note').textContent = testSource(curTest) ? `來源：${testSource(curTest)}（僅供個人學習）` : '';
+  $('src-note').textContent = shFav ? '★ 你標記的最愛題目（點 ★ 可移除）'
+    : testSource(curTest) ? `來源：${testSource(curTest)}（僅供個人學習）` : '';
 }
 function switchTest(t) {
+  shFav = false;
   curTest = t; localStorage.setItem('toeic-test', curTest);
   curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
   $('now').textContent = '請選擇題目';
@@ -2596,14 +2649,32 @@ function buildQSel() {
       `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
         `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
   $('qsel').value = String(curIdx);
+  if (shFav) {
+    const byTest = {};
+    Object.keys(TESTS).forEach(t => TESTS[t].forEach((it, i) => {
+      if (FAVS.has(`audio/${t}/${it.f}`)) (byTest[t] ||= []).push([i, it]);
+    }));
+    $('qside-list').innerHTML = !Object.keys(byTest).length
+      ? '<div class="empty">還沒有最愛題目，點題目旁的 ★ 加入</div>'
+      : Object.entries(byTest).map(([t, arr]) =>
+      `<h4>${esc(testName(t))}</h4>` + arr.map(([i, it]) =>
+        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+    $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => {
+      if (b.dataset.t !== curTest) { curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest); }
+      load(+b.dataset.i, true);
+    });
+    bindFavStars($('qside-list'), buildQSel);
+    return;
+  }
   $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
     `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
-      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${it.label}<span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}<span class="lbl">${it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
   $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+  bindFavStars($('qside-list'));
 }
 function updSide() {
   $('qside-list').querySelectorAll('button').forEach(b =>
-    b.classList.toggle('cur', +b.dataset.i === curIdx));
+    b.classList.toggle('cur', +b.dataset.i === curIdx && (!b.dataset.t || b.dataset.t === curTest)));
   const cur = $('qside-list').querySelector('button.cur');
   if (cur) {
     const box = $('qside');
