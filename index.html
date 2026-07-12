@@ -159,9 +159,12 @@
   .choices button.right { border-color: var(--good); background: rgba(31,157,99,.12); }
   .choices button.wrongpick { border-color: var(--bad); background: rgba(214,69,69,.12); }
   .spellrow { display: flex; gap: 10px; }
-  .spellrow input {
+  .spellrow input, .spellrow textarea {
     flex: 1; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px;
     background: var(--bg); color: var(--ink); font-size: 1.1rem; letter-spacing: .03em;
+  }
+  .spellrow textarea {
+    resize: vertical; min-height: 62px; font-family: inherit; line-height: 1.5;
   }
   .feedback { text-align: center; min-height: 1.6em; margin-top: 14px; font-size: 1rem; font-weight: 600; }
   .feedback.good { color: var(--good); }
@@ -853,7 +856,7 @@
       </div>
       <div id="dt-dictbox">
         <div class="spellrow">
-          <input id="dt-input" placeholder="聽完這一句，把聽到的英文打出來，按 Enter 對答案" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <textarea id="dt-input" rows="2" placeholder="聽完這一句，把聽到的英文打出來，按 Enter 對答案（Shift+Enter 換行）" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
           <button id="dt-check" style="border:1px solid var(--line);background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:0 20px;cursor:pointer">對答案</button>
           <button id="dt-show" style="border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 14px;cursor:pointer">顯示答案</button>
         </div>
@@ -2080,7 +2083,9 @@ function dtNav(d) {
 }
 $('dt-check').onclick = () => dtCheck(false);
 $('dt-show').onclick = () => dtCheck(true);
-$('dt-input').addEventListener('keydown', e => { if (e.key === 'Enter') dtCheck(false); });
+$('dt-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); dtCheck(false); }
+});
 $('dt-prev').onclick = () => dtNav(-1);
 $('dt-rep').onclick = () => dtNav(0);
 $('dt-next').onclick = () => dtNav(1);
