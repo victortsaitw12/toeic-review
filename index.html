@@ -1211,9 +1211,13 @@ function stopAllPlayback() {
   spStopAll();        // 口說跟讀（含錄音、自動跟讀計時器、我的錄音）
   dtAudio.pause();    // 聽寫練習
   qaudio.pause();     // 單字測驗的聽寫片段
-  // 單字卡/單字測驗的語音發音；模擬考聽力進行中不取消（它有自己的暫停/結束流程）
-  if ('speechSynthesis' in window && !(exam && !$('exam-listen').classList.contains('hidden')))
-    speechSynthesis.cancel();
+  if (!('speechSynthesis' in window)) return;
+  if (exam && !$('exam-listen').classList.contains('hidden')) {
+    // 模擬考聽力進行中：切走＝自動暫停（回到考試按「▶ 繼續」接著考，不會漏句）
+    if (!exPauseP) $('el-pause').click();
+  } else {
+    speechSynthesis.cancel();   // 單字卡/單字測驗的語音發音
+  }
 }
 function showView(v) {
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
