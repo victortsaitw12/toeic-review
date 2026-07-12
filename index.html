@@ -208,6 +208,10 @@
   .segctrl.sp-primary .play {
     background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
   }
+  /* 盲聽模式：句子列表遮住未顯示過的句子 */
+  #sp-list.blind .tseg:not(.done) .en,
+  #sp-list.blind .tseg:not(.done) .zh2 { filter: blur(5px); }
+  .sp-en.masked { color: var(--muted); font-weight: 400; }
   /* ---------- dictation ---------- */
   #dt-dictbox { margin-top: 12px; }
   #dt-result {
@@ -773,6 +777,7 @@
       </div>
       <div class="segctrl sp-primary">
         <button class="play" id="sp-play">▶ 播放這句</button>
+        <button id="sp-show" title="盲聽跟讀後，顯示原文看著唸">👁 顯示句子</button>
         <button id="sp-loop" title="這一句反覆播放">🔂 循環</button>
         <button id="sp-rec">⏺ 錄音</button>
         <button id="sp-mine" disabled>▶ 我的錄音</button>
@@ -781,6 +786,7 @@
         <button id="sp-prev" title="上一句">⏮ 上一句</button>
         <button id="sp-next" title="下一句">下一句 ⏭</button>
         <span class="sep"></span>
+        <button id="sp-blind" title="開啟時句子先遮住，盲聽跟讀後再按「顯示句子」">🙈 盲聽模式</button>
         <button id="sp-auto" title="播一句、留時間複誦、自動播下一句">🎙 自動跟讀模式</button>
         <span class="speed">
           <select id="sp-rate" title="語速">
@@ -792,10 +798,10 @@
           </select>
         </span>
       </div>
-      <p class="sp-tip">跟讀方法：點句子列表任一句 → 播完該句會<b>自動停</b> → 開口複誦，
-      按「⏺ 錄音」錄下來、「▶ 我的錄音」和原音比對 → 「下一句 ⏭」繼續。
-      唸不順的句子開「🔂 循環」反覆聽；「🎙 自動跟讀模式」會播一句、留時間複誦、再自動播下一句，適合整段順一遍。
-      錄音只存在你的瀏覽器記憶體，不會上傳。</p>
+      <p class="sp-tip">跟讀流程：點一句 → <b>先盲聽</b>（文字遮住）跟著唸，唸不出來按「▶ 播放這句」多聽幾次
+      （或開「🔂 循環」）→ 按「👁 顯示句子」看原文，看著唸一次，「⏺ 錄音」＋「▶ 我的錄音」和原音比對 →
+      「下一句 ⏭」繼續（新句子會重新遮住）。「🎙 自動跟讀模式」會播一句、留時間複誦、再自動播下一句；
+      不想盲聽就關掉「🙈 盲聽模式」。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
     </div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
@@ -1748,6 +1754,8 @@ const saveSpset = () => localStorage.setItem('toeic-spset', JSON.stringify(spset
 
 let spSrc = (spset.src === 'voa' || (spset.src && TESTS[spset.src])) ? spset.src : 'voa';
 if ([0.6, 0.75, 0.85, 1, 1.15].includes(+spset.rate)) $('sp-rate').value = String(+spset.rate);
+if (spset.blind === undefined) spset.blind = true;   // 預設盲聽：先聽跟唸、最後才看句子
+const spRev = new Set();   // 這個音檔裡已「顯示句子」過的句子
 function renderClipList() {
   const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
   $('sp-src').innerHTML = opts; $('sp-src-m').innerHTML = opts;
@@ -1787,6 +1795,7 @@ function openClip(i, play) {
   spClipIdx = i;
   spClip = clips[i]; spIdx = -1;
   spRecs.forEach(u => URL.revokeObjectURL(u)); spRecs.clear();
+  spRev.clear();
   spAudio.src = spClip.src;
   spAudio.playbackRate = +$('sp-rate').value;
   $('sp-title').innerHTML = `${esc(spClip.title)}<small>${esc(spClip.source)}</small>`;
@@ -1801,8 +1810,9 @@ function openClip(i, play) {
   if (play) spPlaySeg(0);   // 開檔即從第一句開始練
 }
 function renderSpList() {
+  $('sp-list').classList.toggle('blind', spset.blind);
   $('sp-list').innerHTML = spClip.segs.map((s, i) => `
-    <div class="tseg ${i === spIdx ? 'cur' : ''}" data-i="${i}">
+    <div class="tseg ${i === spIdx ? 'cur' : ''} ${spRev.has(i) ? 'done' : ''}" data-i="${i}">
       <span class="tt">${fmt(s.s)}</span>
       <span class="txt"><div class="en">${esc(s.t)}${spRecs.has(i) ? '<span class="recdot">●已錄</span>' : ''}</div>
       <div class="zh2">${esc(s.z || '')}</div></span>
@@ -1816,12 +1826,33 @@ function spMarkCur() {
   if (el) box.scrollTo({top: el.offsetTop - box.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth'});
   const s = spClip.segs[spIdx];
   if (s) {
-    $('sp-en').textContent = s.t;
-    $('sp-zh').textContent = s.z || '';
+    if (spset.blind && !spRev.has(spIdx)) {
+      $('sp-en').textContent = '🙈 盲聽中：跟著唸，唸不出來按「▶ 播放這句」多聽幾次，準備好按「👁 顯示句子」';
+      $('sp-en').classList.add('masked');
+      $('sp-zh').textContent = '';
+    } else {
+      $('sp-en').textContent = s.t;
+      $('sp-en').classList.remove('masked');
+      $('sp-zh').textContent = s.z || '';
+    }
     $('sp-prog').textContent = `第 ${spIdx + 1} / ${spClip.segs.length} 句`;
   }
   $('sp-mine').disabled = !spRecs.has(spIdx);
 }
+$('sp-show').onclick = () => {
+  if (!spClip || spIdx < 0) return;
+  spRev.add(spIdx);
+  $('sp-list').querySelectorAll('.tseg').forEach(el =>
+    el.classList.toggle('done', spRev.has(+el.dataset.i)));
+  spMarkCur();
+};
+$('sp-blind').classList.toggle('on', spset.blind);
+$('sp-blind').onclick = () => {
+  spset.blind = !spset.blind; saveSpset();
+  $('sp-blind').classList.toggle('on', spset.blind);
+  $('sp-list').classList.toggle('blind', spset.blind);
+  if (spClip && spIdx >= 0) spMarkCur();
+};
 function spPlaySeg(i) {
   if (!spClip || i < 0 || i >= spClip.segs.length) return;
   clearTimeout(spAutoTimer);
