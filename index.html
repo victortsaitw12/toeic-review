@@ -420,6 +420,30 @@
   .nowline .nl-en { font-size: 1.02rem; font-weight: 600; }
   .nowline .nl-zh { color: var(--muted); font-size: .9rem; margin-top: 2px; }
 
+  /* ---------- 錯題複習 ---------- */
+  .mi-q { font-size: 1.12rem; line-height: 1.8; margin: 6px 0 4px; }
+  .mi-srcline { color: var(--muted); font-size: .82rem; margin-bottom: 16px; }
+  .mi-srcline .tag2 {
+    border: 1px solid var(--line); border-radius: 5px; padding: 0 6px;
+    margin-left: 6px; font-size: .74rem;
+  }
+  .mi-exp {
+    margin-top: 14px; padding: 12px 14px; background: var(--chip);
+    border-left: 3px solid var(--accent); border-radius: 8px;
+    font-size: .95rem; line-height: 1.7;
+  }
+  #mi-result { margin: 12px 0 4px; font-weight: 600; color: var(--good); }
+  .mi-row {
+    display: flex; gap: 10px; align-items: baseline; padding: 8px 4px;
+    border-bottom: 1px solid var(--line); font-size: .92rem;
+  }
+  .mi-row .no2 { color: var(--muted); font-size: .8rem; flex: none; }
+  .mi-row .qq { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mi-row .st { flex: none; font-size: .8rem; color: var(--muted); }
+  .mi-row .st .ok { color: var(--good); }
+  .mi-row .st .ng { color: var(--bad); }
+  #mi-onlyhard.on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+
   /* ---------- admin ---------- */
   .panel {
     background: var(--card); border: 1px solid var(--line); border-radius: 16px;
@@ -579,6 +603,7 @@
     <button id="tab-speak">口說跟讀</button>
     <button id="tab-dict">聽寫練習</button>
     <button id="tab-exam">模擬考試</button>
+    <button id="tab-mist">錯題複習</button>
     <button id="tab-admin">單字管理</button>
   </nav>
   <button id="logout" title="登出後需重新輸入密碼">登出</button>
@@ -994,6 +1019,38 @@
   </section>
 
   <!-- ================= 單字管理 ================= -->
+  <!-- ================= 錯題複習 ================= -->
+  <section id="view-mist" class="hidden">
+    <div id="mi-setup">
+      <div class="panel">
+        <h3>錯題複習 <span class="badge zero" id="mi-count">0 題</span></h3>
+        <p class="desc">把模擬考做錯或不熟的題目（尤其 Part 5）記在 repo 的 <code>review/*.md</code>，
+          跟 Claude 說「匯入錯題」就會出現在這裡，可以反覆練到會。格式見 <code>review/README.md</code>。</p>
+        <div class="toolbar">
+          <select id="mi-src"></select>
+          <select id="mi-tag"></select>
+          <button id="mi-onlyhard">只練還沒答對的</button>
+          <button id="mi-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練習</button>
+        </div>
+        <div id="mi-result"></div>
+        <div id="mi-list"></div>
+      </div>
+    </div>
+    <div id="mi-run" class="hidden">
+      <div class="panel">
+        <div class="qmeta"><span id="mi-progress"></span><span id="mi-score"></span></div>
+        <div class="mi-q" id="mi-q"></div>
+        <div class="mi-srcline" id="mi-srcline"></div>
+        <div class="choices" id="mi-choices"></div>
+        <div class="mi-exp hidden" id="mi-exp"></div>
+        <div class="btnrow">
+          <button id="mi-next" class="primary hidden">下一題 ⏭</button>
+          <button id="mi-quit">結束練習</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="view-admin" class="hidden">
     <div class="panel">
       <h3 id="form-title">新增單字</h3>
@@ -1081,6 +1138,7 @@
 <script src="data/transcripts.js"></script>
 <script src="data/exam_l.js"></script>
 <script src="data/exam_r.js"></script>
+<script src="data/mistakes.js"></script>
 <script src="data/speak.js"></script>
 <script src="data/books.js"></script>
 <script>
@@ -1275,7 +1333,7 @@ function stopAllPlayback() {
 }
 function showView(v) {
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
-  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'admin']) {
+  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
@@ -1288,6 +1346,7 @@ $('tab-shadow').onclick = () => showView('shadow');
 $('tab-speak').onclick = () => showView('speak');
 $('tab-dict').onclick = () => showView('dict');
 $('tab-exam').onclick = () => showView('exam');
+$('tab-mist').onclick = () => showView('mist');
 $('tab-admin').onclick = () => showView('admin');
 
 /* ================= flashcards ================= */
@@ -2600,6 +2659,107 @@ function renderExamHistory() {
   });
 }
 
+/* ================= 錯題複習 ================= */
+const MI = typeof MISTAKES !== 'undefined' ? MISTAKES : [];
+const miStat = JSON.parse(localStorage.getItem('toeic-mistakes-stat') || '{}');  // id -> {r, w}
+const saveMiStat = () => localStorage.setItem('toeic-mistakes-stat', JSON.stringify(miStat));
+let miPool = [], miIdx = 0, miRight = 0, miDone = 0, miOnlyHard = false, miCur = null, miOrder = [];
+
+const miShuffle = a => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+function miFilterPool() {
+  const src = $('mi-src').value || 'all', tag = $('mi-tag').value || 'all';
+  return MI.filter(m => (src === 'all' || m.src === src)
+    && (tag === 'all' || (m.tags || []).includes(tag))
+    && (!miOnlyHard || !(miStat[m.id]?.r > 0)));
+}
+function miRenderSetup() {
+  const sv = $('mi-src').value || 'all', tv = $('mi-tag').value || 'all';
+  const srcs = [...new Set(MI.map(m => m.src))];
+  const tags = [...new Set(MI.flatMap(m => m.tags || []))];
+  $('mi-count').textContent = `${MI.length} 題`;
+  $('mi-src').innerHTML = `<option value="all">全部來源</option>`
+    + srcs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  if (srcs.includes(sv)) $('mi-src').value = sv;
+  $('mi-tag').innerHTML = '<option value="all">全部標籤</option>'
+    + tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  if (tags.includes(tv)) $('mi-tag').value = tv;
+  $('mi-tag').classList.toggle('hidden', !tags.length);
+  const pool = miFilterPool();
+  $('mi-start').disabled = !pool.length;
+  $('mi-list').innerHTML = pool.length ? pool.map(m => {
+    const st = miStat[m.id];
+    return `<div class="mi-row"><span class="no2">${esc(m.src)}${m.no ? '・' + esc(m.no) : ''}</span>
+      <span class="qq">${esc(m.q)}</span>
+      <span class="st">${st ? `<span class="ok">✓${st.r}</span> <span class="ng">✗${st.w}</span>` : '未練過'}</span></div>`;
+  }).join('')
+    : `<p class="desc" style="margin-top:12px">${MI.length ? '這個篩選條件下沒有題目'
+      : '還沒有錯題。做模擬考時把錯的題目記在 review/*.md，跟 Claude 說「匯入錯題」就會出現在這裡。'}</p>`;
+}
+function miStart() {
+  miPool = miShuffle(miFilterPool().slice());
+  if (!miPool.length) return;
+  miIdx = 0; miRight = 0; miDone = 0;
+  $('mi-setup').classList.add('hidden');
+  $('mi-run').classList.remove('hidden');
+  miShow();
+}
+function miShow() {
+  if (miIdx >= miPool.length) { miFinish(); return; }
+  miCur = miPool[miIdx];
+  miOrder = miShuffle(miCur.opts.map((_, i) => i));   // 選項順序打亂，避免背字母位置
+  $('mi-progress').textContent = `第 ${miIdx + 1} / ${miPool.length} 題`;
+  $('mi-score').textContent = `答對 ${miRight}`;
+  $('mi-q').textContent = miCur.q;
+  $('mi-srcline').innerHTML = `${esc(miCur.src)}${miCur.no ? '・' + esc(miCur.no) : ''}`
+    + (miCur.tags || []).map(t => `<span class="tag2">${esc(t)}</span>`).join('');
+  $('mi-choices').innerHTML = miOrder.map((oi, i) =>
+    `<button data-oi="${oi}"><span class="no">(${'ABCDE'[i]})</span>${esc(miCur.opts[oi])}</button>`).join('');
+  $('mi-exp').classList.add('hidden');
+  $('mi-next').classList.add('hidden');
+  $('mi-choices').querySelectorAll('button').forEach(b => b.onclick = () => miAnswer(+b.dataset.oi, b));
+}
+function miAnswer(oi, btn) {
+  const right = oi === miCur.ans;
+  const st = miStat[miCur.id] ||= {r: 0, w: 0};
+  miDone++;
+  right ? (st.r++, miRight++) : st.w++;
+  saveMiStat();
+  $('mi-choices').querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (+b.dataset.oi === miCur.ans) b.classList.add('right');
+  });
+  if (!right) btn.classList.add('wrongpick');
+  $('mi-score').textContent = `答對 ${miRight}`;
+  if (miCur.exp) { $('mi-exp').textContent = miCur.exp; $('mi-exp').classList.remove('hidden'); }
+  $('mi-next').textContent = miIdx + 1 >= miPool.length ? '看結果 🏁' : '下一題 ⏭';
+  $('mi-next').classList.remove('hidden');
+  $('mi-next').focus();
+}
+function miFinish() {
+  const answered = miDone;
+  $('mi-run').classList.add('hidden');
+  $('mi-setup').classList.remove('hidden');
+  $('mi-result').textContent = answered
+    ? `上一輪：${answered} 題答對 ${miRight} 題（${Math.round(miRight / answered * 100)}%）` : '';
+  miRenderSetup();
+}
+$('mi-start').onclick = miStart;
+$('mi-next').onclick = () => { miIdx++; miShow(); };
+$('mi-quit').onclick = () => miFinish();
+$('mi-onlyhard').onclick = () => {
+  miOnlyHard = !miOnlyHard;
+  $('mi-onlyhard').classList.toggle('on', miOnlyHard);
+  miRenderSetup();
+};
+$('mi-src').onchange = miRenderSetup;
+$('mi-tag').onchange = miRenderSetup;
+
 /* ================= shadowing ================= */
 const audio = $('audio');
 let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
@@ -3020,7 +3180,7 @@ $('do-sync').onclick = async () => {
 };
 
 /* ================= init ================= */
-buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending();
+buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending(); miRenderSetup();
 buildQRange(); renderHistory(); renderExamHistory(); renderClipList(); renderDtSide();
 buildBookSels(); renderBooksAdmin();
 showView(localStorage.getItem('toeic-view') || 'cards');

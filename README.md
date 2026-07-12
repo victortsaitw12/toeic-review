@@ -6,6 +6,9 @@
   瀏覽器發音（TTS）、隨機排序、標記「認識／不熟」（存在 localStorage）、只複習不熟單字。
 - **模擬考聽力解析** — 5 份模擬考聽力，已切成每題（Part 1/2）或每組對話（Part 3/4）一個音檔，
   可逐題選擇播放，支援變速（0.6×–1.15×）、單檔循環、A-B 區間循環、倒退 3 秒。
+- **錯題複習** — 做模擬考（尤其 Part 5）記錄下來的錯題／不熟題，可反覆練習並追蹤答對答錯。
+  錯題記在 `review/*.md`（格式見 `review/README.md`），用 `tools/import_mistakes.py` 匯入
+  `data/mistakes.js`（或請 Claude「匯入錯題」）。
 
 ## 部署到 GitHub Pages
 
