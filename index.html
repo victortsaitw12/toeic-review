@@ -783,10 +783,18 @@
   <!-- ================= 口說跟讀 ================= -->
   <section id="view-speak" class="hidden">
     <div class="shadow-grid">
-    <aside class="qside" id="sp-side">
-      <select id="sp-src" class="tsel"></select>
-      <div class="src-note" id="sp-note"></div>
-      <div id="sp-side-list"></div>
+    <aside class="qcol">
+      <div class="qpick">
+        <div class="chips" id="sp-series-row"></div>
+        <div id="sp-pick-exams">
+          <h4>模擬考選項</h4>
+          <div class="chips" id="sp-num-row"></div>
+        </div>
+        <div class="src-note" id="sp-note"></div>
+      </div>
+      <div class="qside" id="sp-side">
+        <div id="sp-side-list"></div>
+      </div>
     </aside>
     <div class="shadow-main">
     <div class="qpickrow">
@@ -844,10 +852,18 @@
   <!-- ================= 聽寫練習 ================= -->
   <section id="view-dict" class="hidden">
     <div class="shadow-grid">
-    <aside class="qside" id="dt-side">
-      <select id="dt-src" class="tsel"></select>
-      <div class="src-note" id="dt-note"></div>
-      <div id="dt-side-list"></div>
+    <aside class="qcol">
+      <div class="qpick">
+        <div class="chips" id="dt-series-row"></div>
+        <div id="dt-pick-exams">
+          <h4>模擬考選項</h4>
+          <div class="chips" id="dt-num-row"></div>
+        </div>
+        <div class="src-note" id="dt-note"></div>
+      </div>
+      <div class="qside" id="dt-side">
+        <div id="dt-side-list"></div>
+      </div>
     </aside>
     <div class="shadow-main">
     <div class="qpickrow">
@@ -1772,9 +1788,30 @@ document.addEventListener('keydown', e => {
 
 /* ================= speaking practice ================= */
 const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
-/* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋EZ 模擬考聽力題 */
+/* 模擬考系列（跟讀/聽寫/聽力解析側邊欄共用） */
+const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}, {k: 'C', n: '國學藍'}];
+const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
+const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
+  .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
+/* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋模擬考聽力題 */
 const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'},
   ...Object.keys(TESTS).map(t => ({key: t, name: `${testName(t)} 聽力`}))];
+/* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…）＋模擬考回數 */
+function buildPracticePick(p, cur, onSwitch) {
+  const curS = cur === 'voa' ? 'voa' : seriesOf(cur);
+  $(p + '-series-row').innerHTML = [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length)]
+    .map(s => `<button data-s="${s.k}" class="${s.k === curS ? 'cur' : ''}">${s.n}</button>`).join('');
+  $(p + '-series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.s === curS) return;
+    onSwitch(b.dataset.s === 'voa' ? 'voa' : seriesTests(b.dataset.s)[0]);
+  });
+  $(p + '-pick-exams').classList.toggle('hidden', cur === 'voa');
+  $(p + '-num-row').innerHTML = cur === 'voa' ? '' : seriesTests(curS)
+    .map(t => `<button data-t="${t}" class="${t === cur ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
+  $(p + '-num-row').querySelectorAll('button').forEach(b => b.onclick = () => {
+    if (b.dataset.t !== cur) onSwitch(b.dataset.t);
+  });
+}
 function practiceClips(srcKey) {
   if (srcKey === 'voa')
     return SPEAK_DATA.map(c => ({...c, group: c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音',
@@ -1803,8 +1840,9 @@ if (spset.blind === undefined) spset.blind = true;   // 預設盲聽：先聽跟
 const spRev = new Set();   // 這個音檔裡已「顯示句子」過的句子
 function renderClipList() {
   const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
-  $('sp-src').innerHTML = opts; $('sp-src-m').innerHTML = opts;
-  $('sp-src').value = spSrc; $('sp-src-m').value = spSrc;
+  $('sp-src-m').innerHTML = opts;
+  $('sp-src-m').value = spSrc;
+  buildPracticePick('sp', spSrc, spSwitchSrc);
   $('sp-note').textContent = srcNoteText(spSrc);
   const clips = practiceClips(spSrc);
   const groups = {};
@@ -1936,7 +1974,6 @@ function spSetAuto(on) {
   $('sp-auto').classList.toggle('on', on);
   if (!on) clearTimeout(spAutoTimer);
 }
-$('sp-src').onchange = () => spSwitchSrc($('sp-src').value);
 $('sp-src-m').onchange = () => spSwitchSrc($('sp-src-m').value);
 $('sp-sel').onchange = () => openClip(+$('sp-sel').value, true);
 $('sp-cprev').onclick = () => openClip(spClipIdx - 1);
@@ -1999,8 +2036,9 @@ let dtSrc = (dtset.src === 'voa' || (dtset.src && TESTS[dtset.src])) ? dtset.src
 
 function renderDtSide() {
   const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
-  $('dt-src').innerHTML = opts; $('dt-src-m').innerHTML = opts;
-  $('dt-src').value = dtSrc; $('dt-src-m').value = dtSrc;
+  $('dt-src-m').innerHTML = opts;
+  $('dt-src-m').value = dtSrc;
+  buildPracticePick('dt', dtSrc, dtSwitchSrc);
   $('dt-note').textContent = srcNoteText(dtSrc);
   const clips = practiceClips(dtSrc);
   const groups = {};
@@ -2140,7 +2178,6 @@ $('dt-play').onclick = () => {
   if (!dtAudio.paused) { dtAudio.pause(); return; }
   dtPlaySeg(dtIdx < 0 ? 0 : dtIdx);
 };
-$('dt-src').onchange = () => dtSwitchSrc($('dt-src').value);
 $('dt-src-m').onchange = () => dtSwitchSrc($('dt-src-m').value);
 $('dt-sel').onchange = () => dtOpen(+$('dt-sel').value);
 $('dt-cprev').onclick = () => dtOpen(dtClipIdx - 1);
@@ -2502,10 +2539,6 @@ let curIdx = -1, abA = null, abB = null;
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
-const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}, {k: 'C', n: '國學藍'}];
-const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
-const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
-  .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
 function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
   $('tsel-m').innerHTML = opts;
