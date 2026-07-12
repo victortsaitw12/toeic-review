@@ -195,7 +195,12 @@
   }
   .sp-now .sp-en { font-size: 1.15rem; font-weight: 650; line-height: 1.5; }
   .sp-now .sp-zh { color: var(--muted); font-size: .95rem; margin-top: 4px; }
-  .segctrl.sp-primary { margin-top: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+  .sp-tabs { display: flex; gap: 4px; margin-top: 12px; border-bottom: 1px solid var(--line); }
+  .sp-tabs button {
+    border: none; background: none; color: var(--muted); cursor: pointer;
+    padding: 8px 16px; font-size: .9rem; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .sp-tabs button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
   .segctrl.sp-primary button { padding: 10px 16px; font-size: .95rem; }
   #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .6; } }
@@ -750,7 +755,11 @@
         <div class="sp-en" id="sp-en">從清單選擇音檔，點句子列表任一句開始練習</div>
         <div class="sp-zh" id="sp-zh"></div>
       </div>
-      <div class="segctrl sp-primary">
+      <div class="sp-tabs">
+        <button id="sp-tab-shadow" class="on">🎙 跟讀功能</button>
+        <button id="sp-tab-player">🎧 播放器</button>
+      </div>
+      <div class="segctrl sp-primary" id="sp-ctrl-shadow">
         <button id="sp-prev" title="上一句">⏮ 句</button>
         <button id="sp-rep" title="重播這一句">↻ 句</button>
         <button id="sp-next" title="下一句">句 ⏭</button>
@@ -761,7 +770,7 @@
         <button id="sp-auto">🎙 自動跟讀模式</button>
         <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
       </div>
-      <div class="segctrl">
+      <div class="segctrl hidden" id="sp-ctrl-player">
         <button id="sp-qprev" title="上一段音檔">⏮ 段</button>
         <button id="sp-qnext" title="下一段音檔">段 ⏭</button>
         <span class="sep"></span>
@@ -1831,6 +1840,16 @@ $('sp-rep').onclick = () => spSegNav(0);
 $('sp-back3').onclick = () => { spAudio.currentTime = Math.max(0, spAudio.currentTime - 3); };
 $('sp-loop').onclick = () => { spLoopOn = !spLoopOn; $('sp-loop').classList.toggle('on', spLoopOn); };
 $('sp-loopall').onclick = () => { spAudio.loop = !spAudio.loop; $('sp-loopall').classList.toggle('on', spAudio.loop); };
+function spShowCtrl(t) {
+  spset.tab = t; saveSpset();
+  $('sp-tab-shadow').classList.toggle('on', t === 'shadow');
+  $('sp-tab-player').classList.toggle('on', t === 'player');
+  $('sp-ctrl-shadow').classList.toggle('hidden', t !== 'shadow');
+  $('sp-ctrl-player').classList.toggle('hidden', t !== 'player');
+}
+$('sp-tab-shadow').onclick = () => spShowCtrl('shadow');
+$('sp-tab-player').onclick = () => spShowCtrl('player');
+spShowCtrl(spset.tab || 'shadow');
 $('sp-tgnow').classList.toggle('on', spset.now);
 spUpdNowline();
 $('sp-tgnow').onclick = () => {
