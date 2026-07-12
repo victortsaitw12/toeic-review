@@ -388,6 +388,8 @@
   .qside button.cur { background: var(--accent); color: var(--accent-ink); }
   .qside button .d { color: var(--muted); font-size: .74rem; }
   .qside button.cur .d { color: inherit; opacity: .8; }
+  .qside button .pdone { color: var(--good); font-weight: 600; margin-right: 8px; }
+  .qside button.cur .pdone { color: inherit; }
   @media (max-width: 860px) {
     .shadow-grid { grid-template-columns: 1fr; }
     .qside, .qcol { display: none; }
@@ -1812,6 +1814,23 @@ function buildPracticePick(p, cur, onSwitch) {
     if (b.dataset.t !== cur) onSwitch(b.dataset.t);
   });
 }
+/* 練習紀錄：每個音檔練過哪幾句（跟讀＝播放過該句、聽寫＝對過答案），存 localStorage */
+const practiceDone = JSON.parse(localStorage.getItem('toeic-practice-done') || '{"sp":{},"dt":{}}');
+const doneBadge = (p, c) => {
+  const r = practiceDone[p][c.src];
+  if (!r || !r.d.length) return '';
+  return r.d.length >= r.t ? '<span class="pdone all">✓ 練完</span>'
+    : `<span class="pdone">✓ ${r.d.length}/${r.t}</span>`;
+};
+function markPracticed(p, clip, clipIdx, idx) {
+  const rec = practiceDone[p][clip.src] ||= {d: [], t: clip.segs.length};
+  rec.t = clip.segs.length;
+  if (rec.d.includes(idx)) return;
+  rec.d.push(idx);
+  localStorage.setItem('toeic-practice-done', JSON.stringify(practiceDone));
+  const d = $(p + '-side-list').querySelector(`button[data-i="${clipIdx}"] .d`);
+  if (d) d.innerHTML = doneBadge(p, clip) + fmt(clip.dur);
+}
 function practiceClips(srcKey) {
   if (srcKey === 'voa')
     return SPEAK_DATA.map(c => ({...c, group: c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音',
@@ -1850,7 +1869,7 @@ function renderClipList() {
   $('sp-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
   $('sp-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
@@ -1940,6 +1959,7 @@ function spPlaySeg(i) {
   if (!spClip || i < 0 || i >= spClip.segs.length) return;
   clearTimeout(spAutoTimer);
   spIdx = i; spMarkCur();
+  markPracticed('sp', spClip, spClipIdx, i);
   $('sp-segfill').style.width = '0';
   spAudio.playbackRate = +$('sp-rate').value;
   const s = spClip.segs[i];
@@ -2046,7 +2066,7 @@ function renderDtSide() {
   $('dt-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
   $('dt-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
@@ -2159,6 +2179,7 @@ function dtCheck(reveal) {
       html: `<span class="score" style="color:${d.pct >= 80 ? 'var(--good)' : 'var(--bad)'}">${d.pct}%</span>${d.html}<div class="zh2">${esc(s.z || '')}</div>`};
   }
   dtRes.set(dtIdx, entry);
+  markPracticed('dt', dtClip, dtClipIdx, dtIdx);
   renderDtList(); dtMarkCur();
 }
 function dtNav(d) {
