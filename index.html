@@ -792,7 +792,7 @@
         <button id="sp-setb">B</button>
         <button id="sp-clearab">清 A-B</button>
       </div>
-      <p class="sp-tip">跟讀方法：點句子列表任一句 → 播完該句會<b>自動停</b>，按「⏺ 錄音」複誦 →
+      <p class="sp-tip" id="sp-tip">跟讀方法：點句子列表任一句 → 播完該句會<b>自動停</b>，按「⏺ 錄音」複誦 →
       「▶ 我的錄音」和原音比對 → 「句 ⏭」練下一句；「🎙 自動跟讀模式」會自動播一句、留時間複誦、再播下一句。
       想連續聽整段就按左上大播放鍵 ▶。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
     </div>
@@ -1846,6 +1846,7 @@ function spShowCtrl(t) {
   $('sp-tab-player').classList.toggle('on', t === 'player');
   $('sp-ctrl-shadow').classList.toggle('hidden', t !== 'shadow');
   $('sp-ctrl-player').classList.toggle('hidden', t !== 'player');
+  $('sp-tip').classList.toggle('hidden', t !== 'shadow');
 }
 $('sp-tab-shadow').onclick = () => spShowCtrl('shadow');
 $('sp-tab-player').onclick = () => spShowCtrl('player');
