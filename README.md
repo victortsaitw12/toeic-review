@@ -78,7 +78,8 @@ audio/Test1..5/   # 切割好的聽力音檔（每題／每組一個 mp3）
    輸出到 `split/Test6/`（編號接續）
 3. 把切好的資料夾複製到 `audio/Test6/`，用 `tools/` 內既有邏輯重新產生
    `data/audio.js` 的清單，並在 `TEST_META` 加上
-   `"Test6": {"name": "模擬考 6", "source": "○○出版社"}`
+   `"Test6": {"name": "○○ 模擬考 1", "source": "○○出版社"}`
+   （`name` 慣例＝出版社縮寫＋模擬考編號，全站顯示與跟讀/聽寫的來源選單都取自這裡）
 4. 執行 `tools/transcribe.py Test6` 產生逐字稿（需 `pip install faster-whisper`），
    翻譯後併入 `data/transcripts.js`
 5. `git add . && git commit && git push` 部署
