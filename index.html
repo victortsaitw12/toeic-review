@@ -229,7 +229,10 @@
   #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .6; } }
   .recdot { color: var(--good); font-size: .7rem; margin-left: 6px; }
-  .sp-tip { color: var(--muted); font-size: .82rem; margin-top: 10px; line-height: 1.6; }
+  .sp-tip { color: var(--muted); font-size: .82rem; margin-top: 8px; line-height: 1.6; }
+  .tipbox { margin-top: 10px; }
+  .tipbox summary { color: var(--muted); font-size: .82rem; cursor: pointer; user-select: none; }
+  button, select { touch-action: manipulation; }
 
   /* ---------- exam ---------- */
   .exam-timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -574,6 +577,47 @@
     .wrow .act { width: 100%; margin-left: 0; }
     .hist-row .act { width: 100%; margin-left: 0; }
     .hist-row .act button, .wrow .act button { padding: 8px 14px; }
+
+    /* 口說跟讀：控制列固定在螢幕底部拇指區，句子卡置頂 */
+    body[data-view="speak"] main { padding-bottom: calc(196px + env(safe-area-inset-bottom)); }
+    #view-speak .player { padding: 10px 12px; }
+    #view-speak .sp-now { margin: 8px 0 2px; padding: 12px; min-height: 60px; }
+    #view-speak .sp-ctrls {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+      background: var(--card); border-top: 1px solid var(--line);
+      box-shadow: 0 -4px 18px rgba(0,0,0,.12);
+      padding: 8px max(10px, env(safe-area-inset-right))
+               calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px;
+    }
+    #view-speak .sp-ctrls .segctrl { display: contents; }
+    #view-speak .sp-ctrls .sep { display: none; }
+    #view-speak .sp-ctrls button { margin: 0; padding: 10px 2px; font-size: .82rem; min-height: 44px; }
+    /* 第一列：上一句｜播放這句（主鍵）｜下一句 */
+    #sp-prev { grid-area: 1 / 1 / 2 / 4; }
+    #sp-play { grid-area: 1 / 4 / 2 / 10; font-size: 1rem !important; min-height: 50px !important; }
+    #sp-next { grid-area: 1 / 10 / 2 / 13; }
+    /* 第二列：顯示句子｜循環｜錄音｜我的錄音 */
+    #sp-show { grid-area: 2 / 1 / 3 / 5; }
+    #sp-loop { grid-area: 2 / 5 / 3 / 8; }
+    #sp-rec  { grid-area: 2 / 8 / 3 / 10; }
+    #sp-mine { grid-area: 2 / 10 / 3 / 13; }
+    /* 第三列：盲聽｜自動跟讀｜語速（次要設定，較矮） */
+    #sp-blind { grid-area: 3 / 1 / 4 / 5; min-height: 38px !important; padding: 7px 2px !important; }
+    #sp-auto  { grid-area: 3 / 5 / 4 / 10; min-height: 38px !important; padding: 7px 2px !important; }
+    #view-speak .sp-ctrls .speed { grid-area: 3 / 10 / 4 / 13; display: flex; }
+    #view-speak .sp-ctrls .speed select { flex: 1; padding: 7px 6px; border-radius: 10px; }
+
+    /* 聽寫：控制鈕加大成等寬格（不固定底部，避免擋輸入鍵盤） */
+    #view-dict .segctrl.sp-primary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    #view-dict .sp-primary .sep { display: none; }
+    #view-dict .sp-primary button { min-height: 46px; font-size: .95rem; }
+    #view-dict .sp-primary .speed { display: flex; grid-column: 1 / 3; }
+    #view-dict .sp-primary .speed select { flex: 1; padding: 8px; }
+    #dt-stat { grid-column: 3 / 4; text-align: center; }
+
+    /* 句子列表加大觸控列 */
+    #sp-list .tseg, #dt-list .tseg { padding: 12px 8px; }
   }
   /* 進度條加大觸控範圍（視覺高度不變） */
   .bar { height: 22px; padding: 6px 0; background-clip: content-box; }
@@ -849,6 +893,7 @@
         <div class="sp-zh" id="sp-zh"></div>
         <div class="sp-segbar"><div class="fill" id="sp-segfill"></div></div>
       </div>
+      <div class="sp-ctrls">
       <div class="segctrl sp-primary">
         <button class="play" id="sp-play">▶ 播放這句</button>
         <button id="sp-show" title="盲聽跟讀後，顯示原文看著唸">👁 顯示句子</button>
@@ -872,10 +917,12 @@
           </select>
         </span>
       </div>
+      </div><!-- /sp-ctrls -->
+      <details class="tipbox"><summary>💡 跟讀流程說明</summary>
       <p class="sp-tip">跟讀流程：點一句 → <b>先盲聽</b>（文字遮住）跟著唸，唸不出來按「▶ 播放這句」多聽幾次
       （或開「🔂 循環」）→ 按「👁 顯示句子」看原文，看著唸一次，「⏺ 錄音」＋「▶ 我的錄音」和原音比對 →
       「下一句 ⏭」繼續（新句子會重新遮住）。「🎙 自動跟讀模式」會播一句、留時間複誦、再自動播下一句；
-      不想盲聽就關掉「🙈 盲聽模式」。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
+      不想盲聽就關掉「🙈 盲聽模式」。錄音只存在你的瀏覽器記憶體，不會上傳。</p></details>
     </div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
@@ -941,10 +988,11 @@
         </div>
         <div id="dt-result" class="hidden"></div>
       </div>
+      <details class="tipbox"><summary>💡 聽寫方法說明</summary>
       <p class="sp-tip">聽寫方法：點右側句子列表任一句（內容已遮住）→ 聽原音（播完該句<b>自動停</b>，不會自動播下一句）→
       把聽到的英文打出來 → Enter 對答案，<span style="color:var(--good)">綠色</span>＝答對的字、
       <span style="color:var(--bad);text-decoration:underline">紅色底線</span>＝漏掉或拼錯的字；
-      答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或調慢語速，練完一句自己按「句 ⏭」。</p>
+      答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或調慢語速，練完一句自己按「句 ⏭」。</p></details>
     </div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
