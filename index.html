@@ -189,18 +189,6 @@
   .resultsub { text-align: center; color: var(--muted); margin-bottom: 14px; }
 
   /* ---------- speaking practice ---------- */
-  .clipcard {
-    display: flex; align-items: center; gap: 12px; padding: 13px 14px;
-    border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px;
-    cursor: pointer; background: var(--card);
-  }
-  .clipcard:hover { border-color: var(--accent); }
-  .clipcard .ttl2 { flex: 1; min-width: 0; }
-  .clipcard .ttl2 b { display: block; font-size: .98rem; }
-  .clipcard .ttl2 small { color: var(--muted); font-size: .78rem; }
-  .accent-badge { flex: none; font-size: .75rem; padding: 3px 10px; border-radius: 999px; color: #fff; font-weight: 600; }
-  .accent-us { background: #2f6fed; }
-  .accent-uk { background: #d64545; }
   .sp-now {
     margin: 12px 0; padding: 14px 16px; border-radius: 12px;
     background: var(--chip); border-left: 4px solid var(--accent); min-height: 76px;
@@ -210,7 +198,6 @@
   #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .6; } }
   .recdot { color: var(--good); font-size: .7rem; margin-left: 6px; }
-  #sp-back { border: none; background: none; color: var(--muted); cursor: pointer; padding: 0 0 8px; font-size: .88rem; }
   .sp-tip { color: var(--muted); font-size: .82rem; margin-top: 10px; line-height: 1.6; }
 
   /* ---------- exam ---------- */
@@ -296,7 +283,7 @@
     padding: 4px 12px; border-radius: 999px; cursor: pointer; font-size: .8rem;
   }
   .thead button.on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  #tlist { max-height: 56vh; overflow-y: auto; position: relative; }
+  #tlist, #sp-list { max-height: 56vh; overflow-y: auto; position: relative; }
   .tseg {
     display: flex; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer;
     border-left: 3px solid transparent; align-items: baseline;
@@ -329,7 +316,7 @@
   }
   .controls .on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
   /* 電腦版：左側題目 sidebar＋右側逐字稿；手機版：單欄＋頂部下拉選單 */
-  body[data-view="shadow"] main { max-width: 1380px; }
+  body[data-view="shadow"] main, body[data-view="speak"] main { max-width: 1380px; }
   .shadow-grid {
     display: grid; grid-template-columns: 220px minmax(0, 1fr) minmax(280px, 430px);
     gap: 18px; align-items: start;
@@ -339,7 +326,7 @@
       position: sticky; top: 78px; margin-bottom: 0;
       max-height: calc(100vh - 96px); display: flex; flex-direction: column;
     }
-    .tpanel #tlist { max-height: none; flex: 1; }
+    .tpanel #tlist, .tpanel #sp-list { max-height: none; flex: 1; }
   }
   .qside {
     position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow-y: auto;
@@ -746,51 +733,51 @@
 
   <!-- ================= 口說跟讀 ================= -->
   <section id="view-speak" class="hidden">
-
-    <div id="speak-list">
-      <div class="panel">
-        <h3>選擇練習音檔</h3>
-        <p class="desc">音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），
-        語速清晰、適合跟讀。逐句播放 → 按錄音跟讀 → 比對自己和原音的差異。</p>
-        <div id="clip-list"><p style="color:var(--muted)">資料準備中…</p></div>
-      </div>
+    <div class="shadow-grid">
+    <aside class="qside" id="sp-side">
+      <div class="src-note">音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），
+      語速清晰、適合跟讀。</div>
+      <div id="sp-side-list"></div>
+    </aside>
+    <div class="shadow-main">
+    <div class="qpickrow">
+      <select id="sp-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
+      <button id="sp-cprev" title="上一段音檔">⏮</button>
+      <button id="sp-cnext" title="下一段音檔">⏭</button>
     </div>
-
-    <div id="speak-run" class="hidden">
-      <div class="panel">
-        <button id="sp-back">← 返回音檔列表</button>
-        <h3 id="sp-title"></h3>
-        <div class="sp-now">
-          <div class="sp-en" id="sp-en">點下方任一句開始練習</div>
-          <div class="sp-zh" id="sp-zh"></div>
-        </div>
-        <div class="controls">
-          <button class="play" id="sp-play">▶ 原音</button>
-          <button id="sp-loop">🔂 循環</button>
-          <button id="sp-rec">⏺ 錄音</button>
-          <button id="sp-mine" disabled>▶ 我的錄音</button>
-          <button id="sp-prev">⏮ 句</button>
-          <button id="sp-next">句 ⏭</button>
-          <span class="speed">
-            <select id="sp-rate">
-              <option value="0.6">0.6×</option>
-              <option value="0.75">0.75×</option>
-              <option value="0.85">0.85×</option>
-              <option value="1" selected>1.0×</option>
-            </select>
-          </span>
-          <button id="sp-auto">🎙 自動跟讀模式</button>
-          <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
-        </div>
-        <p class="sp-tip">跟讀方法：先聽原音 → 按「⏺ 錄音」複誦一次 → 按「▶ 我的錄音」和原音比對。
-        「自動跟讀模式」會播一句、留時間讓你複誦、再自動播下一句。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
+    <div class="player">
+      <div class="now" id="sp-title">請選擇音檔</div>
+      <div class="sp-now">
+        <div class="sp-en" id="sp-en">從清單選擇音檔，點句子列表任一句開始練習</div>
+        <div class="sp-zh" id="sp-zh"></div>
       </div>
-      <div class="tpanel">
-        <div class="thead"><h3>句子列表</h3></div>
-        <div id="sp-list" style="max-height:48vh;overflow-y:auto;position:relative"></div>
+      <div class="controls">
+        <button class="play" id="sp-play">▶ 原音</button>
+        <button id="sp-loop">🔂 循環</button>
+        <button id="sp-rec">⏺ 錄音</button>
+        <button id="sp-mine" disabled>▶ 我的錄音</button>
+        <button id="sp-prev">⏮ 句</button>
+        <button id="sp-next">句 ⏭</button>
+        <span class="speed">
+          <select id="sp-rate">
+            <option value="0.6">0.6×</option>
+            <option value="0.75">0.75×</option>
+            <option value="0.85">0.85×</option>
+            <option value="1" selected>1.0×</option>
+          </select>
+        </span>
+        <button id="sp-auto">🎙 自動跟讀模式</button>
+        <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
       </div>
+      <p class="sp-tip">跟讀方法：先聽原音 → 按「⏺ 錄音」複誦一次 → 按「▶ 我的錄音」和原音比對。
+      「自動跟讀模式」會播一句、留時間讓你複誦、再自動播下一句。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
     </div>
-
+    </div><!-- /shadow-main -->
+    <div class="tpanel">
+      <div class="thead"><h3>句子列表</h3></div>
+      <div id="sp-list"><div class="empty">選擇音檔後顯示句子列表</div></div>
+    </div>
+    </div><!-- /shadow-grid -->
   </section>
 
   <!-- ================= 模擬考試 ================= -->
@@ -1648,29 +1635,39 @@ document.addEventListener('keydown', e => {
 /* ================= speaking practice ================= */
 const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
 const spAudio = new Audio(), spMine = new Audio();
-let spClip = null, spIdx = -1, spLoopOn = false, spAutoOn = false, spAutoTimer = null;
+let spClip = null, spClipIdx = -1, spIdx = -1, spLoopOn = false, spAutoOn = false, spAutoTimer = null;
 let spRecorder = null, spChunks = [], spStream = null;
 const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
 
 function renderClipList() {
   if (!SPEAK_DATA.length) return;
-  $('clip-list').innerHTML = SPEAK_DATA.map((c, i) => `
-    <div class="clipcard" data-i="${i}">
-      <span class="accent-badge ${c.accent === '英' ? 'accent-uk' : 'accent-us'}">${c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'}</span>
-      <span class="ttl2"><b>${esc(c.title)}</b><small>${esc(c.source)}・${c.segs.length} 句・${fmt(c.dur)}</small></span>
-    </div>`).join('');
-  $('clip-list').querySelectorAll('.clipcard').forEach(el => el.onclick = () => openClip(+el.dataset.i));
+  const groups = {};
+  SPEAK_DATA.forEach((c, i) => (groups[c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音'] ||= []).push(i));
+  $('sp-side-list').innerHTML = Object.entries(groups).map(([g, arr]) =>
+    `<h4>${g}</h4>` + arr.map(i => {
+      const c = SPEAK_DATA[i];
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${esc(c.title)}<span class="d">${fmt(c.dur)}</span></button>`;
+    }).join('')).join('');
+  $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i));
+  $('sp-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
+    SPEAK_DATA.map((c, i) =>
+      `<option value="${i}">${c.accent === '英' ? '🇬🇧' : '🇺🇸'} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
+  $('sp-sel').value = String(spClipIdx);
 }
 function openClip(i) {
+  if (i < 0 || i >= SPEAK_DATA.length) return;
   spStopAll();
+  spClipIdx = i;
   spClip = SPEAK_DATA[i]; spIdx = -1;
   spRecs.forEach(u => URL.revokeObjectURL(u)); spRecs.clear();
   spAudio.src = spClip.src;
-  $('sp-title').textContent = spClip.title;
-  $('sp-en').textContent = '點下方任一句開始練習'; $('sp-zh').textContent = '';
+  $('sp-title').innerHTML = `${esc(spClip.title)}<small>${esc(spClip.source)}</small>`;
+  $('sp-en').textContent = '點句子列表任一句開始練習'; $('sp-zh').textContent = '';
   $('sp-prog').textContent = `共 ${spClip.segs.length} 句`;
-  $('speak-list').classList.add('hidden');
-  $('speak-run').classList.remove('hidden');
+  $('sp-sel').value = String(i);
+  $('sp-side-list').querySelectorAll('button').forEach(b =>
+    b.classList.toggle('cur', +b.dataset.i === i));
+  $('sp-mine').disabled = true;
   renderSpList();
 }
 function renderSpList() {
@@ -1730,8 +1727,10 @@ function spSetAuto(on) {
   $('sp-auto').classList.toggle('on', on);
   if (!on) clearTimeout(spAutoTimer);
 }
-$('sp-back').onclick = () => { spStopAll(); $('speak-run').classList.add('hidden'); $('speak-list').classList.remove('hidden'); };
-$('sp-play').onclick = () => { if (spIdx < 0) spPlaySeg(0); else spPlaySeg(spIdx); };
+$('sp-sel').onchange = () => openClip(+$('sp-sel').value);
+$('sp-cprev').onclick = () => openClip(spClipIdx - 1);
+$('sp-cnext').onclick = () => openClip(spClipIdx + 1);
+$('sp-play').onclick = () => { if (!spClip) return; if (spIdx < 0) spPlaySeg(0); else spPlaySeg(spIdx); };
 $('sp-prev').onclick = () => spPlaySeg(spIdx - 1);
 $('sp-next').onclick = () => spPlaySeg(spIdx + 1);
 $('sp-loop').onclick = () => { spLoopOn = !spLoopOn; $('sp-loop').classList.toggle('on', spLoopOn); };
