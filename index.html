@@ -195,6 +195,8 @@
   }
   .sp-now .sp-en { font-size: 1.15rem; font-weight: 650; line-height: 1.5; }
   .sp-now .sp-zh { color: var(--muted); font-size: .95rem; margin-top: 4px; }
+  .segctrl.sp-primary { margin-top: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--line); }
+  .segctrl.sp-primary button { padding: 10px 16px; font-size: .95rem; }
   #sp-rec.recording { background: var(--bad); color: #fff; border-color: var(--bad); animation: pulse 1.2s infinite; }
   @keyframes pulse { 50% { opacity: .6; } }
   .recdot { color: var(--good); font-size: .7rem; margin-left: 6px; }
@@ -744,19 +746,24 @@
           <div class="time"><span id="sp-tcur">0:00</span><span id="sp-tdur">0:00</span></div>
         </div>
       </div>
-      <div class="sp-now hidden" id="sp-nowline">
-        <div class="sp-en" id="sp-en"></div>
+      <div class="sp-now" id="sp-nowline">
+        <div class="sp-en" id="sp-en">從清單選擇音檔，點句子列表任一句開始練習</div>
         <div class="sp-zh" id="sp-zh"></div>
       </div>
-      <div class="segctrl">
-        <button id="sp-qprev" title="上一段音檔">⏮ 段</button>
-        <button id="sp-qnext" title="下一段音檔">段 ⏭</button>
-        <span class="sep"></span>
+      <div class="segctrl sp-primary">
         <button id="sp-prev" title="上一句">⏮ 句</button>
         <button id="sp-rep" title="重播這一句">↻ 句</button>
         <button id="sp-next" title="下一句">句 ⏭</button>
         <button id="sp-loop" title="單句循環（跟讀）">🔂 單句循環</button>
-        <button id="sp-tgnow" class="on" title="顯示/隱藏正在播放的句子">💬 目前句</button>
+        <span class="sep"></span>
+        <button id="sp-rec">⏺ 錄音</button>
+        <button id="sp-mine" disabled>▶ 我的錄音</button>
+        <button id="sp-auto">🎙 自動跟讀模式</button>
+        <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
+      </div>
+      <div class="segctrl">
+        <button id="sp-qprev" title="上一段音檔">⏮ 段</button>
+        <button id="sp-qnext" title="下一段音檔">段 ⏭</button>
         <span class="sep"></span>
         <button id="sp-back3">↺ 3 秒</button>
         <span class="speed">
@@ -770,19 +777,15 @@
         </span>
         <button id="sp-loopall" title="整段循環">🔁 整段</button>
         <button id="sp-autonext" title="這一段播完後自動播放下一段">▶▶ 自動下一段</button>
+        <button id="sp-tgnow" class="on" title="顯示/隱藏正在播放的句子">💬 目前句</button>
+        <span class="sep"></span>
         <button id="sp-seta">A</button>
         <button id="sp-setb">B</button>
         <button id="sp-clearab">清 A-B</button>
       </div>
-      <div class="segctrl">
-        <button id="sp-rec">⏺ 錄音</button>
-        <button id="sp-mine" disabled>▶ 我的錄音</button>
-        <button id="sp-auto">🎙 自動跟讀模式</button>
-        <span id="sp-prog" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
-      </div>
-      <p class="sp-tip">跟讀方法：點句子列表任一句從該句開始播放；開「🔂 單句循環」反覆聽同一句，
-      按「⏺ 錄音」複誦一次 → 按「▶ 我的錄音」和原音比對。
-      「🎙 自動跟讀模式」會播一句、留時間讓你複誦、再自動播下一句。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
+      <p class="sp-tip">跟讀方法：點句子列表任一句 → 播完該句會<b>自動停</b>，按「⏺ 錄音」複誦 →
+      「▶ 我的錄音」和原音比對 → 「句 ⏭」練下一句；「🎙 自動跟讀模式」會自動播一句、留時間複誦、再播下一句。
+      想連續聽整段就按左上大播放鍵 ▶。錄音只存在你的瀏覽器記憶體，不會上傳。</p>
     </div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
@@ -1648,7 +1651,7 @@ document.addEventListener('keydown', e => {
 const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
 const spAudio = new Audio(), spMine = new Audio();
 let spClip = null, spClipIdx = -1, spIdx = -1, spLoopOn = false, spAutoOn = false, spAutoTimer = null;
-let spA = null, spB = null;
+let spA = null, spB = null, spSegMode = false;   // spSegMode：跟讀模式，句尾自動停
 let spRecorder = null, spChunks = [], spStream = null;
 const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
 const spset = JSON.parse(localStorage.getItem('toeic-spset') || '{"now":true,"autonext":false}');
@@ -1679,7 +1682,9 @@ function openClip(i, play) {
   spAudio.src = spClip.src;
   spAudio.playbackRate = +$('sp-rate').value;
   $('sp-title').innerHTML = `${esc(spClip.title)}<small>${esc(spClip.source)}</small>`;
-  $('sp-nowline').classList.add('hidden');
+  spSegMode = false;
+  $('sp-en').textContent = '點句子列表任一句開始練習'; $('sp-zh').textContent = '';
+  spUpdNowline();
   $('sp-fill').style.width = '0';
   $('sp-tcur').textContent = '0:00';
   $('sp-tdur').textContent = fmt(spClip.dur);
@@ -1698,10 +1703,7 @@ function renderSpList() {
       <span class="txt"><div class="en">${esc(s.t)}${spRecs.has(i) ? '<span class="recdot">●已錄</span>' : ''}</div>
       <div class="zh2">${esc(s.z || '')}</div></span>
     </div>`).join('');
-  $('sp-list').querySelectorAll('.tseg').forEach(el => el.onclick = () => {
-    clearTimeout(spAutoTimer);
-    spSeek(spClip.segs[+el.dataset.i].s + 0.01, true);
-  });
+  $('sp-list').querySelectorAll('.tseg').forEach(el => el.onclick = () => spPlaySeg(+el.dataset.i));
 }
 function spSeek(t, play) {
   const go = () => { spAudio.currentTime = t; if (play) spAudio.play(); };
@@ -1709,7 +1711,7 @@ function spSeek(t, play) {
   else spAudio.addEventListener('loadedmetadata', go, {once: true});
 }
 function spUpdNowline() {
-  $('sp-nowline').classList.toggle('hidden', !(spset.now && spIdx >= 0));
+  $('sp-nowline').classList.toggle('hidden', !spset.now);
 }
 function spMarkCur() {
   $('sp-list').querySelectorAll('.tseg').forEach(el =>
@@ -1732,13 +1734,18 @@ function spUpdateSeg() {
   spIdx = i;
   spMarkCur();
 }
-function spGotoSeg(d) {
-  if (!spClip) return;
+function spPlaySeg(i) {
+  if (!spClip || i < 0 || i >= spClip.segs.length) return;
   clearTimeout(spAutoTimer);
+  spSegMode = true;
+  spIdx = i; spMarkCur();
+  spSeek(spClip.segs[i].s + 0.01, true);
+}
+function spSegNav(d) {
+  if (!spClip) return;
   let i = spIdx;
   if (i < 0) i = spClip.segs.findIndex(s => spAudio.currentTime < s.e);
-  i = Math.min(Math.max((i < 0 ? 0 : i) + d, 0), spClip.segs.length - 1);
-  spSeek(spClip.segs[i].s + 0.01, true);
+  spPlaySeg(Math.min(Math.max((i < 0 ? 0 : i) + d, 0), spClip.segs.length - 1));
 }
 spAudio.addEventListener('timeupdate', () => {
   if (!spClip) return;
@@ -1754,13 +1761,15 @@ spAudio.addEventListener('timeupdate', () => {
   const s = spIdx >= 0 ? spClip.segs[spIdx] : null;
   if (s && spAudio.currentTime >= s.e) {
     if (spLoopOn) { spAudio.currentTime = s.s + 0.01; return; }
-    if (spAutoOn) {
+    if (spSegMode) {           // 跟讀模式：句尾自動停，留時間複誦
       spAudio.pause();
-      const gap = Math.max(1500, (s.e - s.s) * 1250 / (+$('sp-rate').value));
-      spAutoTimer = setTimeout(() => {
-        if (spAutoOn && spIdx + 1 < spClip.segs.length) spGotoSeg(1);
-        else spSetAuto(false);
-      }, gap);
+      if (spAutoOn) {
+        const gap = Math.max(1500, (s.e - s.s) * 1250 / (+$('sp-rate').value));
+        spAutoTimer = setTimeout(() => {
+          if (spAutoOn && spIdx + 1 < spClip.segs.length) spPlaySeg(spIdx + 1);
+          else spSetAuto(false);
+        }, gap);
+      }
       return;
     }
   }
@@ -1775,6 +1784,7 @@ spAudio.addEventListener('ended', () => {
 });
 $('sp-bar').onclick = e => {
   if (!spAudio.duration) return;
+  spSegMode = false;
   const r = $('sp-bar').getBoundingClientRect();
   spAudio.currentTime = (e.clientX - r.left) / r.width * spAudio.duration;
 };
@@ -1790,7 +1800,7 @@ function spDrawAB() {
 }
 $('sp-seta').onclick = () => { spA = spAudio.currentTime; if (spB !== null && spB <= spA) spB = null; spDrawAB(); };
 $('sp-setb').onclick = () => {
-  if (spAudio.currentTime > (spA ?? 0)) { spB = spAudio.currentTime; if (spA === null) spA = 0; }
+  if (spAudio.currentTime > (spA ?? 0)) { spB = spAudio.currentTime; if (spA === null) spA = 0; spSegMode = false; }
   spDrawAB();
 };
 $('sp-clearab').onclick = () => { spA = spB = null; spDrawAB(); };
@@ -1812,15 +1822,17 @@ $('sp-qprev').onclick = () => openClip(spClipIdx - 1, !spAudio.paused);
 $('sp-qnext').onclick = () => openClip(spClipIdx + 1, !spAudio.paused);
 $('sp-play').onclick = () => {
   if (!spClip) { openClip(0, true); return; }
+  spSegMode = false; clearTimeout(spAutoTimer);
   spAudio.paused ? spAudio.play() : spAudio.pause();
 };
-$('sp-prev').onclick = () => spGotoSeg(-1);
-$('sp-next').onclick = () => spGotoSeg(1);
-$('sp-rep').onclick = () => spGotoSeg(0);
+$('sp-prev').onclick = () => spSegNav(-1);
+$('sp-next').onclick = () => spSegNav(1);
+$('sp-rep').onclick = () => spSegNav(0);
 $('sp-back3').onclick = () => { spAudio.currentTime = Math.max(0, spAudio.currentTime - 3); };
 $('sp-loop').onclick = () => { spLoopOn = !spLoopOn; $('sp-loop').classList.toggle('on', spLoopOn); };
 $('sp-loopall').onclick = () => { spAudio.loop = !spAudio.loop; $('sp-loopall').classList.toggle('on', spAudio.loop); };
 $('sp-tgnow').classList.toggle('on', spset.now);
+spUpdNowline();
 $('sp-tgnow').onclick = () => {
   spset.now = !spset.now; saveSpset();
   $('sp-tgnow').classList.toggle('on', spset.now);
@@ -1834,7 +1846,7 @@ $('sp-autonext').onclick = () => {
 $('sp-auto').onclick = () => {
   if (!spClip) return;
   spSetAuto(!spAutoOn);
-  if (spAutoOn) { if (spIdx < 0) spGotoSeg(0); else if (spAudio.paused) spAudio.play(); }
+  if (spAutoOn) spPlaySeg(spIdx < 0 ? 0 : spIdx);
 };
 $('sp-rate').onchange = () => { spAudio.playbackRate = +$('sp-rate').value; };
 $('sp-mine').onclick = () => {
