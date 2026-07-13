@@ -283,6 +283,12 @@
     padding: 10px 12px; border-radius: 9px; font-size: .95rem; cursor: pointer;
   }
   .src-note { color: var(--muted); font-size: .72rem; margin: 6px 6px 4px; line-height: 1.4; }
+  .favclear {
+    display: inline-block; margin-left: 6px; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid var(--bad); background: none; color: var(--bad);
+    font-size: .72rem; cursor: pointer; white-space: nowrap;
+  }
+  .favclear:hover { background: var(--bad); color: #fff; }
 
   .player {
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
@@ -1976,6 +1982,17 @@ function toggleFav(key) {
   localStorage.setItem('toeic-favs', JSON.stringify([...FAVS]));
 }
 const favStar = key => `<span class="favstar ${FAVS.has(key) ? 'on' : ''}" data-fav="${key}" title="加入/移除我的最愛">★</span>`;
+/* 清空全部最愛（含二次確認），三頁共用；清完重繪三頁清單 */
+function clearFavs() {
+  if (!FAVS.size) return;
+  if (!confirm(`確定要清空全部 ${FAVS.size} 個最愛嗎？清空後無法復原。`)) return;
+  FAVS.clear();
+  localStorage.setItem('toeic-favs', '[]');
+  renderClipList(); renderDtSide(); buildQSel();
+}
+/* 在「最愛」來源的說明列尾端顯示清空鈕（有最愛時才出現） */
+const favClearBtn = isFav => (isFav && FAVS.size)
+  ? `<button type="button" class="favclear" onclick="clearFavs()">🗑 清空最愛（${FAVS.size}）</button>` : '';
 function bindFavStars(box, onToggle) {
   box.querySelectorAll('.favstar').forEach(el => el.onclick = e => {
     e.stopPropagation();
@@ -2040,7 +2057,7 @@ function renderClipList() {
   $('sp-src-m').innerHTML = opts;
   $('sp-src-m').value = spSrc;
   buildPracticePick('sp', spSrc, spSwitchSrc);
-  $('sp-note').textContent = srcNoteText(spSrc);
+  $('sp-note').innerHTML = esc(srcNoteText(spSrc)) + favClearBtn(spSrc === 'fav');
   const clips = practiceClips(spSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
@@ -2244,7 +2261,7 @@ function renderDtSide() {
   $('dt-src-m').innerHTML = opts;
   $('dt-src-m').value = dtSrc;
   buildPracticePick('dt', dtSrc, dtSwitchSrc);
-  $('dt-note').textContent = srcNoteText(dtSrc);
+  $('dt-note').innerHTML = esc(srcNoteText(dtSrc)) + favClearBtn(dtSrc === 'fav');
   const clips = practiceClips(dtSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
@@ -2875,8 +2892,8 @@ function buildTestSel() {
   $('testnum-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.t !== curTest) switchTest(b.dataset.t);
   });
-  $('src-note').textContent = shFav ? '★ 你標記的最愛題目（點 ★ 可移除）'
-    : testSource(curTest) ? `來源：${testSource(curTest)}（僅供個人學習）` : '';
+  $('src-note').innerHTML = shFav ? '★ 你標記的最愛題目（點 ★ 可移除）' + favClearBtn(true)
+    : testSource(curTest) ? esc(`來源：${testSource(curTest)}（僅供個人學習）`) : '';
 }
 function switchTest(t) {
   shFav = false;
