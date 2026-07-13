@@ -407,7 +407,10 @@
   .qside button.cur .favstar.on { opacity: 1; }
   .qside .empty { color: var(--muted); font-size: .85rem; padding: 10px 8px; line-height: 1.6; }
   @media (max-width: 860px) {
-    .shadow-grid { grid-template-columns: 1fr; }
+    /* 單欄；minmax(0,1fr)＋子項 min-width:0 避免長標題/句子撐爆欄位而溢出畫面 */
+    .shadow-grid { grid-template-columns: minmax(0, 1fr); }
+    .shadow-grid > * { min-width: 0; }
+    .shadow-main { min-width: 0; overflow-x: hidden; }
     .qside, .qcol { display: none; }
     .tpanel { position: static; max-height: none; }
   }
@@ -422,6 +425,11 @@
     border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 0 16px; border-radius: 10px; cursor: pointer; font-size: 1rem; flex: none;
   }
+  .qpickrow .qp-fav { padding: 0 14px; }
+  .qpickrow .qp-fav.on { color: var(--warn); border-color: var(--warn); }
+  .qpickrow .qp-favclear { flex: 1 1 100%; }
+  .qpickrow .qp-favclear:empty { display: none; }
+  .qpickrow .qp-favclear .favclear { margin-left: 0; }
   .nowline {
     margin-top: 10px; padding: 10px 12px; border-radius: 10px;
     background: var(--chip); border-left: 3px solid var(--accent);
@@ -915,6 +923,8 @@
       <select id="sp-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
       <button id="sp-cprev" title="上一段音檔">⏮</button>
       <button id="sp-cnext" title="下一段音檔">⏭</button>
+      <button id="sp-cfav" class="qp-fav" title="收藏／取消收藏目前音檔">☆</button>
+      <span id="sp-favclear" class="qp-favclear"></span>
     </div>
     <div class="player">
       <div class="sp-head">
@@ -987,6 +997,8 @@
       <select id="dt-sel"><option value="-1" disabled selected>— 選擇音檔 —</option></select>
       <button id="dt-cprev" title="上一段音檔">⏮</button>
       <button id="dt-cnext" title="下一段音檔">⏭</button>
+      <button id="dt-cfav" class="qp-fav" title="收藏／取消收藏目前音檔">☆</button>
+      <span id="dt-favclear" class="qp-favclear"></span>
     </div>
     <div class="player">
       <div class="playrow">
@@ -1993,6 +2005,15 @@ function clearFavs() {
 /* 在「最愛」來源的說明列尾端顯示清空鈕（有最愛時才出現） */
 const favClearBtn = isFav => (isFav && FAVS.size)
   ? `<button type="button" class="favclear" onclick="clearFavs()">🗑 清空最愛（${FAVS.size}）</button>` : '';
+/* 手機控制列的「★ 收藏目前音檔」鈕狀態（prefix = sp / dt） */
+function updCFav(prefix, clip) {
+  const btn = $(prefix + '-cfav'); if (!btn) return;
+  const on = !!(clip && FAVS.has(clip.src));
+  btn.textContent = on ? '★' : '☆';
+  btn.classList.toggle('on', on);
+  btn.disabled = !clip;
+  btn.title = !clip ? '先選一段音檔' : on ? '取消收藏目前音檔' : '收藏目前音檔';
+}
 function bindFavStars(box, onToggle) {
   box.querySelectorAll('.favstar').forEach(el => el.onclick = e => {
     e.stopPropagation();
@@ -2078,6 +2099,8 @@ function renderClipList() {
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('sp-sel').value = String(spClipIdx);
+  $('sp-favclear').innerHTML = favClearBtn(spSrc === 'fav');
+  updCFav('sp', spClip);
 }
 function spSwitchSrc(k) {
   spSrc = k; spset.src = k; saveSpset();
@@ -2109,6 +2132,7 @@ function openClip(i, play) {
   $('sp-sel').value = String(i);
   $('sp-side-list').querySelectorAll('button').forEach(b =>
     b.classList.toggle('cur', +b.dataset.i === i));
+  updCFav('sp', spClip);
   $('sp-mine').disabled = true;
   renderSpList();
   if (play) spPlaySeg(0);   // 開檔即從第一句開始練
@@ -2200,6 +2224,7 @@ $('sp-src-m').onchange = () => spSwitchSrc($('sp-src-m').value);
 $('sp-sel').onchange = () => openClip(+$('sp-sel').value, true);
 $('sp-cprev').onclick = () => openClip(spClipIdx - 1);
 $('sp-cnext').onclick = () => openClip(spClipIdx + 1);
+$('sp-cfav').onclick = () => { if (!spClip) return; toggleFav(spClip.src); updCFav('sp', spClip); renderClipList(); };
 $('sp-play').onclick = () => {
   if (!spClip) { openClip(0, true); return; }
   spPlaySeg(spIdx < 0 ? 0 : spIdx);   // 重播目前句
@@ -2282,6 +2307,8 @@ function renderDtSide() {
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('dt-sel').value = String(dtClipIdx);
+  $('dt-favclear').innerHTML = favClearBtn(dtSrc === 'fav');
+  updCFav('dt', dtClip);
 }
 function dtSwitchSrc(k) {
   dtSrc = k; dtset.src = k; saveDtset();
@@ -2312,6 +2339,7 @@ function dtOpen(i) {
   $('dt-sel').value = String(i);
   $('dt-side-list').querySelectorAll('button').forEach(b =>
     b.classList.toggle('cur', +b.dataset.i === i));
+  updCFav('dt', dtClip);
   renderDtList();
   dtShowRes();
 }
@@ -2412,6 +2440,7 @@ $('dt-src-m').onchange = () => dtSwitchSrc($('dt-src-m').value);
 $('dt-sel').onchange = () => dtOpen(+$('dt-sel').value);
 $('dt-cprev').onclick = () => dtOpen(dtClipIdx - 1);
 $('dt-cnext').onclick = () => dtOpen(dtClipIdx + 1);
+$('dt-cfav').onclick = () => { if (!dtClip) return; toggleFav(dtClip.src); updCFav('dt', dtClip); renderDtSide(); };
 $('dt-rate').onchange = () => { dtAudio.playbackRate = +$('dt-rate').value; };
 
 /* ================= mock exam ================= */
