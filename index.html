@@ -1209,14 +1209,26 @@
 
 <footer>聽力音檔：EZ出版社 NEW TOEIC 模擬試題・單字：刷刷鍋多益 1000 單<br>內容版權屬原出版社所有，本站僅供個人學習複習使用</footer>
 
-<script src="data/words.js"></script>
-<script src="data/audio.js"></script>
-<script src="data/transcripts.js"></script>
-<script src="data/exam_l.js"></script>
-<script src="data/exam_r.js"></script>
-<script src="data/mistakes.js"></script>
-<script src="data/speak.js"></script>
-<script src="data/books.js"></script>
+<script>
+/* 資料檔載入器：先抓「即時、不快取」的部署版本號，再用它當作 data/*.js 的版本參數，
+   讓手機（尤其 iOS Safari）即使快取了舊 index.html，也會被強制載入最新的單字/題目資料。
+   版本號抓失敗時退回目前時間戳（照樣載得到資料，只是當次不走快取）。 */
+(function () {
+  var v;
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'data/version.txt?t=' + Date.now(), false);
+    xhr.send();
+    v = (xhr.status >= 200 && xhr.status < 300 && xhr.responseText.trim()) || String(Date.now());
+  } catch (e) {
+    v = String(Date.now());
+  }
+  var files = ['words', 'audio', 'transcripts', 'exam_l', 'exam_r', 'mistakes', 'speak', 'books'];
+  for (var i = 0; i < files.length; i++) {
+    document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
+  }
+})();
+</script>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -3195,6 +3207,7 @@ $('export-json').onclick = () => {
 /* ================= GitHub sync ================= */
 const GH_API = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/words.js';
 const GH_API_BOOKS = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/books.js';
+const GH_API_VERSION = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/version.txt';
 if (localStorage.getItem('toeic-token')) $('gh-token').value = '••••••••（已儲存）';
 $('save-token').onclick = () => {
   const t = $('gh-token').value.trim();
@@ -3249,6 +3262,10 @@ $('do-sync').onclick = async () => {
         `更新單字本（${clean.length} 本）`);
       saveBooks(false);
     }
+    // 更新部署版本號，讓其他裝置（含手機）強制重抓最新資料
+    await putFile(GH_API_VERSION,
+      new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14),
+      '更新部署版本號');
     syncStatus('✅ 同步完成，網站約 1 分鐘後更新', 'ok');
   } catch (e) {
     syncStatus('❌ ' + e.message, 'err');

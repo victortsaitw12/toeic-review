@@ -26,6 +26,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW = ROOT / 'review'
 OUT = ROOT / 'data' / 'mistakes.js'
+VERSION_TXT = ROOT / 'data' / 'version.txt'
+
+
+def bump_version():
+    """更新部署版本號，讓前端強制重抓 data/*.js（破手機快取）。"""
+    import datetime
+    VERSION_TXT.write_text(datetime.datetime.now().strftime('%Y%m%d%H%M%S'), encoding='utf-8')
 
 OPT_RE = re.compile(r'^[-*]?\s*\(?([A-E])[.)、）]?\s+(.+?)\s*$')
 ANS_RE = re.compile(r'^答案\s*[:：]\s*\(?([A-E])\)?\s*$')
@@ -149,7 +156,8 @@ def main():
     js = ('// 錯題複習資料，由 tools/import_mistakes.py 從 review/*.md 產生，勿手改\n'
           'const MISTAKES = ' + json.dumps(items, ensure_ascii=False) + ';\n')
     OUT.write_text(js, encoding='utf-8')
-    print(f'已寫入 {OUT.relative_to(ROOT)}')
+    bump_version()
+    print(f'已寫入 {OUT.relative_to(ROOT)}（版本號已更新）')
 
 
 if __name__ == '__main__':

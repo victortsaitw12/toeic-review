@@ -13,8 +13,14 @@ import json, re, sys, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 WORDS_JS = ROOT / 'data' / 'words.js'
 BOOKS_JS = ROOT / 'data' / 'books.js'
+VERSION_TXT = ROOT / 'data' / 'version.txt'
 VOCAB = ROOT / 'vocab'
 DRY = '--dry' in sys.argv
+
+def bump_version():
+    """更新部署版本號，讓前端強制重抓 data/*.js（破手機快取）。"""
+    import datetime
+    VERSION_TXT.write_text(datetime.datetime.now().strftime('%Y%m%d%H%M%S'), encoding='utf-8')
 
 def load_js_array(path, varname):
     if not path.exists():
@@ -149,4 +155,5 @@ if DRY:
 else:
     write_js_array(WORDS_JS, 'WORDS', words)
     write_js_array(BOOKS_JS, 'BOOKS', books)
-    print('已寫入 data/words.js 與 data/books.js')
+    bump_version()
+    print('已寫入 data/words.js 與 data/books.js（版本號已更新）')
