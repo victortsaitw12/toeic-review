@@ -856,6 +856,8 @@
       <select id="qsel"></select>
       <button id="qprev" title="上一題">⏮</button>
       <button id="qnext" title="下一題">⏭</button>
+      <button id="sh-cfav" class="qp-fav" title="收藏／取消收藏目前題目">☆</button>
+      <button id="sh-cbook" class="qp-fav" title="加入其他練習本">📓</button>
     </div>
     <div class="player">
       <div class="playrow">
@@ -934,6 +936,7 @@
       <button id="sp-cprev" title="上一段音檔">⏮</button>
       <button id="sp-cnext" title="下一段音檔">⏭</button>
       <button id="sp-cfav" class="qp-fav" title="收藏／取消收藏目前音檔">☆</button>
+      <button id="sp-cbook" class="qp-fav" title="加入其他練習本">📓</button>
       <span id="sp-favclear" class="qp-favclear"></span>
     </div>
     <div class="player">
@@ -1008,6 +1011,7 @@
       <button id="dt-cprev" title="上一段音檔">⏮</button>
       <button id="dt-cnext" title="下一段音檔">⏭</button>
       <button id="dt-cfav" class="qp-fav" title="收藏／取消收藏目前音檔">☆</button>
+      <button id="dt-cbook" class="qp-fav" title="加入其他練習本">📓</button>
       <span id="dt-favclear" class="qp-favclear"></span>
     </div>
     <div class="player">
@@ -1230,6 +1234,21 @@
     </div>
     <div class="btnrow" style="justify-content:flex-end">
       <button id="bm-close">完成</button>
+    </div>
+  </div>
+</div>
+
+<div id="lbmodal" class="modalwrap hidden">
+  <div class="modal-card">
+    <h3 style="margin:0 0 4px">📓 加入聽力練習本</h3>
+    <p id="lbm-clip" style="margin:0 0 12px;color:var(--muted);font-size:.9rem"></p>
+    <div id="lbm-list"></div>
+    <div class="btnrow">
+      <input id="lbm-new" placeholder="新練習本名稱（如：Part2 弱點）" style="flex:1;min-width:120px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)">
+      <button id="lbm-create">建立並加入</button>
+    </div>
+    <div class="btnrow" style="justify-content:flex-end">
+      <button id="lbm-close">完成</button>
     </div>
   </div>
 </div>
@@ -2040,60 +2059,138 @@ const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
 const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
   .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
 /* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋模擬考聽力題＋我的最愛 */
-const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'}, {key: 'fav', name: '★ 我的最愛'},
+const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'},
+  ...lbooks.map(b => ({key: 'lb:' + b.name, name: (b.name === LFAV ? '★ ' : '📓 ') + b.name})),
   ...Object.keys(TESTS).map(t => ({key: t, name: `${testName(t)} 聽力`}))];
-/* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…/最愛）＋模擬考回數 */
+/* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…）＋各練習本＋模擬考回數 */
 function buildPracticePick(p, cur, onSwitch) {
-  const curS = (cur === 'voa' || cur === 'fav') ? cur : seriesOf(cur);
+  const curS = isFlatSrc(cur) ? cur : seriesOf(cur);
   $(p + '-series-row').innerHTML =
-    [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length), {k: 'fav', n: '★ 最愛'}]
-    .map(s => `<button data-s="${s.k}" class="${s.k === curS ? 'cur' : ''}">${s.n}</button>`).join('');
+    [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length),
+     ...lbooks.map(b => ({k: 'lb:' + b.name, n: (b.name === LFAV ? '★ ' : '📓 ') + b.name}))]
+    .map(s => `<button data-s="${s.k}" class="${s.k === curS ? 'cur' : ''}">${esc(s.n)}</button>`).join('');
   $(p + '-series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.s === curS) return;
-    onSwitch((b.dataset.s === 'voa' || b.dataset.s === 'fav') ? b.dataset.s : seriesTests(b.dataset.s)[0]);
+    onSwitch(isFlatSrc(b.dataset.s) ? b.dataset.s : seriesTests(b.dataset.s)[0]);
   });
-  $(p + '-pick-exams').classList.toggle('hidden', cur === 'voa' || cur === 'fav');
-  $(p + '-num-row').innerHTML = (cur === 'voa' || cur === 'fav') ? '' : seriesTests(curS)
+  $(p + '-pick-exams').classList.toggle('hidden', isFlatSrc(cur));
+  $(p + '-num-row').innerHTML = isFlatSrc(cur) ? '' : seriesTests(curS)
     .map(t => `<button data-t="${t}" class="${t === cur ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
   $(p + '-num-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.t !== cur) onSwitch(b.dataset.t);
   });
 }
-/* 我的最愛：以音檔路徑為 key，聽力解析/跟讀/聽寫三頁共用，存 localStorage */
-const FAVS = new Set(JSON.parse(localStorage.getItem('toeic-favs') || '[]'));
-function toggleFav(key) {
-  FAVS.has(key) ? FAVS.delete(key) : FAVS.add(key);
-  localStorage.setItem('toeic-favs', JSON.stringify([...FAVS]));
+/* ===== 聽力練習本：多本、本機儲存；收藏單位＝整段音檔 src；預設「最愛」 =====
+   聽力解析／口說跟讀／聽寫練習三頁共用。舊版單一 toeic-favs 會遷移進「最愛」。 */
+const LFAV = '最愛';
+let lbooks = (() => {
+  const raw = localStorage.getItem('toeic-lbooks');
+  if (raw) return JSON.parse(raw);
+  return [{name: LFAV, clips: JSON.parse(localStorage.getItem('toeic-favs') || '[]')}];
+})();
+const saveLbooks = () => localStorage.setItem('toeic-lbooks', JSON.stringify(lbooks));
+const getLbook = n => lbooks.find(b => b.name === n);
+function ensureLfav() { if (!getLbook(LFAV)) lbooks.unshift({name: LFAV, clips: []}); }
+ensureLfav(); saveLbooks();
+const isFlatSrc = k => k === 'voa' || String(k).startsWith('lb:');   // 沒有「回數」的來源
+const lbookHas = (name, src) => { const b = getLbook(name); return !!b && b.clips.includes(src); };
+const inFav = src => lbookHas(LFAV, src);
+function toggleLbookClip(name, src) {
+  const b = getLbook(name); if (!b) return;
+  const i = b.clips.indexOf(src);
+  i >= 0 ? b.clips.splice(i, 1) : b.clips.push(src);
+  saveLbooks();
 }
-const favStar = key => `<span class="favstar ${FAVS.has(key) ? 'on' : ''}" data-fav="${key}" title="加入/移除我的最愛">★</span>`;
-/* 清空全部最愛（含二次確認），三頁共用；清完重繪三頁清單 */
-function clearFavs() {
-  if (!FAVS.size) return;
-  if (!confirm(`確定要清空全部 ${FAVS.size} 個最愛嗎？清空後無法復原。`)) return;
-  FAVS.clear();
-  localStorage.setItem('toeic-favs', '[]');
-  renderClipList(); renderDtSide(); buildQSel();
+function createLbook(name) {
+  name = name.trim(); if (!name) return null;
+  if (/["'<>]/.test(name)) { alert('名稱請勿包含 " \' < > 等符號'); return null; }
+  if (getLbook(name)) { alert('已有同名的練習本'); return null; }
+  const b = {name, clips: []}; lbooks.push(b); saveLbooks(); return b;
 }
-/* 在「最愛」來源的說明列尾端顯示清空鈕（有最愛時才出現） */
-const favClearBtn = isFav => (isFav && FAVS.size)
-  ? `<button type="button" class="favclear" onclick="clearFavs()">🗑 清空最愛（${FAVS.size}）</button>` : '';
-/* 手機控制列的「★ 收藏目前音檔」鈕狀態（prefix = sp / dt） */
-function updCFav(prefix, clip) {
-  const btn = $(prefix + '-cfav'); if (!btn) return;
-  const on = !!(clip && FAVS.has(clip.src));
-  btn.textContent = on ? '★' : '☆';
-  btn.classList.toggle('on', on);
-  btn.disabled = !clip;
-  btn.title = !clip ? '先選一段音檔' : on ? '取消收藏目前音檔' : '收藏目前音檔';
-}
+/* 星號：預設操作「最愛」；瀏覽某本練習本時 data-book 指向該本（名稱已保證不含引號） */
+const favStar = (src, book = LFAV) => `<span class="favstar ${lbookHas(book, src) ? 'on' : ''}" data-fav="${src}" data-book="${book}" title="加入/移除「${esc(book)}」">★</span>`;
 function bindFavStars(box, onToggle) {
   box.querySelectorAll('.favstar').forEach(el => el.onclick = e => {
     e.stopPropagation();
-    toggleFav(el.dataset.fav);
-    el.classList.toggle('on', FAVS.has(el.dataset.fav));
+    const book = el.dataset.book || LFAV;
+    ensureLfav();
+    toggleLbookClip(book, el.dataset.fav);
+    el.classList.toggle('on', lbookHas(book, el.dataset.fav));
     if (onToggle) onToggle();
   });
 }
+/* 「收藏目前音檔」鈕＝加入/移除最愛（prefix = sp / dt / sh） */
+function updCFav(prefix, clip) {
+  const btn = $(prefix + '-cfav'); if (!btn) return;
+  const on = !!(clip && inFav(clip.src));
+  btn.textContent = on ? '★' : '☆';
+  btn.classList.toggle('on', on);
+  btn.disabled = !clip;
+  btn.title = !clip ? '先選一段音檔' : on ? '從最愛移除' : '加入最愛';
+}
+/* 清空指定練習本 */
+function clearLbook(name) {
+  const b = getLbook(name); if (!b || !b.clips.length) return;
+  if (!confirm(`確定要清空練習本「${name}」的 ${b.clips.length} 段音檔嗎？無法復原。`)) return;
+  b.clips = []; saveLbooks();
+  renderClipList(); renderDtSide(); buildQSel();
+}
+/* 刪除整本練習本（「最愛」不可刪） */
+function deleteLbook(name) {
+  if (name === LFAV || !getLbook(name)) return;
+  if (!confirm(`刪除練習本「${name}」？（音檔本身不會被刪除）`)) return;
+  lbooks = lbooks.filter(x => x.name !== name);
+  saveLbooks();
+  if (spSrc === 'lb:' + name) spSwitchSrc('voa');
+  if (dtSrc === 'lb:' + name) dtSwitchSrc('voa');
+  if (shBook === name) { shBook = null; buildTestSel(); buildQSel(); }
+  renderClipList(); renderDtSide();
+}
+/* 瀏覽某練習本時，說明列尾端顯示「清空／刪除」鈕 */
+function favClearBtn(srcKey) {
+  if (!String(srcKey).startsWith('lb:')) return '';
+  const name = srcKey.slice(3), b = getLbook(name); if (!b) return '';
+  let h = b.clips.length ? ` <button type="button" class="favclear" data-clearlb="${name}">🗑 清空（${b.clips.length}）</button>` : '';
+  if (name !== LFAV) h += ` <button type="button" class="favclear" data-dellb="${name}">✕ 刪除此練習本</button>`;
+  return h;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest) return;
+  const c = e.target.closest('[data-clearlb]'); if (c) { clearLbook(c.dataset.clearlb); return; }
+  const d = e.target.closest('[data-dellb]');  if (d) deleteLbook(d.dataset.dellb);
+});
+/* 加入其他練習本的 modal（把目前音檔加入指定本，或建立新本） */
+let lbmClip = null;
+function openLbookModal(clip) {
+  if (!clip) return;
+  lbmClip = clip;
+  $('lbm-clip').textContent = `音檔：${clip.title || clip.src}`;
+  renderLbmList();
+  $('lbmodal').classList.remove('hidden');
+}
+function renderLbmList() {
+  $('lbm-list').innerHTML = lbooks.map(b => {
+    const inb = b.clips.includes(lbmClip.src);
+    return `<button class="bookrow ${inb ? 'inbook' : ''}" data-b="${b.name}">
+      <span class="ck">${inb ? '✓' : ''}</span><span class="bn">${esc(b.name)}</span>
+      <span class="bc">${b.clips.length} 段</span></button>`;
+  }).join('');
+  $('lbm-list').querySelectorAll('.bookrow').forEach(el => el.onclick = () => {
+    toggleLbookClip(el.dataset.b, lbmClip.src);
+    renderLbmList();
+  });
+}
+function closeLbookModal() {
+  $('lbmodal').classList.add('hidden');
+  renderClipList(); renderDtSide(); buildQSel();   // 同步三頁的收藏狀態
+}
+$('lbm-close').onclick = closeLbookModal;
+$('lbmodal').onclick = e => { if (e.target === $('lbmodal')) closeLbookModal(); };
+$('lbm-create').onclick = () => {
+  const b = createLbook($('lbm-new').value); if (!b) return;
+  b.clips.push(lbmClip.src); saveLbooks();
+  $('lbm-new').value = ''; renderLbmList();
+};
 /* 練習紀錄：每個音檔練過哪幾句（跟讀＝播放過該句、聽寫＝對過答案），存 localStorage */
 const practiceDone = JSON.parse(localStorage.getItem('toeic-practice-done') || '{"sp":{},"dt":{}}');
 const doneBadge = (p, c) => {
@@ -2115,10 +2212,12 @@ function markPracticed(p, clip, clipIdx, idx) {
   if (d) d.innerHTML = doneBadge(p, clip) + fmt(clip.dur);
 }
 function practiceClips(srcKey) {
-  if (srcKey === 'fav')
+  if (String(srcKey).startsWith('lb:')) {
+    const name = srcKey.slice(3);
     return ['voa', ...Object.keys(TESTS)].flatMap(k =>
-      practiceClips(k).filter(c => FAVS.has(c.src))
+      practiceClips(k).filter(c => lbookHas(name, c.src))
         .map(c => ({...c, group: k === 'voa' ? 'VOA 跟讀教材' : testName(k)})));
+  }
   if (srcKey === 'voa')
     return SPEAK_DATA.map(c => ({...c, group: c.accent === '英' ? '🇬🇧 英音' : '🇺🇸 美音',
                                  flag: c.accent === '英' ? '🇬🇧' : '🇺🇸'}));
@@ -2131,7 +2230,7 @@ function practiceClips(srcKey) {
 }
 const srcNoteText = k => k === 'voa'
   ? '音檔來自 🇺🇸 VOA Learning English（美國之音教學頻道，公有領域），語速清晰。'
-  : k === 'fav' ? '★ 你標記的最愛題目（點 ★ 可移除）'
+  : String(k).startsWith('lb:') ? `📓 練習本「${k.slice(3)}」的音檔（點 ★ 可移除）`
   : `來源：${testSource(k) || testName(k)}（僅供個人學習）`;
 /* 純跟讀播放器：一次只播「目前句」，句尾自動停，沒有連續播放模式 */
 const spAudio = new Audio(), spMine = new Audio();
@@ -2141,7 +2240,8 @@ const spRecs = new Map();   // sentence idx -> objectURL（只存在記憶體）
 const spset = JSON.parse(localStorage.getItem('toeic-spset') || '{}');
 const saveSpset = () => localStorage.setItem('toeic-spset', JSON.stringify(spset));
 
-let spSrc = (spset.src === 'voa' || spset.src === 'fav' || (spset.src && TESTS[spset.src])) ? spset.src : 'voa';
+let spSrc = spset.src === 'fav' ? 'lb:' + LFAV : spset.src;   // 舊版 'fav' → 最愛練習本
+spSrc = (spSrc === 'voa' || (String(spSrc).startsWith('lb:') && getLbook(spSrc.slice(3))) || (spSrc && TESTS[spSrc])) ? spSrc : 'voa';
 if ([0.6, 0.75, 0.85, 1, 1.15].includes(+spset.rate)) $('sp-rate').value = String(+spset.rate);
 if (spset.blind === undefined) spset.blind = true;   // 預設盲聽：先聽跟唸、最後才看句子
 const spRev = new Set();   // 這個音檔裡已「顯示句子」過的句子
@@ -2150,28 +2250,29 @@ function renderClipList() {
   $('sp-src-m').innerHTML = opts;
   $('sp-src-m').value = spSrc;
   buildPracticePick('sp', spSrc, spSwitchSrc);
-  $('sp-note').innerHTML = esc(srcNoteText(spSrc)) + favClearBtn(spSrc === 'fav');
+  $('sp-note').innerHTML = esc(srcNoteText(spSrc)) + favClearBtn(spSrc);
+  const spBook = String(spSrc).startsWith('lb:') ? spSrc.slice(3) : LFAV;
   const clips = practiceClips(spSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
   $('sp-side-list').innerHTML = !clips.length
-    ? '<div class="empty">還沒有最愛，在各清單點 ★ 加入</div>'
+    ? '<div class="empty">這個練習本還沒有音檔，在各清單點 ★ 加入</div>'
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src, spBook)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
   bindFavStars($('sp-side-list'), () => {
-    if (spSrc !== 'fav') return;
-    if (spClip) spClipIdx = practiceClips('fav').findIndex(c => c.src === spClip.src);
+    if (!String(spSrc).startsWith('lb:')) return;
+    if (spClip) spClipIdx = practiceClips(spSrc).findIndex(c => c.src === spClip.src);
     renderClipList();
   });
   $('sp-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('sp-sel').value = String(spClipIdx);
-  $('sp-favclear').innerHTML = favClearBtn(spSrc === 'fav');
+  $('sp-favclear').innerHTML = favClearBtn(spSrc);
   updCFav('sp', spClip);
 }
 function spSwitchSrc(k) {
@@ -2296,7 +2397,8 @@ $('sp-src-m').onchange = () => spSwitchSrc($('sp-src-m').value);
 $('sp-sel').onchange = () => openClip(+$('sp-sel').value, true);
 $('sp-cprev').onclick = () => openClip(spClipIdx - 1);
 $('sp-cnext').onclick = () => openClip(spClipIdx + 1);
-$('sp-cfav').onclick = () => { if (!spClip) return; toggleFav(spClip.src); updCFav('sp', spClip); renderClipList(); };
+$('sp-cfav').onclick = () => { if (!spClip) return; ensureLfav(); toggleLbookClip(LFAV, spClip.src); updCFav('sp', spClip); renderClipList(); };
+$('sp-cbook').onclick = () => openLbookModal(spClip);
 $('sp-play').onclick = () => {
   if (!spClip) { openClip(0, true); return; }
   spPlaySeg(spIdx < 0 ? 0 : spIdx);   // 重播目前句
@@ -2351,35 +2453,37 @@ let dtClip = null, dtClipIdx = -1, dtIdx = -1;
 const dtRes = new Map();   // sentence idx -> 聽寫結果 {ans, pct?, revealed?, html}（只存在記憶體）
 const dtset = JSON.parse(localStorage.getItem('toeic-dtset') || '{}');
 const saveDtset = () => localStorage.setItem('toeic-dtset', JSON.stringify(dtset));
-let dtSrc = (dtset.src === 'voa' || dtset.src === 'fav' || (dtset.src && TESTS[dtset.src])) ? dtset.src : 'voa';
+let dtSrc = dtset.src === 'fav' ? 'lb:' + LFAV : dtset.src;   // 舊版 'fav' → 最愛練習本
+dtSrc = (dtSrc === 'voa' || (String(dtSrc).startsWith('lb:') && getLbook(dtSrc.slice(3))) || (dtSrc && TESTS[dtSrc])) ? dtSrc : 'voa';
 
 function renderDtSide() {
   const opts = practiceSrcs().map(s => `<option value="${s.key}">${esc(s.name)}</option>`).join('');
   $('dt-src-m').innerHTML = opts;
   $('dt-src-m').value = dtSrc;
   buildPracticePick('dt', dtSrc, dtSwitchSrc);
-  $('dt-note').innerHTML = esc(srcNoteText(dtSrc)) + favClearBtn(dtSrc === 'fav');
+  $('dt-note').innerHTML = esc(srcNoteText(dtSrc)) + favClearBtn(dtSrc);
+  const dtBook = String(dtSrc).startsWith('lb:') ? dtSrc.slice(3) : LFAV;
   const clips = practiceClips(dtSrc);
   const groups = {};
   clips.forEach((c, i) => (groups[c.group] ||= []).push(i));
   $('dt-side-list').innerHTML = !clips.length
-    ? '<div class="empty">還沒有最愛，在各清單點 ★ 加入</div>'
+    ? '<div class="empty">這個練習本還沒有音檔，在各清單點 ★ 加入</div>'
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src, dtBook)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
   bindFavStars($('dt-side-list'), () => {
-    if (dtSrc !== 'fav') return;
-    if (dtClip) dtClipIdx = practiceClips('fav').findIndex(c => c.src === dtClip.src);
+    if (!String(dtSrc).startsWith('lb:')) return;
+    if (dtClip) dtClipIdx = practiceClips(dtSrc).findIndex(c => c.src === dtClip.src);
     renderDtSide();
   });
   $('dt-sel').innerHTML = '<option value="-1" disabled>— 選擇音檔 —</option>' +
     clips.map((c, i) =>
       `<option value="${i}">${c.flag} ${esc(c.title)}（${c.segs.length} 句・${fmt(c.dur)}）</option>`).join('');
   $('dt-sel').value = String(dtClipIdx);
-  $('dt-favclear').innerHTML = favClearBtn(dtSrc === 'fav');
+  $('dt-favclear').innerHTML = favClearBtn(dtSrc);
   updCFav('dt', dtClip);
 }
 function dtSwitchSrc(k) {
@@ -2512,7 +2616,8 @@ $('dt-src-m').onchange = () => dtSwitchSrc($('dt-src-m').value);
 $('dt-sel').onchange = () => dtOpen(+$('dt-sel').value);
 $('dt-cprev').onclick = () => dtOpen(dtClipIdx - 1);
 $('dt-cnext').onclick = () => dtOpen(dtClipIdx + 1);
-$('dt-cfav').onclick = () => { if (!dtClip) return; toggleFav(dtClip.src); updCFav('dt', dtClip); renderDtSide(); };
+$('dt-cfav').onclick = () => { if (!dtClip) return; ensureLfav(); toggleLbookClip(LFAV, dtClip.src); updCFav('dt', dtClip); renderDtSide(); };
+$('dt-cbook').onclick = () => openLbookModal(dtClip);
 $('dt-rate').onchange = () => { dtAudio.playbackRate = +$('dt-rate').value; };
 
 /* ================= mock exam ================= */
@@ -2968,7 +3073,7 @@ $('mi-tag').onchange = miRenderSetup;
 const audio = $('audio');
 let curTest = localStorage.getItem('toeic-test') || Object.keys(TESTS)[0];
 let curIdx = -1, abA = null, abB = null;
-let shFav = false;   // 側邊欄是否顯示「我的最愛」清單（跨模擬考）
+let shBook = null;   // 側邊欄正在顯示的練習本名稱（null＝一般模擬考清單，跨模擬考）
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
@@ -2976,28 +3081,29 @@ function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
   $('tsel-m').innerHTML = opts;
   $('tsel-m').value = curTest;
-  const cs = shFav ? 'fav' : seriesOf(curTest);
+  const cs = shBook ? 'lb:' + shBook : seriesOf(curTest);
   $('series-row').innerHTML =
-    [...SERIES.filter(s => seriesTests(s.k).length), {k: 'fav', n: '★ 最愛'}]
-    .map(s => `<button data-s="${s.k}" class="${s.k === cs ? 'cur' : ''}">${s.n}</button>`).join('');
+    [...SERIES.filter(s => seriesTests(s.k).length),
+     ...lbooks.map(b => ({k: 'lb:' + b.name, n: (b.name === LFAV ? '★ ' : '📓 ') + b.name}))]
+    .map(s => `<button data-s="${s.k}" class="${s.k === cs ? 'cur' : ''}">${esc(s.n)}</button>`).join('');
   $('series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.s === cs) return;
-    if (b.dataset.s === 'fav') { shFav = true; buildTestSel(); buildQSel(); return; }
-    shFav = false;
+    if (b.dataset.s.startsWith('lb:')) { shBook = b.dataset.s.slice(3); buildTestSel(); buildQSel(); return; }
+    shBook = null;
     if (b.dataset.s === seriesOf(curTest)) { buildTestSel(); buildQSel(); }
     else switchTest(seriesTests(b.dataset.s)[0]);
   });
-  $('sh-pick-exams').classList.toggle('hidden', shFav);
-  $('testnum-row').innerHTML = shFav ? '' : seriesTests(cs)
+  $('sh-pick-exams').classList.toggle('hidden', !!shBook);
+  $('testnum-row').innerHTML = shBook ? '' : seriesTests(cs)
     .map(t => `<button data-t="${t}" class="${t === curTest ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
   $('testnum-row').querySelectorAll('button').forEach(b => b.onclick = () => {
     if (b.dataset.t !== curTest) switchTest(b.dataset.t);
   });
-  $('src-note').innerHTML = shFav ? '★ 你標記的最愛題目（點 ★ 可移除）' + favClearBtn(true)
+  $('src-note').innerHTML = shBook ? esc(`📓 練習本「${shBook}」的題目（點 ★ 可移除）`) + favClearBtn('lb:' + shBook)
     : testSource(curTest) ? esc(`來源：${testSource(curTest)}（僅供個人學習）`) : '';
 }
 function switchTest(t) {
-  shFav = false;
+  shBook = null;
   curTest = t; localStorage.setItem('toeic-test', curTest);
   curIdx = -1; audio.pause(); audio.removeAttribute('src'); clearAB();
   $('now').textContent = '請選擇題目';
@@ -3016,21 +3122,22 @@ function buildQSel() {
       `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
         `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
   $('qsel').value = String(curIdx);
-  if (shFav) {
+  if (shBook) {
     const byTest = {};
     Object.keys(TESTS).forEach(t => TESTS[t].forEach((it, i) => {
-      if (FAVS.has(`audio/${t}/${it.f}`)) (byTest[t] ||= []).push([i, it]);
+      if (lbookHas(shBook, `audio/${t}/${it.f}`)) (byTest[t] ||= []).push([i, it]);
     }));
     $('qside-list').innerHTML = !Object.keys(byTest).length
-      ? '<div class="empty">還沒有最愛題目，點題目旁的 ★ 加入</div>'
+      ? '<div class="empty">這個練習本還沒有題目，點題目旁的 ★ 加入</div>'
       : Object.entries(byTest).map(([t, arr]) =>
       `<h4>${esc(testName(t))}</h4>` + arr.map(([i, it]) =>
-        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
     $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.t !== curTest) { curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest); }
       load(+b.dataset.i, true);
     });
     bindFavStars($('qside-list'), buildQSel);
+    updShFav();
     return;
   }
   $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
@@ -3038,7 +3145,14 @@ function buildQSel() {
       `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}<span class="lbl">${it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
   $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
   bindFavStars($('qside-list'));
+  updShFav();
 }
+/* 聽力解析目前題目對應的音檔 clip（給收藏鈕用） */
+function shCurClip() {
+  const it = TESTS[curTest] && TESTS[curTest][curIdx];
+  return it ? {src: `audio/${curTest}/${it.f}`, title: it.part === '說明' ? it.label : it.part + '・' + it.label} : null;
+}
+function updShFav() { updCFav('sh', shCurClip()); }
 function updSide() {
   $('qside-list').querySelectorAll('button').forEach(b =>
     b.classList.toggle('cur', +b.dataset.i === curIdx && (!b.dataset.t || b.dataset.t === curTest)));
@@ -3063,10 +3177,17 @@ function load(i, play) {
   $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>${esc(testName(curTest))}</small>`;
   $('qsel').value = String(i);
   updSide();
+  updShFav();
   $('nowline').classList.add('hidden');
   renderTranscript();
   if (play) audio.play();
 }
+$('sh-cfav').onclick = () => {
+  const c = shCurClip(); if (!c) return;
+  ensureLfav(); toggleLbookClip(LFAV, c.src);
+  buildTestSel(); buildQSel();   // 重繪側欄星號與收藏鈕
+};
+$('sh-cbook').onclick = () => openLbookModal(shCurClip());
 function updPlay() {
   $('play').textContent = audio.paused ? '▶' : '⏸';
 }
