@@ -1876,9 +1876,13 @@ function answer(ok, entry, pickedBtn) {
     return;
   }
   if (ok) {
-    $('q-fb').textContent = '✅ 答對了！';
+    // 單字聽力：選項是中文，答對也把英文單字秀出來讓使用者對照拼字
+    if (q.mode === 'listen')
+      $('q-fb').innerHTML = `✅ 答對了！<b style="margin-left:6px">${esc(entry.w)}</b>（${esc(entry.pos)}）`;
+    else
+      $('q-fb').textContent = '✅ 答對了！';
     $('q-fb').className = 'feedback good';
-    qAdvTimer = setTimeout(nextQuestion, 900);
+    qAdvTimer = setTimeout(nextQuestion, q.mode === 'listen' ? 1600 : 900);
   } else {
     $('q-fb').textContent = `❌ 正確答案：${entry.w}（${entry.pos}）${entry.zh}`;
     $('q-fb').className = 'feedback bad';
