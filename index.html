@@ -412,6 +412,8 @@
   .qside button .favstar.on { color: var(--warn); }
   .qside button.cur .favstar { color: inherit; opacity: .45; }
   .qside button.cur .favstar.on { opacity: 1; }
+  .qside button .bookadd { flex: none; margin-right: 7px; cursor: pointer; opacity: .5; font-size: .92em; }
+  .qside button .bookadd:hover { opacity: 1; }
   .qside .empty { color: var(--muted); font-size: .85rem; padding: 10px 8px; line-height: 1.6; }
   @media (max-width: 860px) {
     /* 單欄；minmax(0,1fr)＋子項 min-width:0 避免長標題/句子撐爆欄位而溢出畫面 */
@@ -2119,6 +2121,14 @@ function bindFavStars(box, onToggle) {
     if (onToggle) onToggle();
   });
 }
+/* 清單每一列 ★ 旁的 📓：加入「最愛」以外的練習本（桌機也看得到） */
+const bookAddBtn = (src, title) => `<span class="bookadd" data-add="${src}" data-title="${esc(title || '')}" title="加入其他練習本">📓</span>`;
+function bindBookAdd(box) {
+  box.querySelectorAll('.bookadd').forEach(el => el.onclick = e => {
+    e.stopPropagation();
+    openLbookModal({src: el.dataset.add, title: el.dataset.title || el.dataset.add});
+  });
+}
 /* 「收藏目前音檔」鈕＝加入/移除最愛（prefix = sp / dt / sh） */
 function updCFav(prefix, clip) {
   const btn = $(prefix + '-cfav'); if (!btn) return;
@@ -2260,9 +2270,10 @@ function renderClipList() {
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src, spBook)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src, spBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
+  bindBookAdd($('sp-side-list'));
   bindFavStars($('sp-side-list'), () => {
     if (!String(spSrc).startsWith('lb:')) return;
     if (spClip) spClipIdx = practiceClips(spSrc).findIndex(c => c.src === spClip.src);
@@ -2471,9 +2482,10 @@ function renderDtSide() {
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src, dtBook)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src, dtBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
+  bindBookAdd($('dt-side-list'));
   bindFavStars($('dt-side-list'), () => {
     if (!String(dtSrc).startsWith('lb:')) return;
     if (dtClip) dtClipIdx = practiceClips(dtSrc).findIndex(c => c.src === dtClip.src);
@@ -3131,19 +3143,21 @@ function buildQSel() {
       ? '<div class="empty">這個練習本還沒有題目，點題目旁的 ★ 加入</div>'
       : Object.entries(byTest).map(([t, arr]) =>
       `<h4>${esc(testName(t))}</h4>` + arr.map(([i, it]) =>
-        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}${bookAddBtn(`audio/${t}/${it.f}`, it.part === '說明' ? it.label : it.part + '・' + it.label)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
     $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.t !== curTest) { curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest); }
       load(+b.dataset.i, true);
     });
+    bindBookAdd($('qside-list'));
     bindFavStars($('qside-list'), buildQSel);
     updShFav();
     return;
   }
   $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
     `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
-      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}<span class="lbl">${it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}${bookAddBtn(`audio/${curTest}/${it.f}`, it.label)}<span class="lbl">${it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
   $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
+  bindBookAdd($('qside-list'));
   bindFavStars($('qside-list'));
   updShFav();
 }
