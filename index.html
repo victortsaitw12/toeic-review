@@ -1888,7 +1888,8 @@ function answer(ok, entry, pickedBtn) {
   } else {
     $('q-fb').textContent = `❌ 正確答案：${entry.w}（${entry.pos}）${entry.zh}`;
     $('q-fb').className = 'feedback bad';
-    if (q.mode !== 'listen') speak(entry.w);
+    // 英翻中出題時已唸過、聽力模式全程用聽的，這兩種答錯不重複唸
+    if (q.mode !== 'listen' && q.mode !== 'e2z') speak(entry.w);
     $('q-next').classList.remove('hidden');
     $('q-next').focus();
   }
