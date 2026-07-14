@@ -795,7 +795,8 @@
           <div class="big" id="q-big"></div>
           <div class="sub" id="q-sub"></div>
           <button class="speak hidden" id="q-speak">🔊 再聽一次</button>
-          <button class="speak hidden" id="q-addbook">📓 加入單字本</button>
+          <button class="speak hidden" id="q-addbook">🤍 加入最愛</button>
+          <button class="speak hidden" id="q-addbook-more">＋其他單字本</button>
         </div>
         <div class="choices hidden" id="q-choices"></div>
         <div class="spellrow hidden" id="q-spell">
@@ -1315,6 +1316,13 @@ let books = booksDirty
   ? JSON.parse(localStorage.getItem('toeic-books-local') || '[]')
   : JSON.parse(JSON.stringify(BOOKS_BASE));
 
+const FAV = '最愛';
+// 「最愛」是內建預設單字本，永遠存在且排在最前；空的時候不算待同步變更
+function ensureFav() {
+  if (!getBook(FAV)) books.unshift({name: FAV, words: []});
+}
+ensureFav();
+
 function saveBooks(dirty = true) {
   localStorage.setItem('toeic-books-local', JSON.stringify(books));
   booksDirty = dirty;
@@ -1373,8 +1381,12 @@ function renderBmList() {
   });
 }
 $('add-book').onclick = () => { if (deck.length) openBookModal(deck[idx].w); };
-$('bm-close').onclick = () => $('bookmodal').classList.add('hidden');
-$('bookmodal').onclick = e => { if (e.target === $('bookmodal')) $('bookmodal').classList.add('hidden'); };
+function closeBookModal() {
+  $('bookmodal').classList.add('hidden');
+  if (typeof updAddbookBtn === 'function') updAddbookBtn();  // 測驗進行中時同步愛心狀態
+}
+$('bm-close').onclick = closeBookModal;
+$('bookmodal').onclick = e => { if (e.target === $('bookmodal')) closeBookModal(); };
 $('bm-create').onclick = () => {
   const b = createBook($('bm-new').value);
   if (!b) return;
@@ -1401,6 +1413,7 @@ function renderBooksAdmin() {
   });
   $('books-admin').querySelectorAll('[data-delb]').forEach(el => el.onclick = () => {
     const b = books[+el.dataset.delb];
+    if (b.name === FAV) { alert('「最愛」是內建單字本，無法刪除（可以逐一移除裡面的單字）'); return; }
     if (!confirm(`刪除單字本「${b.name}」？（單字本身不會被刪除）`)) return;
     books.splice(+el.dataset.delb, 1); saveBooks();
   });
@@ -1715,7 +1728,9 @@ function showQuestion() {
   $('q-choices').classList.add('hidden');
   $('q-spell').classList.add('hidden');
   // 聽寫(dict)考的是句子、沒有單一單字，其餘模式都可加入單字本
-  $('q-addbook').classList.toggle('hidden', q.mode === 'dict');
+  const noword = q.mode === 'dict';
+  $('q-addbook-more').classList.toggle('hidden', noword);
+  updAddbookBtn();
 
   if (q.mode === 'e2z') {
     $('q-big').textContent = e.w;
@@ -1753,7 +1768,24 @@ $('q-speak').onclick = () => {
   const e = quiz.words[quiz.i];
   quiz.mode === 'dict' ? playSnippet(e) : speak(e.w);
 };
+// 更新「加入最愛」按鈕的愛心狀態；聽寫模式沒有單字則整顆隱藏
+function updAddbookBtn() {
+  const btn = $('q-addbook');
+  if (!quiz || quiz.mode === 'dict') { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden');
+  const fav = getBook(FAV);
+  const inb = fav && fav.words.includes(quiz.words[quiz.i].w);
+  btn.textContent = inb ? '❤️ 已加入最愛' : '🤍 加入最愛';
+  btn.classList.toggle('on', !!inb);
+}
 $('q-addbook').onclick = () => {
+  if (!quiz || quiz.mode === 'dict') return;
+  if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }  // 別在加最愛時跳下一題
+  ensureFav();
+  toggleBookWord(FAV, quiz.words[quiz.i].w);  // 預設加到「最愛」，再按一次取消
+  updAddbookBtn();
+};
+$('q-addbook-more').onclick = () => {
   if (!quiz || quiz.mode === 'dict') return;
   if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }  // 別在挑單字本時跳下一題
   openBookModal(quiz.words[quiz.i].w);
