@@ -89,7 +89,14 @@
   .toolbar .on { border-color: var(--accent); color: var(--accent); }
   .counter { margin-left: auto; color: var(--muted); font-size: .9rem; }
 
-  .cardwrap { perspective: 1200px; }
+  .cardwrap { perspective: 1200px; position: relative; }
+  .favbtn {
+    position: absolute; top: 12px; left: 12px; z-index: 5;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 999px; width: 42px; height: 42px; font-size: 1.2rem;
+    line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .favbtn.on { border-color: #d64545; box-shadow: 0 0 0 2px rgba(214,69,69,.25); }
   .flashcard {
     position: relative; width: 100%; min-height: 320px; cursor: pointer;
     transform-style: preserve-3d; transition: transform .45s;
@@ -712,6 +719,7 @@
       <span class="counter" id="counter"></span>
     </div>
     <div class="cardwrap">
+      <button id="fav-card" class="favbtn" title="加入最愛">🤍</button>
       <div class="flashcard" id="card">
         <div class="face front">
           <span class="lvchip hidden" id="f-lv"></span>
@@ -733,7 +741,7 @@
       <button class="dontknow" id="mark-hard">不熟</button>
       <button class="know" id="mark-known">認識 ✓</button>
       <button id="next-card">下一張 →</button>
-      <button id="add-book">📓 加入單字本</button>
+      <button id="add-book">📓 其他單字本</button>
     </div>
     <p class="kbd-tip">
       <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
@@ -1383,7 +1391,9 @@ function renderBmList() {
 $('add-book').onclick = () => { if (deck.length) openBookModal(deck[idx].w); };
 function closeBookModal() {
   $('bookmodal').classList.add('hidden');
-  if (typeof updAddbookBtn === 'function') updAddbookBtn();  // 測驗進行中時同步愛心狀態
+  // 同步兩處愛心狀態（測驗中的按鈕、單字卡右上角）
+  if (typeof updAddbookBtn === 'function') updAddbookBtn();
+  if (typeof updFavCard === 'function') updFavCard();
 }
 $('bm-close').onclick = closeBookModal;
 $('bookmodal').onclick = e => { if (e.target === $('bookmodal')) closeBookModal(); };
@@ -1514,6 +1524,7 @@ function renderCard() {
     $('counter').textContent = '0 / 0';
     $('f-lv').classList.add('hidden');
     $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
+    $('fav-card').classList.add('hidden');
     return;
   }
   const w = deck[idx];
@@ -1527,7 +1538,26 @@ function renderCard() {
   $('counter').textContent = `${idx + 1} / ${deck.length}`;
   $('mark-known').classList.toggle('marked', marks[w.w] === 'known');
   $('mark-hard').classList.toggle('marked', marks[w.w] === 'hard');
+  updFavCard();
 }
+// 單字卡右上角愛心：切換目前單字在「最愛」單字本的狀態
+function updFavCard() {
+  const btn = $('fav-card');
+  if (!deck.length) { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden');
+  const fav = getBook(FAV);
+  const inb = fav && fav.words.includes(deck[idx].w);
+  btn.textContent = inb ? '❤️' : '🤍';
+  btn.title = inb ? '從最愛移除' : '加入最愛';
+  btn.classList.toggle('on', !!inb);
+}
+$('fav-card').onclick = e => {
+  e.stopPropagation();
+  if (!deck.length) return;
+  ensureFav();
+  toggleBookWord(FAV, deck[idx].w);  // 預設加到「最愛」，再按一次取消
+  updFavCard();
+};
 function move(d) {
   if (!deck.length) return;
   idx = (idx + d + deck.length) % deck.length;
