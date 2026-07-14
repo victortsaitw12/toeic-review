@@ -1786,7 +1786,9 @@ function showQuestion() {
   if (q.mode === 'e2z') {
     $('q-big').textContent = e.w;
     $('q-sub').textContent = e.pos;
+    $('q-speak').classList.remove('hidden');
     renderChoices(makeChoices(e, 'zh'), 'zh', e);
+    speak(e.w);
   } else if (q.mode === 'z2e') {
     $('q-big').textContent = e.zh;
     $('q-sub').textContent = e.pos;
