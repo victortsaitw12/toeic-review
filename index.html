@@ -795,6 +795,7 @@
           <div class="big" id="q-big"></div>
           <div class="sub" id="q-sub"></div>
           <button class="speak hidden" id="q-speak">🔊 再聽一次</button>
+          <button class="speak hidden" id="q-addbook">📓 加入單字本</button>
         </div>
         <div class="choices hidden" id="q-choices"></div>
         <div class="spellrow hidden" id="q-spell">
@@ -1575,6 +1576,7 @@ document.addEventListener('keydown', e => {
 const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '單字聽力', dict: '聽寫測驗'};
 let qMode = 'e2z', qOnlyHard = false;
 let quiz = null;   // {mode, words:[entry|seg], i, correct, wrong:[], answered}
+let qAdvTimer = null;   // 答對後自動跳題的計時器
 let qHistory = JSON.parse(localStorage.getItem('toeic-quiz-history') || '[]');
 
 document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
@@ -1703,6 +1705,7 @@ function makeChoices(entry, field) {
 function showQuestion() {
   const q = quiz, e = q.words[q.i];
   q.answered = false;
+  if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }
   qaudio.pause();
   $('q-progress').textContent = `第 ${q.i + 1} / ${q.words.length} 題・${MODE_NAME[q.mode]}`;
   $('q-score').textContent = `答對 ${q.correct}｜答錯 ${q.wrong.length}`;
@@ -1711,6 +1714,8 @@ function showQuestion() {
   $('q-speak').classList.add('hidden');
   $('q-choices').classList.add('hidden');
   $('q-spell').classList.add('hidden');
+  // 聽寫(dict)考的是句子、沒有單一單字，其餘模式都可加入單字本
+  $('q-addbook').classList.toggle('hidden', q.mode === 'dict');
 
   if (q.mode === 'e2z') {
     $('q-big').textContent = e.w;
@@ -1747,6 +1752,11 @@ $('q-speak').onclick = () => {
   if (!quiz) return;
   const e = quiz.words[quiz.i];
   quiz.mode === 'dict' ? playSnippet(e) : speak(e.w);
+};
+$('q-addbook').onclick = () => {
+  if (!quiz || quiz.mode === 'dict') return;
+  if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }  // 別在挑單字本時跳下一題
+  openBookModal(quiz.words[quiz.i].w);
 };
 
 function renderChoices(opts, field, entry) {
@@ -1785,7 +1795,7 @@ function answer(ok, entry, pickedBtn) {
   if (ok) {
     $('q-fb').textContent = '✅ 答對了！';
     $('q-fb').className = 'feedback good';
-    setTimeout(nextQuestion, 900);
+    qAdvTimer = setTimeout(nextQuestion, 900);
   } else {
     $('q-fb').textContent = `❌ 正確答案：${entry.w}（${entry.pos}）${entry.zh}`;
     $('q-fb').className = 'feedback bad';
