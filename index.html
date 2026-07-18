@@ -525,7 +525,23 @@
     flex: none; border: none; background: none; color: var(--muted);
     cursor: pointer; font-size: .85rem; padding: 2px 4px; line-height: 1;
   }
-  #mi-onlyhard.on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
+  .mi-row .box2 { flex: none; font-size: .78rem; color: var(--muted); white-space: nowrap; }
+  .mi-row .box2.due { color: var(--warn); font-weight: 600; }
+  /* 考點診斷：整列可點，點了就篩到那個考點 */
+  .catrow {
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 4px;
+    background: none; border: none; border-bottom: 1px solid var(--line);
+    font-size: .88rem; color: var(--ink); text-align: left; cursor: pointer; margin: 0;
+  }
+  .catrow:hover { background: var(--chip); }
+  .catrow .cn { width: 92px; flex: none; font-size: .84rem; }
+  .catrow .track { flex: 1; height: 9px; background: var(--chip); border-radius: 999px; overflow: hidden; }
+  .catrow .track i { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+  .catrow .pct { flex: none; min-width: 104px; text-align: right; white-space: nowrap;
+    font-variant-numeric: tabular-nums; font-size: .82rem; color: var(--muted); }
+  .catrow.weak .cn { font-weight: 700; }
+  .catrow.weak .track i { background: var(--bad); }
+  .catrow.untried .track i { background: var(--line); }
 
   /* ---------- admin ---------- */
   .panel {
@@ -658,6 +674,13 @@
     #q-next { flex: 1 1 100%; padding: 14px !important; font-size: 1rem; }
     #q-quit { margin-left: 0 !important; }
     #quiz-result .btnrow button { flex: 1 1 45%; padding: 12px 8px; }
+
+    /* 錯題複習：四個篩選選單兩欄排，開始練習獨佔一列 */
+    #view-mist .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #view-mist .toolbar select, #view-mist .toolbar button { width: 100%; margin: 0; }
+    #mi-start { grid-column: 1 / -1; padding: 13px !important; font-size: 1rem; }
+    .catrow .cn { width: 76px; }
+    .catrow .pct { min-width: 86px; }
 
     /* 聽力解析播放器 */
     .player { padding: 12px 14px; top: 54px; border-radius: 14px; }
@@ -1213,12 +1236,22 @@
           紙本模擬考的錯題則記在 repo 的 <code>review/*.md</code>，跟 Claude 說「匯入錯題」即可，格式見 <code>review/README.md</code>。</p>
         <div class="toolbar">
           <select id="mi-src"></select>
+          <select id="mi-cat"></select>
           <select id="mi-tag"></select>
-          <button id="mi-onlyhard">只練還沒答對的</button>
+          <select id="mi-mode">
+            <option value="due">今天該複習</option>
+            <option value="hard">還沒答對過的</option>
+            <option value="all">全部題目</option>
+          </select>
           <button id="mi-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練習</button>
         </div>
         <div id="mi-result"></div>
         <div id="mi-list"></div>
+      </div>
+      <div class="panel" id="mi-catpanel">
+        <h3>考點診斷</h3>
+        <p class="desc">依每題第一個標籤歸類，統計你在錯題複習裡的作答正確率（紅色是最弱的考點）。點一列就只練那個考點。</p>
+        <div id="mi-cats"></div>
       </div>
     </div>
     <div id="mi-run" class="hidden">
@@ -3254,8 +3287,73 @@ function rebuildMI() { MI = [...(typeof MISTAKES !== 'undefined' ? MISTAKES : []
 rebuildMI();
 const miStat = JSON.parse(localStorage.getItem('toeic-mistakes-stat') || '{}');  // id -> {r, w}
 const saveMiStat = () => localStorage.setItem('toeic-mistakes-stat', JSON.stringify(miStat));
-const miUnsolved = () => MI.filter(m => !(miStat[m.id]?.r > 0)).length;   // 還沒答對過的題數
-let miPool = [], miIdx = 0, miRight = 0, miDone = 0, miOnlyHard = false, miCur = null, miOrder = [];
+let miPool = [], miIdx = 0, miRight = 0, miDone = 0, miCur = null, miOrder = [];
+
+/* ----- 錯題的間隔複習：沿用單字那套 Leitner 五盒（SRS_IV）----- */
+// 答對一次就消失容易假性掌握（Part 5 常常是猜對的），所以錯題也排程重考：
+// 答對往上一盒、答錯打回第 1 盒。沒練過的錯題一律視為今天到期。
+const misrs = JSON.parse(localStorage.getItem('toeic-mi-srs') || '{}');   // id -> {b:1-5, d:到期日, n:練過幾次}
+const saveMiSrs = () => localStorage.setItem('toeic-mi-srs', JSON.stringify(misrs));
+// 舊資料遷移：用既有的 ✓/✗ 次數推一個起始盒號，只跑一次
+(() => {
+  if (localStorage.getItem('toeic-mi-srs-mig')) return;
+  const t = today();
+  for (const [id, st] of Object.entries(miStat)) {
+    if (misrs[id]) continue;
+    const b = !(st.r > 0) ? 1 : (st.w ? 2 : 3);
+    misrs[id] = {b, d: t + SRS_IV[b - 1], n: (st.r || 0) + (st.w || 0)};
+  }
+  localStorage.setItem('toeic-mi-srs-mig', '1');
+  saveMiSrs();
+})();
+function miGrade(id, ok) {
+  const e = misrs[id] || (misrs[id] = {b: 1, d: today(), n: 0});
+  e.b = ok ? Math.min(5, e.b + 1) : 1;
+  e.n++;
+  e.d = today() + SRS_IV[e.b - 1];
+  saveMiSrs();
+  return e;
+}
+const miDue = id => !misrs[id] || misrs[id].d <= today();
+const miDueCount = () => MI.reduce((n, m) => n + (miDue(m.id) ? 1 : 0), 0);
+function miBoxLabel(id) {
+  const e = misrs[id];
+  if (!e) return '<span class="box2 due">待複習</span>';
+  const gap = e.d - today();
+  return gap <= 0 ? '<span class="box2 due">今天到期</span>'
+    : `<span class="box2">第${e.b}盒・${gap}天後</span>`;
+}
+
+/* ----- 考點：每題的第一個標籤就是考點，其餘是細分標籤 ----- */
+const miCat = m => (m.tags || [])[0] || '未分類';
+const CAT_HINT = {
+  '介系詞': '時間/地點/讓步介系詞最常考，注意 despite・within・prior to',
+  '連接詞': '分辨連接詞與介系詞（although vs despite）是高頻陷阱',
+  '代名詞': '主格/受格/所有格/反身，先看空格在句中的角色',
+  '詞性': '看空格前後決定要名詞、形容詞還是副詞',
+  '時態': '找句中的時間副詞或另一個子句的時態當線索',
+  '字彙': '語意題，靠平常累積搭配詞',
+  '片語動詞': '動詞＋介副詞的固定搭配，要整組背',
+  '假設語氣': '注意 if 子句與主句的時態配對',
+};
+// 考點統計：只算在錯題複習裡實際作答過的紀錄
+function miCatStats(pool) {
+  const st = {};
+  (pool || MI).forEach(m => {
+    const k = miCat(m);
+    const s = st[k] || (st[k] = {n: 0, r: 0, w: 0, due: 0});
+    const x = miStat[m.id];
+    s.n++;
+    if (x) { s.r += x.r; s.w += x.w; }
+    if (miDue(m.id)) s.due++;
+  });
+  return st;
+}
+function miWeakCat() {
+  const st = miCatStats();
+  return Object.entries(st).filter(([, s]) => s.r + s.w >= 3)
+    .sort((a, b) => a[1].r / (a[1].r + a[1].w) - b[1].r / (b[1].r + b[1].w))[0] || null;
+}
 
 const miShuffle = a => {
   for (let i = a.length - 1; i > 0; i--) {
@@ -3265,22 +3363,33 @@ const miShuffle = a => {
   return a;
 };
 function miFilterPool() {
-  const src = $('mi-src').value || 'all', tag = $('mi-tag').value || 'all';
+  const src = $('mi-src').value || 'all', cat = $('mi-cat').value || 'all';
+  const tag = $('mi-tag').value || 'all', mode = $('mi-mode').value || 'due';
   return MI.filter(m => (src === 'all' || m.src === src)
-    && (tag === 'all' || (m.tags || []).includes(tag))
-    && (!miOnlyHard || !(miStat[m.id]?.r > 0)));
+    && (cat === 'all' || miCat(m) === cat)
+    && (tag === 'all' || (m.tags || []).slice(1).includes(tag))
+    && (mode === 'all'
+      || (mode === 'hard' ? !(miStat[m.id]?.r > 0) : miDue(m.id))));
 }
 function miRenderSetup() {
-  const sv = $('mi-src').value || 'all', tv = $('mi-tag').value || 'all';
+  const sv = $('mi-src').value || 'all', cv = $('mi-cat').value || 'all', tv = $('mi-tag').value || 'all';
   const srcs = [...new Set(MI.map(m => m.src))];
-  const tags = [...new Set(MI.flatMap(m => m.tags || []))];
-  $('mi-count').textContent = `${MI.length} 題`;
+  const cats = [...new Set(MI.map(miCat))];
+  $('mi-count').textContent = `${MI.length} 題・今天到期 ${miDueCount()} 題`;
   $('mi-src').innerHTML = `<option value="all">全部來源</option>`
     + srcs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
   if (srcs.includes(sv)) $('mi-src').value = sv;
-  $('mi-tag').innerHTML = '<option value="all">全部標籤</option>'
+  $('mi-cat').innerHTML = '<option value="all">全部考點</option>'
+    + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  if (cats.includes(cv)) $('mi-cat').value = cv;
+  $('mi-cat').classList.toggle('hidden', cats.length < 2);
+  // 細分標籤只列出目前考點底下的，避免 90 個標籤全塞在一個選單裡
+  const cur = $('mi-cat').value;
+  const tags = [...new Set(MI.filter(m => cur === 'all' || miCat(m) === cur)
+    .flatMap(m => (m.tags || []).slice(1)))];
+  $('mi-tag').innerHTML = '<option value="all">全部細項</option>'
     + tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  if (tags.includes(tv)) $('mi-tag').value = tv;
+  $('mi-tag').value = tags.includes(tv) ? tv : 'all';
   $('mi-tag').classList.toggle('hidden', !tags.length);
   const pool = miFilterPool();
   $('mi-start').disabled = !pool.length;
@@ -3289,17 +3398,46 @@ function miRenderSetup() {
     const st = miStat[m.id];
     return `<div class="mi-row"><span class="no2">${esc(m.src)}${m.no ? '・' + esc(m.no) : ''}</span>
       <span class="qq">${esc(m.q)}</span>
+      ${miBoxLabel(m.id)}
       <span class="st">${st ? `<span class="ok">✓${st.r}</span> <span class="ng">✗${st.w}</span>` : '未練過'}</span>
       ${localIds.has(m.id) ? `<button class="midel" data-midel="${esc(m.id)}" title="從錯題本移除">🗑</button>` : ''}</div>`;
   }).join('')
-    : `<p class="desc" style="margin-top:12px">${MI.length ? '這個篩選條件下沒有題目'
+    : `<p class="desc" style="margin-top:12px">${MI.length
+      ? ($('mi-mode').value === 'due'
+        ? '這個條件下今天沒有到期的題目 🎉 換成「全部題目」可以繼續練。'
+        : '這個篩選條件下沒有題目')
       : '還沒有錯題。去「模擬考試」考一回，交卷後按「加入錯題複習」，答錯的題目就會自動收進這裡。'}</p>`;
   $('mi-list').querySelectorAll('[data-midel]').forEach(b => b.onclick = () => {
     const i = miLocal.findIndex(m => m.id === b.dataset.midel);
     if (i < 0) return;
     miLocal.splice(i, 1);
     delete miStat[b.dataset.midel];
-    saveMiLocal(); saveMiStat(); rebuildMI(); miRenderSetup();
+    delete misrs[b.dataset.midel];
+    saveMiLocal(); saveMiStat(); saveMiSrs(); rebuildMI(); miRenderSetup();
+  });
+  miRenderCats();
+}
+function miRenderCats() {
+  const st = miCatStats();
+  const ks = Object.keys(st).sort((a, b) => st[b].n - st[a].n);
+  $('mi-catpanel').classList.toggle('hidden', !ks.length);
+  if (!ks.length) return;
+  const weak = miWeakCat()?.[0];
+  $('mi-cats').innerHTML = ks.map(k => {
+    const s = st[k], ans = s.r + s.w;
+    const pct = ans ? Math.round(s.r / ans * 100) : 0;
+    return `<button class="catrow${k === weak ? ' weak' : ''}${ans ? '' : ' untried'}" data-cat="${esc(k)}">
+      <span class="cn">${esc(k)}</span>
+      <span class="track"><i style="width:${ans ? pct : 100}%"></i></span>
+      <span class="pct">${ans ? pct + '%・' : ''}${s.n} 題${s.due ? '・到期 ' + s.due : ''}</span>
+    </button>`;
+  }).join('')
+    + (weak ? `<p class="desc" style="margin-top:10px">最弱考點是 <b>${esc(weak)}</b>。${esc(CAT_HINT[weak] || '')}</p>` : '');
+  $('mi-cats').querySelectorAll('[data-cat]').forEach(b => b.onclick = () => {
+    $('mi-cat').value = b.dataset.cat;
+    $('mi-mode').value = 'all';
+    miRenderSetup();
+    $('mi-start').scrollIntoView({behavior: 'smooth', block: 'center'});
   });
 }
 function miStart() {
@@ -3334,6 +3472,9 @@ function miAnswer(oi, btn) {
   miDone++;
   right ? (st.r++, miRight++) : st.w++;
   saveMiStat();
+  const e = miGrade(miCur.id, right);
+  const gap = e.d - today();
+  srsToast(right ? `第 ${e.b} 盒・${gap} 天後再考一次` : '打回第 1 盒・今天會再出現');
   touchDay();
   $('mi-choices').querySelectorAll('button').forEach(b => {
     b.disabled = true;
@@ -3357,13 +3498,10 @@ function miFinish() {
 $('mi-start').onclick = miStart;
 $('mi-next').onclick = () => { miIdx++; miShow(); };
 $('mi-quit').onclick = () => miFinish();
-$('mi-onlyhard').onclick = () => {
-  miOnlyHard = !miOnlyHard;
-  $('mi-onlyhard').classList.toggle('on', miOnlyHard);
-  miRenderSetup();
-};
 $('mi-src').onchange = miRenderSetup;
+$('mi-cat').onchange = miRenderSetup;
 $('mi-tag').onchange = miRenderSetup;
+$('mi-mode').onchange = miRenderSetup;
 
 /* ================= shadowing ================= */
 const audio = $('audio');
@@ -3885,24 +4023,38 @@ function renderGoal() {
 
 function renderTasks() {
   const due = dueCount();
-  const uns = miUnsolved();
+  const midue = miDueCount();
   const st = partStats();
   const weak = Object.entries(st).filter(([, s]) => s.t >= 3)
     .sort((a, b) => a[1].c / a[1].t - b[1].c / b[1].t)[0];
+  const wcat = miWeakCat();
+  const goMist = (cat, mode) => () => {
+    showView('mist');
+    $('mi-cat').value = cat || 'all';
+    $('mi-mode').value = mode;
+    miRenderSetup();
+  };
   const cards = [
     {done: !due, lbl: '📅 單字複習', num: due, unit: '個到期',
      sub: due ? '照間隔排程今天該複習的字' : '今天的單字都複習完了',
      btn: '開始複習', act: () => { showView('cards'); setDueOnly(true); refreshDueBtn(); }},
-    {done: !uns, lbl: '❌ 錯題複習', num: uns, unit: '題還沒答對',
-     sub: uns ? '練到答對一次就會從清單消失' : (MI.length ? '錯題全部都答對過了' : '交卷後把錯題加進來'),
+    {done: !midue, lbl: '❌ 錯題複習', num: midue, unit: '題到期',
+     sub: midue ? '答對往後排、答錯明天再考一次'
+       : (MI.length ? '今天的錯題都複習完了' : '交卷後把錯題加進來'),
      btn: MI.length ? '開始練' : '去考一回', dis: !MI.length,
-     act: () => { showView('mist'); if (!miOnlyHard) $('mi-onlyhard').click(); }},
+     act: goMist('all', 'due')},
   ];
-  if (weak) {
+  // Part 5 靠錯題本能練，而且考點診斷比「Part 5 很弱」更有指向性，優先顯示考點
+  if (wcat && (!weak || +weak[0] === 5)) {
+    const [c, s] = wcat;
+    cards.push({lbl: '🎯 最弱考點', num: Math.round(s.r / (s.r + s.w) * 100), unit: '% ' + c,
+      sub: CAT_HINT[c] || `錯題本裡有 ${s.n} 題`, btn: '練這個考點',
+      act: goMist(c, 'all')});
+  } else if (weak) {
     const [p, s] = weak;
     cards.push({lbl: '🎯 最弱項目', num: Math.round(s.c / s.t * 100), unit: '% ' + PART_NAME[p],
       sub: PART_HINT[p] || '', btn: '去練這一項',
-      act: () => showView(+p <= 4 ? 'shadow' : (+p === 5 ? 'mist' : 'exam'))});
+      act: +p === 5 ? goMist('all', 'all') : () => showView(+p <= 4 ? 'shadow' : 'exam')});
   } else {
     cards.push({lbl: '🎯 最弱項目', num: '—', unit: '',
       sub: '考過模擬考之後，這裡會指出你最該補的 Part', btn: '去考模擬考',
