@@ -198,6 +198,59 @@
   .resultbig { text-align: center; font-size: 2.2rem; font-weight: 800; margin: 6px 0 2px; }
   .resultsub { text-align: center; color: var(--muted); margin-bottom: 14px; }
 
+  /* ---------- 今天（儀表板） ---------- */
+  .goalhead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .goalhead .big { font-size: 2.6rem; font-weight: 800; line-height: 1.1; }
+  .goalhead .gap { font-size: .9rem; color: var(--muted); }
+  .goalhead .gap b { color: var(--ink); }
+  .goalhead .streak { margin-left: auto; font-size: .86rem; color: var(--muted); }
+  #home-goal .goalset { margin-top: 10px; font-size: .82rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  #home-goal .goalset input {
+    width: 72px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 7px;
+    background: var(--bg); color: var(--ink); font-size: .82rem; font-family: inherit;
+  }
+  .spark { width: 100%; height: 132px; margin-top: 10px; display: block; overflow: visible; }
+  .spark .grid { stroke: var(--line); stroke-width: 1; }
+  .spark .goalline { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 4 4; opacity: .8; }
+  .spark .ln { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .spark .dot { fill: var(--accent); stroke: var(--card); stroke-width: 2; }
+  .spark text { fill: var(--muted); font-size: 10px; }
+  .spark text.val { fill: var(--ink); font-size: 11px; font-weight: 700; }
+  .tasks { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .task {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px 18px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .task .lbl { font-size: .84rem; color: var(--muted); }
+  .task .num { font-size: 1.8rem; font-weight: 800; line-height: 1.15; }
+  .task .num small { font-size: .82rem; font-weight: 500; color: var(--muted); margin-left: 4px; }
+  .task .sub { font-size: .82rem; color: var(--muted); min-height: 1.3em; }
+  .task button {
+    margin-top: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+    padding: 9px 14px; border-radius: 9px; cursor: pointer; font-size: .9rem; font-weight: 600;
+  }
+  .task button:disabled { background: var(--card); color: var(--muted); border-color: var(--line); cursor: default; font-weight: 400; }
+  .task.done .num { color: var(--good); }
+  .prow { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: .88rem; }
+  .prow .pn { width: 74px; flex: none; color: var(--muted); font-size: .82rem; }
+  /* 注意：不要用 .bar，那是音檔進度條的 class（有 padding 與 background-clip）*/
+  .prow .track { flex: 1; height: 9px; background: var(--chip); border-radius: 999px; overflow: hidden; }
+  .prow .track i { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+  .prow .pct { flex: none; min-width: 92px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .prow.weak .pn { color: var(--ink); font-weight: 700; }
+  .prow.weak .track i { background: var(--bad); }
+
+  /* ---------- SRS ---------- */
+  #srs-note { text-align: center; font-size: .82rem; color: var(--muted); margin: 10px 0 0; min-height: 1.3em; }
+  #srs-note .box { color: var(--ink); font-weight: 600; }
+  #srs-toast {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom));
+    background: var(--ink); color: var(--bg); padding: 9px 18px; border-radius: 999px;
+    font-size: .88rem; font-weight: 600; z-index: 40; pointer-events: none;
+    opacity: 0; transition: opacity .18s;
+  }
+  #srs-toast.show { opacity: .95; }
+
   /* ---------- speaking practice ---------- */
   .sp-now {
     margin: 12px 0; padding: 14px 16px; border-radius: 12px;
@@ -468,6 +521,10 @@
   .mi-row .st { flex: none; font-size: .8rem; color: var(--muted); }
   .mi-row .st .ok { color: var(--good); }
   .mi-row .st .ng { color: var(--bad); }
+  .mi-row .midel {
+    flex: none; border: none; background: none; color: var(--muted);
+    cursor: pointer; font-size: .85rem; padding: 2px 4px; line-height: 1;
+  }
   #mi-onlyhard.on { border-color: var(--warn); color: var(--warn); font-weight: 600; }
 
   /* ---------- admin ---------- */
@@ -691,7 +748,8 @@
 <header>
   <h1>📚<span class="ttl"> 多益複習</span></h1>
   <nav>
-    <button id="tab-cards" class="active">單字卡</button>
+    <button id="tab-home" class="active">今天</button>
+    <button id="tab-cards">單字卡</button>
     <button id="tab-quiz">單字測驗</button>
     <button id="tab-shadow">模擬考聽力解析</button>
     <button id="tab-speak">口說跟讀</button>
@@ -704,8 +762,22 @@
 </header>
 
 <main>
+  <!-- ================= 今天（儀表板） ================= -->
+  <section id="view-home">
+    <div class="panel" id="home-goal">
+      <h3>距離目標</h3>
+      <div id="home-goalbody"></div>
+    </div>
+    <div class="tasks" id="home-tasks"></div>
+    <div class="panel">
+      <h3>各 Part 正確率</h3>
+      <p class="desc">統計所有模擬考紀錄中你實際作答過的題目，紅色是最弱的一項。</p>
+      <div id="home-parts"></div>
+    </div>
+  </section>
+
   <!-- ================= 單字卡 ================= -->
-  <section id="view-cards">
+  <section id="view-cards" class="hidden">
     <div class="toolbar">
       <select id="bookfilter"></select>
       <select id="range"></select>
@@ -717,6 +789,7 @@
         <option value="4">高階 945+</option>
       </select>
       <button id="shuffle">🔀 隨機</button>
+      <button id="due-only">📅 今日複習</button>
       <button id="only-hard">只看不熟</button>
       <span class="counter" id="counter"></span>
     </div>
@@ -745,6 +818,7 @@
       <button id="next-card">下一張 →</button>
       <button id="add-book">📓 其他單字本</button>
     </div>
+    <p id="srs-note"></p>
     <p class="kbd-tip">
       <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
     </p>
@@ -787,6 +861,7 @@
             <option value="50">50 題</option>
           </select>
           <button id="q-onlyhard">只考不熟</button>
+          <button id="q-due">📅 只考今日到期</button>
           <button id="q-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始測驗</button>
         </div>
       </div>
@@ -1118,6 +1193,7 @@
         <div class="resultbig" id="ex-score"></div>
         <div class="resultsub" id="ex-sub"></div>
         <div class="btnrow" style="justify-content:center">
+          <button id="ex-addmi" class="primary hidden"></button>
           <button id="ex-review-btn">📖 檢討全部題目</button>
           <button id="ex-back">回考試首頁</button>
         </div>
@@ -1133,8 +1209,8 @@
     <div id="mi-setup">
       <div class="panel">
         <h3>錯題複習 <span class="badge zero" id="mi-count">0 題</span></h3>
-        <p class="desc">把模擬考做錯或不熟的題目（尤其 Part 5）記在 repo 的 <code>review/*.md</code>，
-          跟 Claude 說「匯入錯題」就會出現在這裡，可以反覆練到會。格式見 <code>review/README.md</code>。</p>
+        <p class="desc">在「模擬考試」交卷後按<b>「加入錯題複習」</b>，答錯的題目會自動收進這裡（本機保存）。
+          紙本模擬考的錯題則記在 repo 的 <code>review/*.md</code>，跟 Claude 說「匯入錯題」即可，格式見 <code>review/README.md</code>。</p>
         <div class="toolbar">
           <select id="mi-src"></select>
           <select id="mi-tag"></select>
@@ -1148,6 +1224,7 @@
     <div id="mi-run" class="hidden">
       <div class="panel">
         <div class="qmeta"><span id="mi-progress"></span><span id="mi-score"></span></div>
+        <div class="passage hidden" id="mi-ctx"></div>
         <div class="mi-q" id="mi-q"></div>
         <div class="mi-srcline" id="mi-srcline"></div>
         <div class="choices" id="mi-choices"></div>
@@ -1224,6 +1301,8 @@
     </div>
   </section>
 </main>
+
+<div id="srs-toast"></div>
 
 <div id="bookmodal" class="modalwrap hidden">
   <div class="modal-card">
@@ -1482,13 +1561,17 @@ function stopAllPlayback() {
 }
 function showView(v) {
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
-  for (const k of ['cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
+  for (const k of ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
     $('view-' + k).classList.toggle('hidden', v !== k);
     $('tab-' + k).classList.toggle('active', v === k);
   }
   document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
+  if (v === 'home') renderHome();
+  if (v === 'cards') refreshDueBtn();
+  if (v === 'quiz') refreshQDueBtn();
 }
+$('tab-home').onclick = () => showView('home');
 $('tab-cards').onclick = () => showView('cards');
 $('tab-quiz').onclick = () => showView('quiz');
 $('tab-shadow').onclick = () => showView('shadow');
@@ -1498,9 +1581,75 @@ $('tab-exam').onclick = () => showView('exam');
 $('tab-mist').onclick = () => showView('mist');
 $('tab-admin').onclick = () => showView('admin');
 
-/* ================= flashcards ================= */
+/* ================= SRS：Leitner 五盒間隔複習 ================= */
+// 答對往上一盒（間隔拉長），答錯打回第 1 盒（今天再看）。marks 仍同步維護，
+// 「只看不熟 / 只考不熟」等既有篩選才不必改寫。
+const SRS_IV = [0, 1, 3, 7, 21];   // 第 1–5 盒答對後，隔幾天再複習
 const marks = JSON.parse(localStorage.getItem('toeic-marks') || '{}'); // word -> 'known' | 'hard'
-let deck = [], idx = 0, shuffled = false, onlyHard = false;
+const srs = JSON.parse(localStorage.getItem('toeic-srs') || '{}');     // word -> {b:1-5, d:到期日, n:練過幾次}
+const dayOf = ts => Math.floor((ts - new Date(ts).getTimezoneOffset() * 60000) / 86400000);
+const today = () => dayOf(Date.now());
+function saveSrs() {
+  localStorage.setItem('toeic-srs', JSON.stringify(srs));
+  localStorage.setItem('toeic-marks', JSON.stringify(marks));
+}
+// 舊資料遷移：認識 → 第 3 盒、不熟 → 第 1 盒（今天到期），只跑一次
+(() => {
+  if (localStorage.getItem('toeic-srs-mig')) return;
+  const t = today();
+  for (const [w, m] of Object.entries(marks)) {
+    if (srs[w]) continue;
+    srs[w] = m === 'known' ? {b: 3, d: t + SRS_IV[2], n: 1} : {b: 1, d: t, n: 1};
+  }
+  localStorage.setItem('toeic-srs-mig', '1');
+  saveSrs();
+})();
+function srsGrade(w, ok) {
+  const e = srs[w] || (srs[w] = {b: 1, d: today(), n: 0});
+  e.b = ok ? Math.min(5, e.b + 1) : 1;
+  e.n++;
+  e.d = today() + SRS_IV[e.b - 1];
+  marks[w] = e.b >= 3 ? 'known' : 'hard';
+  saveSrs();
+  touchDay();
+  return e;
+}
+const srsDue = w => !!srs[w] && srs[w].d <= today();
+const dueCount = () => getWords().reduce((n, w) => n + (srsDue(w.w) ? 1 : 0), 0);
+function srsLabel(w) {
+  const e = srs[w];
+  if (!e) return '還沒排程過，按「認識／不熟」開始記憶排程';
+  const gap = e.d - today();
+  const when = gap <= 0 ? '今天要複習' : `${gap} 天後複習`;
+  return `<span class="box">第 ${e.b} 盒</span>・${when}・練過 ${e.n} 次`;
+}
+let toastT = null;
+function srsToast(msg) {
+  const el = $('srs-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 1400);
+}
+
+/* ----- 練習天數（連續天數用） ----- */
+const days = JSON.parse(localStorage.getItem('toeic-days') || '[]');
+function touchDay() {
+  const t = today();
+  if (days[days.length - 1] === t) return;
+  days.push(t);
+  localStorage.setItem('toeic-days', JSON.stringify(days.slice(-400)));
+}
+function streak() {
+  const set = new Set(days);
+  let t = today(), s = 0;
+  if (!set.has(t)) t--;          // 今天還沒練，從昨天起算
+  while (set.has(t)) { s++; t--; }
+  return s;
+}
+
+/* ================= flashcards ================= */
+let deck = [], idx = 0, shuffled = false, onlyHard = false, dueOnly = false;
 const LV = {1: '基礎 250–545', 2: '中級 550–780', 3: '中高 785–940', 4: '高階 945+'};
 
 const rangeSel = $('range');
@@ -1514,20 +1663,27 @@ function buildRange() {
   if ([...rangeSel.options].some(o => o.value === prev)) rangeSel.value = prev;
 }
 function buildDeck() {
-  const bk = $('bookfilter').value;
   let pool;
-  if (bk) {
-    pool = bookWords(bk);
+  if (dueOnly) {
+    // 今日複習是一條複習佇列：無視範圍／單字本／級距，到期的字全部撈出來
+    pool = getWords().filter(w => srsDue(w.w));
     rangeSel.classList.add('hidden');
   } else {
-    pool = getWords();
-    rangeSel.classList.remove('hidden');
-    const r = rangeSel.value;
-    if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+    const bk = $('bookfilter').value;
+    if (bk) {
+      pool = bookWords(bk);
+      rangeSel.classList.add('hidden');
+    } else {
+      pool = getWords();
+      rangeSel.classList.remove('hidden');
+      const r = rangeSel.value;
+      if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
+    }
+    const lv = +$('lvfilter').value;
+    if (lv) pool = pool.filter(w => w.lv === lv);
+    if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
   }
-  const lv = +$('lvfilter').value;
-  if (lv) pool = pool.filter(w => w.lv === lv);
-  if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
+  for (const id of ['bookfilter', 'lvfilter', 'only-hard']) $(id).disabled = dueOnly;
   if (shuffled) {
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -1540,9 +1696,11 @@ function buildDeck() {
 function renderCard() {
   $('card').classList.remove('flip');
   if (!deck.length) {
-    $('f-word').textContent = '🎉'; $('f-pos').textContent = '這個範圍沒有符合的單字';
+    $('f-word').textContent = '🎉';
+    $('f-pos').textContent = dueOnly ? '今天的單字複習都做完了！' : '這個範圍沒有符合的單字';
     $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
     $('counter').textContent = '0 / 0';
+    $('srs-note').innerHTML = '';
     $('f-lv').classList.add('hidden');
     $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
     $('fav-card').classList.add('hidden');
@@ -1557,6 +1715,7 @@ function renderCard() {
   $('b-ex').textContent = w.ex;
   $('b-exzh').textContent = w.exzh;
   $('counter').textContent = `${idx + 1} / ${deck.length}`;
+  $('srs-note').innerHTML = srsLabel(w.w);
   $('mark-known').classList.toggle('marked', marks[w.w] === 'known');
   $('mark-hard').classList.toggle('marked', marks[w.w] === 'hard');
   updFavCard();
@@ -1586,11 +1745,19 @@ function move(d) {
 }
 function mark(kind) {
   if (!deck.length) return;
-  const w = deck[idx].w;
-  marks[w] = marks[w] === kind ? undefined : kind;
-  if (!marks[w]) delete marks[w];
-  localStorage.setItem('toeic-marks', JSON.stringify(marks));
-  renderCard();
+  const ok = kind === 'known';
+  const e = srsGrade(deck[idx].w, ok);
+  const gap = e.d - today();
+  srsToast(ok ? `認識 ✓ → ${gap} 天後再複習` : '不熟 → 今天再看一次');
+  if (dueOnly) {
+    // 複習佇列：答對就出隊，答錯打回第 1 盒、排到隊尾今天再遇一次
+    const [c] = deck.splice(idx, 1);
+    if (!ok) deck.push(c);
+    if (idx >= deck.length) idx = 0;
+    renderCard();
+  } else {
+    move(1);
+  }
 }
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
@@ -1620,6 +1787,17 @@ $('speak-word').onclick = e => { e.stopPropagation(); if (deck.length) speak(dec
 $('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].ex); };
 $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
 $('only-hard').onclick = () => { onlyHard = !onlyHard; $('only-hard').classList.toggle('on', onlyHard); buildDeck(); };
+function setDueOnly(on) {
+  dueOnly = on;
+  if (dueOnly && onlyHard) { onlyHard = false; $('only-hard').classList.remove('on'); }
+  $('due-only').classList.toggle('on', dueOnly);
+  buildDeck();
+}
+$('due-only').onclick = () => setDueOnly(!dueOnly);
+function refreshDueBtn() {
+  const n = dueCount();
+  $('due-only').textContent = n ? `📅 今日複習 ${n}` : '📅 今日複習';
+}
 rangeSel.onchange = buildDeck;
 $('lvfilter').onchange = buildDeck;
 $('bookfilter').onchange = buildDeck;
@@ -1638,7 +1816,7 @@ document.addEventListener('keydown', e => {
 
 /* ================= quiz ================= */
 const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '單字聽力', dict: '聽寫測驗'};
-let qMode = 'e2z', qOnlyHard = false;
+let qMode = 'e2z', qOnlyHard = false, qDue = false;
 let quiz = null;   // {mode, words:[entry|seg], i, correct, wrong:[], answered}
 let qAdvTimer = null;   // 答對後自動跳題的計時器
 let qHistory = JSON.parse(localStorage.getItem('toeic-quiz-history') || '[]');
@@ -1694,7 +1872,22 @@ function dictPool(test, part) {
   }
   return out;
 }
-$('q-onlyhard').onclick = () => { qOnlyHard = !qOnlyHard; $('q-onlyhard').classList.toggle('on', qOnlyHard); };
+$('q-onlyhard').onclick = () => {
+  qOnlyHard = !qOnlyHard;
+  if (qOnlyHard && qDue) setQDue(false);
+  $('q-onlyhard').classList.toggle('on', qOnlyHard);
+};
+function setQDue(on) {
+  qDue = on;
+  if (qDue && qOnlyHard) { qOnlyHard = false; $('q-onlyhard').classList.remove('on'); }
+  $('q-due').classList.toggle('on', qDue);
+  for (const id of ['q-book', 'q-lv', 'q-range']) $(id).disabled = qDue;
+}
+$('q-due').onclick = () => setQDue(!qDue);
+function refreshQDueBtn() {
+  const n = dueCount();
+  $('q-due').textContent = n ? `📅 只考今日到期 ${n}` : '📅 只考今日到期';
+}
 
 function buildQRange() {
   const n = getWords().length;
@@ -1719,6 +1912,7 @@ function quizPool() {
   const lv = +$('q-lv').value;
   if (lv) pool = pool.filter(w => w.lv === lv);
   if (qOnlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
+  if (qDue) pool = getWords().filter(w => srsDue(w.w));   // 今日到期無視其他範圍條件
   return pool;
 }
 function sample(arr, n) {
@@ -1859,6 +2053,7 @@ function answer(ok, entry, pickedBtn) {
   const q = quiz;
   q.answered = true;
   if (ok) q.correct++; else q.wrong.push(q.mode === 'dict' ? entry : entry.w);
+  if (q.mode !== 'dict') srsGrade(entry.w, ok);   // 測驗結果直接餵回記憶排程
 
   $('q-choices').querySelectorAll('button').forEach(b => {
     b.disabled = true;
@@ -1948,6 +2143,7 @@ function finishQuiz() {
   qHistory.unshift({t: Date.now(), mode: q.mode, total, correct: q.correct, wrong: q.wrong});
   qHistory = qHistory.slice(0, 50);
   localStorage.setItem('toeic-quiz-history', JSON.stringify(qHistory));
+  touchDay();
 
   $('quiz-run').classList.add('hidden');
   $('quiz-result').classList.remove('hidden');
@@ -2899,10 +3095,55 @@ function finishExam() {
   exHistory.unshift(rec);
   exHistory = exHistory.slice(0, 20);
   localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
+  touchDay();
   showExamResult(rec);
+}
+/* ----- 交卷後把答錯的題目收進錯題本 ----- */
+// 只收「作答了但選錯」的題目；沒作答的不算錯題，避免中途離開時灌進一堆空白題。
+function examWrongItems(rec) {
+  const out = [];
+  const add = (q, ctx) => out.push({
+    id: `模擬考試#Q${q.no}`, src: '模擬考試', no: `Q${q.no}`,
+    q: q.q, opts: q.opts, ans: q.ans, exp: q.exp || '',
+    tags: ['Part ' + q.part], ctx: ctx || ''
+  });
+  const lines = g => g.lines.map(l => `${l.s === 'M' ? '男' : '女'}：${l.t}`).join('\n');
+  if (rec.lT && rec.la) EXL.forEach((q, i) => {
+    if (rec.la[i] == null || rec.la[i] === q.ans) return;
+    if (q.part === 2) add(q);                                        // 題目本身就是聽到的那句話
+    else add(q, lines((q.part === 3 ? EXAM_LISTENING.part3 : EXAM_LISTENING.part4)[q.gi]));
+  });
+  if (rec.rT && rec.ra) EXR.forEach((q, i) => {
+    if (rec.ra[i] == null || rec.ra[i] === q.ans) return;
+    if (q.part === 5) add(q);
+    else if (q.part === 6) {
+      const g = EXAM_READING.part6[q.gi];
+      add(q, `${g.title}\n\n${g.passage}`);
+    } else {
+      add(q, EXAM_READING.part7[q.gi].passages.map(p => `【${p.type}】\n${p.text}`).join('\n\n'));
+    }
+  });
+  return out;
+}
+function updExAddMi(rec) {
+  const btn = $('ex-addmi');
+  const items = examWrongItems(rec);
+  const have = new Set(miLocal.map(m => m.id));
+  const fresh = items.filter(m => !have.has(m.id));
+  btn.classList.toggle('hidden', !items.length);
+  btn.disabled = !fresh.length;
+  btn.textContent = fresh.length ? `➕ 把答錯的 ${fresh.length} 題加入錯題複習`
+    : `✓ 這回的錯題已在錯題本（${items.length} 題）`;
+  btn.onclick = () => {
+    miLocal.push(...fresh);
+    saveMiLocal(); rebuildMI(); miRenderSetup();
+    updExAddMi(rec);
+    srsToast(`已加入 ${fresh.length} 題到錯題複習`);
+  };
 }
 function showExamResult(rec) {
   examShow('exam-result');
+  updExAddMi(rec);
   const parts = [];
   if (rec.lT) parts.push(`聽力 ${rec.lC}/${rec.lT}（粗估 ${est(rec.lC, rec.lT)} 分）`);
   if (rec.rT) parts.push(`閱讀 ${rec.rC}/${rec.rT}（粗估 ${est(rec.rC, rec.rT)} 分）`);
@@ -2988,9 +3229,16 @@ function renderExamHistory() {
 }
 
 /* ================= 錯題複習 ================= */
-const MI = typeof MISTAKES !== 'undefined' ? MISTAKES : [];
+// 錯題有兩個來源：data/mistakes.js（紙本考題，由 tools/import_mistakes.py 匯入）
+// 與 toeic-mistakes-local（站上模擬考交卷後自動收進來的，只存本機）。
+const miLocal = JSON.parse(localStorage.getItem('toeic-mistakes-local') || '[]');
+const saveMiLocal = () => localStorage.setItem('toeic-mistakes-local', JSON.stringify(miLocal));
+let MI = [];
+function rebuildMI() { MI = [...(typeof MISTAKES !== 'undefined' ? MISTAKES : []), ...miLocal]; }
+rebuildMI();
 const miStat = JSON.parse(localStorage.getItem('toeic-mistakes-stat') || '{}');  // id -> {r, w}
 const saveMiStat = () => localStorage.setItem('toeic-mistakes-stat', JSON.stringify(miStat));
+const miUnsolved = () => MI.filter(m => !(miStat[m.id]?.r > 0)).length;   // 還沒答對過的題數
 let miPool = [], miIdx = 0, miRight = 0, miDone = 0, miOnlyHard = false, miCur = null, miOrder = [];
 
 const miShuffle = a => {
@@ -3020,14 +3268,23 @@ function miRenderSetup() {
   $('mi-tag').classList.toggle('hidden', !tags.length);
   const pool = miFilterPool();
   $('mi-start').disabled = !pool.length;
+  const localIds = new Set(miLocal.map(m => m.id));
   $('mi-list').innerHTML = pool.length ? pool.map(m => {
     const st = miStat[m.id];
     return `<div class="mi-row"><span class="no2">${esc(m.src)}${m.no ? '・' + esc(m.no) : ''}</span>
       <span class="qq">${esc(m.q)}</span>
-      <span class="st">${st ? `<span class="ok">✓${st.r}</span> <span class="ng">✗${st.w}</span>` : '未練過'}</span></div>`;
+      <span class="st">${st ? `<span class="ok">✓${st.r}</span> <span class="ng">✗${st.w}</span>` : '未練過'}</span>
+      ${localIds.has(m.id) ? `<button class="midel" data-midel="${esc(m.id)}" title="從錯題本移除">🗑</button>` : ''}</div>`;
   }).join('')
     : `<p class="desc" style="margin-top:12px">${MI.length ? '這個篩選條件下沒有題目'
-      : '還沒有錯題。做模擬考時把錯的題目記在 review/*.md，跟 Claude 說「匯入錯題」就會出現在這裡。'}</p>`;
+      : '還沒有錯題。去「模擬考試」考一回，交卷後按「加入錯題複習」，答錯的題目就會自動收進這裡。'}</p>`;
+  $('mi-list').querySelectorAll('[data-midel]').forEach(b => b.onclick = () => {
+    const i = miLocal.findIndex(m => m.id === b.dataset.midel);
+    if (i < 0) return;
+    miLocal.splice(i, 1);
+    delete miStat[b.dataset.midel];
+    saveMiLocal(); saveMiStat(); rebuildMI(); miRenderSetup();
+  });
 }
 function miStart() {
   miPool = miShuffle(miFilterPool().slice());
@@ -3043,6 +3300,9 @@ function miShow() {
   miOrder = miShuffle(miCur.opts.map((_, i) => i));   // 選項順序打亂，避免背字母位置
   $('mi-progress').textContent = `第 ${miIdx + 1} / ${miPool.length} 題`;
   $('mi-score').textContent = `答對 ${miRight}`;
+  // Part 3/4/6/7 的題目脫離對話或文章就無法作答，ctx 帶的就是那段原文
+  $('mi-ctx').classList.toggle('hidden', !miCur.ctx);
+  if (miCur.ctx) $('mi-ctx').innerHTML = `<span class="ptype">題目原文</span>${esc(miCur.ctx)}`;
   $('mi-q').textContent = miCur.q;
   $('mi-srcline').innerHTML = `${esc(miCur.src)}${miCur.no ? '・' + esc(miCur.no) : ''}`
     + (miCur.tags || []).map(t => `<span class="tag2">${esc(t)}</span>`).join('');
@@ -3058,6 +3318,7 @@ function miAnswer(oi, btn) {
   miDone++;
   right ? (st.r++, miRight++) : st.w++;
   saveMiStat();
+  touchDay();
   $('mi-choices').querySelectorAll('button').forEach(b => {
     b.disabled = true;
     if (+b.dataset.oi === miCur.ans) b.classList.add('right');
@@ -3530,11 +3791,148 @@ $('do-sync').onclick = async () => {
   }
 };
 
+/* ================= 今天（儀表板） ================= */
+const PART_NAME = {1: 'Part 1', 2: 'Part 2', 3: 'Part 3', 4: 'Part 4', 5: 'Part 5', 6: 'Part 6', 7: 'Part 7'};
+const PART_HINT = {
+  2: '應答問題：去「模擬考聽力解析」把 Part 2 逐句聽熟',
+  3: '簡短對話：用「聽寫練習」逼自己聽出每個字',
+  4: '簡短獨白：用「口說跟讀」練語速與連音',
+  5: '單句填空：文法與字彙，練「錯題複習」最有效',
+  6: '段落填空：回「模擬考試」重做並檢討上下文線索',
+  7: '閱讀理解：回「模擬考試」練長文速讀',
+};
+let goal = +(localStorage.getItem('toeic-goal') || 750);
+
+// 統計所有考試紀錄中「實際作答過」的題目，算出每個 Part 的正確率
+function partStats() {
+  const st = {};
+  const add = (p, ok) => { const s = st[p] || (st[p] = {c: 0, t: 0}); s.t++; if (ok) s.c++; };
+  exHistory.forEach(h => {
+    if (h.lT && h.la) EXL.forEach((q, i) => { if (h.la[i] != null) add(q.part, h.la[i] === q.ans); });
+    if (h.rT && h.ra) EXR.forEach((q, i) => { if (h.ra[i] != null) add(q.part, h.ra[i] === q.ans); });
+  });
+  return st;
+}
+const fullExams = () => exHistory.filter(h => h.lT && h.rT).slice().reverse();   // 舊 → 新
+const examTotal = h => est(h.lC, h.lT) + est(h.rC, h.rT);
+
+// 粗估總分趨勢：單一數列的折線圖，虛線是目標分數
+// viewBox 依容器實際寬度而定（1:1 CSS px），字級才不會在手機被縮到看不見
+function sparkSVG(list) {
+  const W = Math.max(280, $('home-goalbody').clientWidth || 560), H = 132, pad = {t: 14, r: 44, b: 20, l: 34};
+  const xs = list.map(examTotal);
+  const lo = Math.max(10, Math.min(...xs, goal) - 60);
+  const hi = Math.min(990, Math.max(...xs, goal) + 60);
+  const px = i => pad.l + (list.length === 1 ? (W - pad.l - pad.r) / 2 : i * (W - pad.l - pad.r) / (list.length - 1));
+  const py = v => pad.t + (hi - v) * (H - pad.t - pad.b) / (hi - lo);
+  const d = xs.map((v, i) => `${i ? 'L' : 'M'}${px(i).toFixed(1)},${py(v).toFixed(1)}`).join('');
+  const md = t => { const x = new Date(t); return `${x.getMonth() + 1}/${x.getDate()}`; };
+  const last = xs.length - 1;
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="模擬考粗估總分趨勢，最近一次 ${xs[last]} 分，目標 ${goal} 分">
+    <line class="grid" x1="${pad.l}" y1="${py(lo)}" x2="${W - pad.r}" y2="${py(lo)}"/>
+    <line class="goalline" x1="${pad.l}" y1="${py(goal)}" x2="${W - pad.r}" y2="${py(goal)}"/>
+    <text x="${W - pad.r + 4}" y="${py(goal) + 3.5}">目標 ${goal}</text>
+    <text x="${pad.l - 6}" y="${py(hi) + 3.5}" text-anchor="end">${Math.round(hi)}</text>
+    <text x="${pad.l - 6}" y="${py(lo) + 3.5}" text-anchor="end">${Math.round(lo)}</text>
+    <path class="ln" d="${d}"/>
+    ${xs.map((v, i) => `<circle class="dot" cx="${px(i).toFixed(1)}" cy="${py(v).toFixed(1)}" r="4"/>`).join('')}
+    <text class="val" x="${px(last).toFixed(1)}" y="${(py(xs[last]) - 10).toFixed(1)}" text-anchor="middle">${xs[last]}</text>
+    <text x="${pad.l}" y="${H - 4}">${md(list[0].t)}</text>
+    ${list.length > 1 ? `<text x="${W - pad.r}" y="${H - 4}" text-anchor="end">${md(list[last].t)}</text>` : ''}
+  </svg>`;
+}
+
+function renderGoal() {
+  const fulls = fullExams();
+  const latest = fulls[fulls.length - 1];
+  const st = streak();
+  const head = latest
+    ? `<div class="goalhead">
+         <span class="big">${examTotal(latest)}</span>
+         <span class="gap">最近一次完整模擬考粗估分數<br>${examTotal(latest) >= goal
+            ? `已經超過目標 <b>${goal}</b> 分 🎉` : `距離目標 <b>${goal}</b> 還差 <b>${goal - examTotal(latest)}</b> 分`}</span>
+         ${st ? `<span class="streak">🔥 連續練習 ${st} 天</span>` : ''}
+       </div>`
+    : `<div class="goalhead"><span class="gap">還沒有完整模擬考紀錄。去「模擬考試」考一回聽力＋閱讀，
+         這裡就會顯示粗估分數與離目標 <b>${goal}</b> 分的差距。</span>
+       ${st ? `<span class="streak">🔥 連續練習 ${st} 天</span>` : ''}</div>`;
+  const chart = fulls.length >= 2 ? sparkSVG(fulls)
+    : (latest ? '<p class="desc" style="margin-top:10px">再考一次完整模擬考，就會出現分數趨勢。</p>' : '');
+  $('home-goalbody').innerHTML = head + chart
+    + `<div class="goalset">目標分數 <input id="goal-in" type="number" min="10" max="990" step="5" value="${goal}"> 分</div>`;
+  $('goal-in').onchange = e => {
+    const v = Math.max(10, Math.min(990, +e.target.value || 750));
+    goal = v; localStorage.setItem('toeic-goal', v); renderGoal();
+  };
+}
+
+function renderTasks() {
+  const due = dueCount();
+  const uns = miUnsolved();
+  const st = partStats();
+  const weak = Object.entries(st).filter(([, s]) => s.t >= 3)
+    .sort((a, b) => a[1].c / a[1].t - b[1].c / b[1].t)[0];
+  const cards = [
+    {done: !due, lbl: '📅 單字複習', num: due, unit: '個到期',
+     sub: due ? '照間隔排程今天該複習的字' : '今天的單字都複習完了',
+     btn: '開始複習', act: () => { showView('cards'); setDueOnly(true); refreshDueBtn(); }},
+    {done: !uns, lbl: '❌ 錯題複習', num: uns, unit: '題還沒答對',
+     sub: uns ? '練到答對一次就會從清單消失' : (MI.length ? '錯題全部都答對過了' : '交卷後把錯題加進來'),
+     btn: MI.length ? '開始練' : '去考一回', dis: !MI.length,
+     act: () => { showView('mist'); if (!miOnlyHard) $('mi-onlyhard').click(); }},
+  ];
+  if (weak) {
+    const [p, s] = weak;
+    cards.push({lbl: '🎯 最弱項目', num: Math.round(s.c / s.t * 100), unit: '% ' + PART_NAME[p],
+      sub: PART_HINT[p] || '', btn: '去練這一項',
+      act: () => showView(+p <= 4 ? 'shadow' : (+p === 5 ? 'mist' : 'exam'))});
+  } else {
+    cards.push({lbl: '🎯 最弱項目', num: '—', unit: '',
+      sub: '考過模擬考之後，這裡會指出你最該補的 Part', btn: '去考模擬考',
+      act: () => showView('exam')});
+  }
+  $('home-tasks').innerHTML = cards.map((c, i) =>
+    `<div class="task${c.done ? ' done' : ''}">
+       <span class="lbl">${c.lbl}</span>
+       <span class="num">${c.num}<small>${c.unit}</small></span>
+       <span class="sub">${c.sub}</span>
+       <button data-t="${i}"${c.dis ? ' disabled' : ''}>${c.btn}</button>
+     </div>`).join('');
+  $('home-tasks').querySelectorAll('[data-t]').forEach(b => b.onclick = () => cards[+b.dataset.t].act());
+}
+
+function renderParts() {
+  const st = partStats();
+  const ks = Object.keys(st).sort((a, b) => a - b);
+  if (!ks.length) {
+    $('home-parts').innerHTML = '<p class="desc">還沒有模擬考紀錄。</p>';
+    return;
+  }
+  const weak = ks.filter(k => st[k].t >= 3).sort((a, b) => st[a].c / st[a].t - st[b].c / st[b].t)[0];
+  $('home-parts').innerHTML = ks.map(k => {
+    const s = st[k], pct = Math.round(s.c / s.t * 100);
+    return `<div class="prow${k === weak ? ' weak' : ''}">
+      <span class="pn">${PART_NAME[k]}</span>
+      <span class="track"><i style="width:${pct}%"></i></span>
+      <span class="pct">${pct}%<span style="color:var(--muted);font-size:.78rem"> ${s.c}/${s.t}</span></span>
+    </div>`;
+  }).join('');
+}
+
+function renderHome() { renderGoal(); renderTasks(); renderParts(); }
+let homeRT = null;
+addEventListener('resize', () => {           // viewBox 綁著容器寬度，轉向後要重畫
+  if (document.body.dataset.view !== 'home') return;
+  clearTimeout(homeRT);
+  homeRT = setTimeout(renderGoal, 200);
+});
+
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending(); miRenderSetup();
 buildQRange(); renderHistory(); renderExamHistory(); renderClipList(); renderDtSide();
 buildBookSels(); renderBooksAdmin();
-showView(localStorage.getItem('toeic-view') || 'cards');
+showView(localStorage.getItem('toeic-view') || 'home');
 </script>
 </body>
 </html>
