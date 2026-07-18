@@ -1349,7 +1349,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'audio', 'transcripts', 'exam_l', 'exam_r', 'mistakes', 'speak', 'books'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'mistakes', 'speak', 'books'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -1551,6 +1551,7 @@ function stopAllPlayback() {
   spStopAll();        // 口說跟讀（含錄音、自動跟讀計時器、我的錄音）
   dtAudio.pause();    // 聽寫練習
   qaudio.pause();     // 單字測驗的聽寫片段
+  wordAudio.pause();  // 單字卡/單字測驗的真人單字發音
   if (!('speechSynthesis' in window)) return;
   if (exam && !$('exam-listen').classList.contains('hidden')) {
     // 模擬考聽力進行中：切走＝自動暫停（回到考試按「▶ 繼續」接著考，不會漏句）
@@ -1759,9 +1760,24 @@ function mark(kind) {
     move(1);
   }
 }
+/* 單字發音：國學 A/B 本單字 MP3 切出來的真人錄音（data/wordaudio.js，約 2,950 字）優先，
+   查不到的字（例句、以及沒收錄的字）才退回瀏覽器語音合成。 */
+const wordAudio = new Audio();
 function speak(text) {
+  const rel = typeof WORD_AUDIO === 'object' && WORD_AUDIO[text];
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  wordAudio.pause();
+  if (rel) {
+    wordAudio.src = 'audio/word/' + rel;
+    // 音檔載不到（漏 push、快取壞掉）時不能整個沒聲音，退回語音合成
+    const p = wordAudio.play();      // 舊版 Safari 的 play() 不回傳 Promise
+    if (p) p.catch(() => ttsSpeak(text));
+    return;
+  }
+  ttsSpeak(text);
+}
+function ttsSpeak(text) {
   if (!('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'en-US'; u.rate = 0.92;
   speechSynthesis.speak(u);
