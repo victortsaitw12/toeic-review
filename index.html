@@ -3151,10 +3151,12 @@ function finishExam() {
 // 只收「作答了但選錯」的題目；沒作答的不算錯題，避免中途離開時灌進一堆空白題。
 function examWrongItems(rec) {
   const out = [];
+  // 考點放第一個標籤（錯題頁的考點診斷吃 tags[0]）；Part 5/6 的題目在 exam_r.js 標了 cat，
+  // 聽力與 Part 7 沒有文法考點可分，就退回用 Part 別當考點。
   const add = (q, ctx) => out.push({
     id: `模擬考試#Q${q.no}`, src: '模擬考試', no: `Q${q.no}`,
     q: q.q, opts: q.opts, ans: q.ans, exp: q.exp || '',
-    tags: ['Part ' + q.part], ctx: ctx || ''
+    tags: q.cat ? [q.cat, 'Part ' + q.part] : ['Part ' + q.part], ctx: ctx || ''
   });
   const lines = g => g.lines.map(l => `${l.s === 'M' ? '男' : '女'}：${l.t}`).join('\n');
   if (rec.lT && rec.la) EXL.forEach((q, i) => {
