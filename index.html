@@ -525,6 +525,26 @@
     flex: none; border: none; background: none; color: var(--muted);
     cursor: pointer; font-size: .85rem; padding: 2px 4px; line-height: 1;
   }
+  /* ---------- 配速訓練 ---------- */
+  .pacechip {
+    font-size: .82rem; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+    background: var(--chip); color: var(--muted); white-space: nowrap;
+  }
+  .pacechip.ahead { background: rgba(34, 160, 90, .14); color: var(--good); }
+  .pacechip.behind { background: rgba(200, 60, 60, .14); color: var(--bad); }
+  .pacerow { display: flex; align-items: center; gap: 10px; padding: 8px 2px; font-size: .88rem; }
+  .pacerow .pn2 { width: 84px; flex: none; font-size: .84rem; color: var(--muted); }
+  .pacerow .track { flex: 1; height: 10px; background: var(--chip); border-radius: 999px; position: relative; overflow: hidden; }
+  .pacerow .track i { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+  .pacerow.over .track i { background: var(--bad); }
+  .pacerow .tgt {
+    position: absolute; top: -2px; bottom: -2px; width: 2px; background: var(--ink); opacity: .45;
+  }
+  .pacerow .num2 { flex: none; min-width: 132px; text-align: right; white-space: nowrap;
+    font-variant-numeric: tabular-nums; font-size: .82rem; }
+  .pacerow.over .num2 { color: var(--bad); font-weight: 600; }
+  #ex-pace .desc { margin-top: 10px; }
+
   .mi-row .box2 { flex: none; font-size: .78rem; color: var(--muted); white-space: nowrap; }
   .mi-row .box2.due { color: var(--warn); font-weight: 600; }
   /* 考點診斷：整列可點，點了就篩到那個考點 */
@@ -859,8 +879,10 @@
           <button data-m="spell">拼字測驗<small>看中文拼出英文</small></button>
           <button data-m="listen">單字聽力<small>聽發音選中文意思</small></button>
           <button data-m="dict">聽寫測驗<small>聽模擬考句子打出來</small></button>
+          <button data-m="p2">真人聽力 Part 2<small>聽真人音檔選回應，選項不印出來</small></button>
         </div>
         <div class="toolbar" style="margin-top:14px">
+          <select id="q-p2test" class="hidden p2opt"></select>
           <select id="q-dtest" class="hidden dictopt"></select>
           <select id="q-dpart" class="hidden dictopt">
             <option value="all">全部 Part</option>
@@ -1203,6 +1225,7 @@
     <div id="exam-read" class="hidden">
       <div class="exambar">
         <span class="exam-timer" id="er-timer">55:00</span>
+        <span class="pacechip" id="er-pace"></span>
         <span id="er-left" style="color:var(--muted);font-size:.9rem"></span>
         <span class="grow2"></span>
         <button class="submitbtn" id="er-submit">交卷</button>
@@ -1220,6 +1243,7 @@
           <button id="ex-review-btn">📖 檢討全部題目</button>
           <button id="ex-back">回考試首頁</button>
         </div>
+        <div id="ex-pace" class="hidden" style="margin-top:18px;text-align:left"></div>
         <div id="ex-review"></div>
       </div>
     </div>
@@ -1382,7 +1406,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'mistakes', 'speak', 'books'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'mistakes', 'speak', 'books', 'listen2'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -1864,7 +1888,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ================= quiz ================= */
-const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '單字聽力', dict: '聽寫測驗'};
+const MODE_NAME = {e2z: '英翻中', z2e: '中翻英', spell: '拼字測驗', listen: '單字聽力', dict: '聽寫測驗', p2: '真人聽力 Part 2'};
 let qMode = 'e2z', qOnlyHard = false, qDue = false;
 let quiz = null;   // {mode, words:[entry|seg], i, correct, wrong:[], answered}
 let qAdvTimer = null;   // 答對後自動跳題的計時器
@@ -1873,12 +1897,28 @@ let qHistory = JSON.parse(localStorage.getItem('toeic-quiz-history') || '[]');
 document.querySelectorAll('.modes button').forEach(b => b.onclick = () => {
   qMode = b.dataset.m;
   document.querySelectorAll('.modes button').forEach(x => x.classList.toggle('sel', x === b));
-  const dict = qMode === 'dict';
+  const dict = qMode === 'dict', p2 = qMode === 'p2';
   document.querySelectorAll('.dictopt').forEach(el => el.classList.toggle('hidden', !dict));
-  for (const id of ['q-lv', 'q-range', 'q-onlyhard', 'q-book']) $(id).classList.toggle('hidden', dict);
+  document.querySelectorAll('.p2opt').forEach(el => el.classList.toggle('hidden', !p2));
+  for (const id of ['q-lv', 'q-range', 'q-onlyhard', 'q-book', 'q-due']) $(id).classList.toggle('hidden', dict || p2);
 });
 $('q-dtest').innerHTML = Object.keys(TESTS).map(t =>
   `<option value="${t}">${testName(t)}</option>`).join('');
+
+/* ----- 真人聽力 Part 2（data/listen2.js，題目與回應皆為真人音檔）----- */
+const P2 = (typeof LISTEN2 !== 'undefined') ? LISTEN2 : [];
+$('q-p2test').innerHTML = `<option value="all">全部 ${Object.keys(TESTS).length} 回隨機</option>`
+  + Object.keys(TESTS).map(t => `<option value="${t}">${testName(t)}</option>`).join('');
+// 出成跟 dict segment 同形狀（test/f/s/e/t/z），重聽與答錯清單就能沿用既有機制
+function p2Pool(test) {
+  return P2.filter(it => test === 'all' || it.id.startsWith(test + '/'))
+    .map(it => {
+      const [t, f] = it.id.split('/');
+      return {...it, test: t, f, s: 0, e: (it.dur || 0) + 1,
+              t: `${it.q}　(A) ${it.opts[0]} (B) ${it.opts[1]} (C) ${it.opts[2]}`,
+              z: it.qz ? `${it.qz}　(A) ${it.optsz[0]} (B) ${it.optsz[1]} (C) ${it.optsz[2]}` : ''};
+    });
+}
 
 /* ----- dictation (listening) helpers ----- */
 const qaudio = new Audio();
@@ -1991,6 +2031,12 @@ $('q-start').onclick = () => {
     startQuiz('dict', sample(pool, Math.min(+$('q-count').value, pool.length)));
     return;
   }
+  if (qMode === 'p2') {
+    const pool = p2Pool($('q-p2test').value);
+    if (!pool.length) { alert('這一回還沒有 Part 2 題庫'); return; }
+    startQuiz('p2', sample(pool, Math.min(+$('q-count').value, pool.length)));
+    return;
+  }
   const pool = quizPool();
   startQuiz(qMode, sample(pool, Math.min(+$('q-count').value, pool.length)));
 };
@@ -2021,8 +2067,8 @@ function showQuestion() {
   $('q-speak').classList.add('hidden');
   $('q-choices').classList.add('hidden');
   $('q-spell').classList.add('hidden');
-  // 聽寫(dict)考的是句子、沒有單一單字，其餘模式都可加入單字本
-  const noword = q.mode === 'dict';
+  // 聽寫(dict)與真人聽力(p2)考的是句子、沒有單一單字，其餘模式都可加入單字本
+  const noword = q.mode === 'dict' || q.mode === 'p2';
   $('q-addbook-more').classList.toggle('hidden', noword);
   updAddbookBtn();
 
@@ -2057,17 +2103,59 @@ function showQuestion() {
     $('q-input').placeholder = '輸入聽到的句子後按 Enter';
     setTimeout(() => $('q-input').focus(), 50);
     playSnippet(e);
+  } else if (q.mode === 'p2') {
+    // 比照真實考試：題目與三個回應只用聽的，按鈕上不印文字
+    $('q-big').textContent = '🎧';
+    $('q-sub').textContent = `${segLabel(e)}｜聽題目與三個回應，選出最合適的（可重聽）`;
+    $('q-speak').classList.remove('hidden');
+    const box = $('q-choices');
+    box.classList.remove('hidden');
+    box.innerHTML = [0, 1, 2].map(i =>
+      `<button data-i="${i}" style="text-align:center;font-weight:600">(${'ABC'[i]})</button>`).join('');
+    box.querySelectorAll('button').forEach(b => b.onclick = () => {
+      if (quiz.answered) return;
+      p2Answer(+b.dataset.i, e, b);
+    });
+    playSnippet(e);
   }
+}
+/* p2 專屬閱卷：答完才亮出英中逐字稿，答錯可把整段音檔收進聽力練習本 */
+function p2Answer(pick, e, btn) {
+  const q = quiz, ok = pick === e.ans;
+  q.answered = true;
+  qaudio.pause();
+  ok ? q.correct++ : q.wrong.push(e);
+  $('q-choices').querySelectorAll('button').forEach(b => {
+    b.disabled = true;
+    if (+b.dataset.i === e.ans) b.classList.add('right');
+    else if (b === btn) b.classList.add('wrongpick');
+  });
+  const line = i => `<div style="margin-top:3px${i === e.ans ? ';color:var(--good);font-weight:600' : ''}">
+      (${'ABC'[i]}) ${esc(e.opts[i])}${e.optsz[i] ? `<span style="color:var(--muted);font-weight:400">　${esc(e.optsz[i])}</span>` : ''}</div>`;
+  const src = `audio/${e.test}/${e.f}`;
+  $('q-fb').innerHTML = (ok ? '✅ 答對了！' : `❌ 正確答案是 (${'ABC'[e.ans]})`)
+    + `<div style="font-weight:400;margin-top:8px">${esc(e.q)}`
+    + (e.qz ? `<span style="color:var(--muted)">　${esc(e.qz)}</span>` : '')
+    + [0, 1, 2].map(line).join('') + '</div>'
+    + `<button id="q-p2fav" style="margin-top:10px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
+  $('q-fb').className = 'feedback ' + (ok ? 'good' : 'bad');
+  $('q-p2fav').onclick = () => {
+    ensureLfav(); toggleLbookClip(LFAV, src);
+    $('q-p2fav').textContent = inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本';
+  };
+  touchDay();
+  $('q-next').classList.remove('hidden');
+  $('q-next').focus();
 }
 $('q-speak').onclick = () => {
   if (!quiz) return;
   const e = quiz.words[quiz.i];
-  quiz.mode === 'dict' ? playSnippet(e) : speak(e.w);
+  (quiz.mode === 'dict' || quiz.mode === 'p2') ? playSnippet(e) : speak(e.w);
 };
 // 更新「加入最愛」按鈕的愛心狀態；聽寫模式沒有單字則整顆隱藏
 function updAddbookBtn() {
   const btn = $('q-addbook');
-  if (!quiz || quiz.mode === 'dict') { btn.classList.add('hidden'); return; }
+  if (!quiz || quiz.mode === 'dict' || quiz.mode === 'p2') { btn.classList.add('hidden'); return; }
   btn.classList.remove('hidden');
   const fav = getBook(FAV);
   const inb = fav && fav.words.includes(quiz.words[quiz.i].w);
@@ -2075,14 +2163,14 @@ function updAddbookBtn() {
   btn.classList.toggle('on', !!inb);
 }
 $('q-addbook').onclick = () => {
-  if (!quiz || quiz.mode === 'dict') return;
+  if (!quiz || quiz.mode === 'dict' || quiz.mode === 'p2') return;
   if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }  // 別在加最愛時跳下一題
   ensureFav();
   toggleBookWord(FAV, quiz.words[quiz.i].w);  // 預設加到「最愛」，再按一次取消
   updAddbookBtn();
 };
 $('q-addbook-more').onclick = () => {
-  if (!quiz || quiz.mode === 'dict') return;
+  if (!quiz || quiz.mode === 'dict' || quiz.mode === 'p2') return;
   if (qAdvTimer) { clearTimeout(qAdvTimer); qAdvTimer = null; }  // 別在挑單字本時跳下一題
   openBookModal(quiz.words[quiz.i].w);
 };
@@ -2943,7 +3031,8 @@ const lqOfUnit = u => EXL.filter(q => q.part === u.part && q.gi === u.gi);
 
 function startExam(type) {
   if (type !== 'r' && !('speechSynthesis' in window)) { alert('此瀏覽器不支援語音合成，無法進行聽力測驗'); return; }
-  exam = {type, la: Array(EXL.length).fill(-1), ra: Array(EXR.length).fill(-1), unit: 0};
+  exam = {type, la: Array(EXL.length).fill(-1), ra: Array(EXR.length).fill(-1), unit: 0,
+          rt: Array(EXR.length).fill(null), rStart: 0};
   if (type === 'r') { startReading(); return; }
   examShow('exam-listen');
   $('el-pause').textContent = '⏸ 暫停';
@@ -3064,14 +3153,34 @@ $('el-quit').onclick = () => {
 
 /* ----- 閱讀 ----- */
 const READ_MIN = 55;
+/* ----- 配速：每題該花的秒數（多益常見建議值），用來算領先／落後 ----- */
+const PACE = {5: 20, 6: 30, 7: 60};
+const PACE_NAME = {5: 'Part 5', 6: 'Part 6', 7: 'Part 7'};
+const exElapsed = () => exam.rStart ? Math.round((Date.now() - exam.rStart) / 1000) : 0;
+const mmss = s => {
+  const neg = s < 0; s = Math.abs(Math.round(s));
+  return (neg ? '-' : '') + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+};
+// 已作答題目的目標累計秒數 —— 對照實際經過時間就是領先／落後
+const paceTarget = ra => EXR.reduce((n, q, i) => n + (ra[i] !== -1 ? PACE[q.part] : 0), 0);
+function updPace() {
+  const el = $('er-pace');
+  const answered = exam.ra.filter(a => a !== -1).length;
+  if (!answered) { el.textContent = '配速 —'; el.className = 'pacechip'; return; }
+  const d = exElapsed() - paceTarget(exam.ra);
+  el.textContent = d > 0 ? `落後 ${mmss(d)}` : `領先 ${mmss(-d)}`;
+  el.className = 'pacechip ' + (d > 20 ? 'behind' : d < -20 ? 'ahead' : '');
+}
 function startReading() {
   examShow('exam-read');
+  exam.rStart = Date.now();
   renderReading();
   let left = READ_MIN * 60;
   const tick = () => {
     const m = Math.floor(left / 60), s = left % 60;
     $('er-timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
     $('er-timer').classList.toggle('low', left <= 300);
+    updPace();
     if (left-- <= 0) { clearInterval(exTimer); alert('時間到，自動交卷'); finishExam(); }
   };
   tick();
@@ -3112,8 +3221,10 @@ function renderReading() {
   $('er-area').innerHTML = html;
   $('er-area').querySelectorAll('.opts label').forEach(l => l.onclick = () => {
     exam.ra[+l.dataset.r] = +l.dataset.i;
+    exam.rt[+l.dataset.r] = exElapsed();      // 記下作答時間點，交卷後算各 Part 配速
     l.parentElement.querySelectorAll('label').forEach(x => x.classList.toggle('picked', x === l));
     updLeft();
+    updPace();
   });
 }
 function updLeft() {
@@ -3140,7 +3251,8 @@ function finishExam() {
   const lC = withL ? EXL.filter((q, i) => exam.la[i] === q.ans).length : 0;
   const rC = withR ? EXR.filter((q, i) => exam.ra[i] === q.ans).length : 0;
   const rec = {t: Date.now(), type: exam.type, lC, lT: withL ? EXL.length : 0, rC, rT: withR ? EXR.length : 0,
-               la: exam.la, ra: exam.ra};
+               la: exam.la, ra: exam.ra,
+               rt: withR ? exam.rt : null, rDur: withR ? exElapsed() : 0};
   exHistory.unshift(rec);
   exHistory = exHistory.slice(0, 20);
   localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
@@ -3201,8 +3313,66 @@ function showExamResult(rec) {
   const total = (rec.lT ? est(rec.lC, rec.lT) : 0) + (rec.rT ? est(rec.rC, rec.rT) : 0);
   $('ex-score').textContent = rec.lT && rec.rT ? `粗估 ${total} 分` : parts[0].split('（')[1]?.replace('）', '') || '';
   $('ex-sub').innerHTML = parts.join('　') + '<br><span style="font-size:.8rem">分數為依答對率換算的粗估值，僅供參考</span>';
+  renderPace(rec);
   $('ex-review').innerHTML = '';
   $('ex-review-btn').onclick = () => renderExamReview(rec);
+}
+/* ----- 交卷後的配速報告 ----- */
+// 閱讀是整頁捲動作答，沒有「離開某一題」的時點，所以用每題的作答時間點來還原：
+// 某個 Part 的耗時 = 該 Part 最後一題的作答時點 − 前一個 Part 最後一題的作答時點。
+function renderPace(rec) {
+  const box = $('ex-pace');
+  if (!rec.rT || !rec.rt || !rec.rt.some(x => x != null)) { box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  const parts = [5, 6, 7];
+  let prev = 0;
+  const rows = parts.map(p => {
+    const idx = EXR.map((q, i) => q.part === p ? i : -1).filter(i => i >= 0);
+    const ts = idx.map(i => rec.rt[i]).filter(x => x != null);
+    const n = idx.length, done = ts.length;
+    const target = n * PACE[p];
+    if (!done) return {p, n, done, target, act: null};
+    const end = Math.max(...ts);
+    const act = Math.max(0, end - prev);
+    prev = end;
+    return {p, n, done, target, act};
+  });
+  const tgtAll = rows.reduce((n, r) => n + r.target, 0);
+  box.innerHTML = `<h3>配速分析</h3>
+    <p class="desc">目標是 Part 5 每題 20 秒、Part 6 每題 30 秒、Part 7 每題 60 秒
+      （共 ${mmss(tgtAll)}，本回限時 ${READ_MIN} 分鐘）。深色刻度是目標時間，超過就轉紅。
+      Part 7 寫不完通常是前面兩個 Part 拖太久。</p>`
+    + rows.map(r => {
+      if (r.act == null) return `<div class="pacerow"><span class="pn2">${PACE_NAME[r.p]}</span>
+        <span class="track"></span><span class="num2">未作答</span></div>`;
+      const over = r.act > r.target;
+      const w = Math.min(100, r.act / Math.max(r.target, 1) * 100 * 0.7);
+      const d = r.act - r.target;
+      return `<div class="pacerow${over ? ' over' : ''}">
+        <span class="pn2">${PACE_NAME[r.p]}</span>
+        <span class="track"><i style="width:${w}%"></i><span class="tgt" style="left:70%"></span></span>
+        <span class="num2">${mmss(r.act)} / ${mmss(r.target)}　${d > 0 ? '+' : ''}${mmss(d)}</span>
+      </div>`;
+    }).join('')
+    + `<div class="pacerow" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px">
+        <span class="pn2">總計</span><span class="track"></span>
+        <span class="num2">${mmss(rec.rDur)} / ${mmss(tgtAll)}</span></div>`
+    + paceAdvice(rows, rec);
+}
+function paceAdvice(rows, rec) {
+  const unans = rec.ra.filter(a => a === -1).length;
+  const worst = rows.filter(r => r.act != null).sort((a, b) => (b.act - b.target) - (a.act - a.target))[0];
+  const msgs = [];
+  if (worst && worst.act > worst.target) {
+    msgs.push(`${PACE_NAME[worst.p]} 超出目標 ${mmss(worst.act - worst.target)}，是這回最拖時間的一段。`);
+  }
+  if (unans) {
+    const lastPart = rows.filter(r => r.done < r.n)[0];
+    msgs.push(`還有 ${unans} 題沒作答${lastPart ? `（多半落在 ${PACE_NAME[lastPart.p]}）` : ''}。`
+      + (worst && worst.p !== 7 ? `把 ${PACE_NAME[worst.p]} 的時間壓回來就寫得完。` : ''));
+  }
+  if (!msgs.length) msgs.push('配速在目標之內，維持這個節奏。');
+  return `<p class="desc">${msgs.map(esc).join('')}</p>`;
 }
 function reviewOpts(q, picked) {
   return `<div class="opts">${q.opts.map((o, i) => {
