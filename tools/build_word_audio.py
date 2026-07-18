@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""把國學 A/B 本的單字 MP3 依轉錄時間戳切成單字級片段，供單字卡/單字測驗真人發音。
+"""把國學單字 MP3 切成單字級片段，供單字卡/單字測驗真人發音。
 
-來源：../國學多益模擬題{A,B}本/04_單字MP3_轉錄/*.tsv（英文、中文各自獨立一行，
-英文那行的起訖秒數就是單字的邊界）。只收純英文且對得上 data/words.js 的片段。
+兩種來源，都只收對得上 data/words.js 的片段：
+
+- A/B 本 `04_單字MP3_轉錄/*.tsv`：英文、中文各自獨立一行，英文那行的起訖秒數
+  就是單字邊界，直接用。
+- 綠本 `green_words/*.json`（tools/transcribe_green_words.py 產生）：綠本英中連著唸、
+  段級時間戳不可靠，所以改用字級時間戳，自己拼出片語邊界。綠本每個字唸兩次
+  （英文、英文、中文），偵測到重複就把兩次一起收進片段。
 
 產出：audio/word/<首字母>/<slug>.mp3（48kbps 單聲道）＋ data/wordaudio.js
 
@@ -32,7 +37,57 @@ SOURCES = [
     ('B', os.path.join(SRC, '國學多益模擬題B本', '04_單字MP3_轉錄', '*.tsv'), b_mp3),
 ]
 
+GREEN_JSON = os.path.join(SRC, 'green_words', '*.json')
+GREEN_MP3 = os.path.join(SRC, '國學多益寫作綠本單字')
+MAX_PHRASE = 4                                   # 片語最多幾個字（a wide assortment of）
+MIN_PROB = 0.4                                   # whisper 對該字的信心下限
+
 CJK = re.compile(r'[一-鿿]')
+TOKEN = re.compile(r"^[A-Za-z][A-Za-z'\-]*$")
+
+def green_candidates(wset):
+    """從綠本的字級時間戳拼出單字/片語片段。yield (key, mp3, start, end)。"""
+    for jf in sorted(glob.glob(GREEN_JSON)):
+        stem = os.path.basename(jf)[:-5]
+        mp3 = os.path.join(GREEN_MP3, stem + '.mp3')
+        if not os.path.exists(mp3):
+            print('！找不到音檔:', mp3); continue
+        toks = []
+        for w in json.load(open(jf, encoding='utf-8')):
+            t = w['w'].strip(" ,.，。、").strip()
+            # 中文（含被 language='en' 硬轉出來的殘字）標成非英文，當分隔點兼結尾界線
+            toks.append((t.lower(), w['s'], w['e'], w['prob'], bool(TOKEN.match(t))))
+
+        def phrase_at(i, n):
+            """第 i 個位置往後 n 個 token 連續且都是英文時，回傳 (詞, 起, 迄, 信心)。"""
+            if i + n > len(toks): return None
+            part = toks[i:i + n]
+            if not all(p[4] for p in part): return None
+            return (' '.join(p[0] for p in part), part[0][1], part[-1][2],
+                    min(p[3] for p in part))
+
+        i = 0
+        while i < len(toks):
+            if not toks[i][4]: i += 1; continue
+            # 由長到短找最長的片語，對不上就往前挪一格
+            hit = next((g for g in (phrase_at(i, n) for n in range(MAX_PHRASE, 0, -1))
+                        if g and g[0] in wset), None)
+            if not hit: i += 1; continue
+            key, s, run_end, prob = hit
+            n = len(key.split())
+            if prob < MIN_PROB: i += n; continue
+            # 綠本每個字唸兩次，第二次常被轉成複數或零長度，所以只要還是英文就一路吃掉
+            j = i + n
+            while j < len(toks) and toks[j][4] and toks[j][0].rstrip('s') == key.split()[0].rstrip('s'):
+                run_end = max(run_end, toks[j][2]); j += 1
+            # 結尾界線＝下一個 token 的起點，不管它是中文翻譯還是別的英文字：
+            # 綠本英中是貼著唸的，延伸過頭會吃到中文；而像「formal attire」這種
+            # 相鄰的兩個單字，只看中文會讓 formal 的片段把 attire 一起吃進去。
+            # 這裡先扣掉 PAD，因為後面切割時會統一補 PAD，扣掉才剛好停在下一個字之前。
+            nxt = toks[j][1] if j < len(toks) else None
+            e = min(run_end + 0.35 if nxt is None else nxt, s + MAX_DUR) - PAD
+            if e - s >= MIN_DUR: yield key, mp3, s, max(e, run_end)
+            i = max(j, i + n)
 
 def is_grid_snapped(path):
     """whisper 偶爾會整檔切成等長格點（例如每段都剛好 2.0 秒），那種時間戳不是真的
@@ -80,6 +135,14 @@ def main():
                 # 同一個字出現多次時保留最短的（最乾淨、最不可能夾到別的字）
                 if key in picked and picked[key][2] - picked[key][1] <= e - s: continue
                 picked[key] = (mp3, s, e, tag)
+
+    # 綠本只補 A/B 本沒有的字：A/B 本是段級時間戳、邊界較保險，優先留著
+    for key, mp3, s, e in green_candidates(wset):
+        stats['hit'] += 1
+        if not (MIN_DUR <= e - s <= MAX_DUR): stats['bad_dur'] += 1; continue
+        if key in picked and picked[key][3] != 'G': continue
+        if key in picked and picked[key][2] - picked[key][1] <= e - s: continue
+        picked[key] = (mp3, s, e, 'G')
 
     print(f'單字卡 {len(words)} 字；對到片段 {stats["hit"]} 次；'
           f'可切片單字 {len(picked)} 字（{len(picked)/len(words)*100:.1f}%）'
