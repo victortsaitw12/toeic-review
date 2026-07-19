@@ -88,13 +88,6 @@
   }
   .toolbar .on { border-color: var(--accent); color: var(--accent); }
   .counter { margin-left: auto; color: var(--muted); font-size: .9rem; }
-  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-  .seg button {
-    border: none; background: var(--card); color: var(--muted);
-    padding: 8px 16px; font-size: .92rem; cursor: pointer;
-  }
-  .seg button + button { border-left: 1px solid var(--line); }
-  .seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 
   .cardwrap { perspective: 1200px; position: relative; }
   .favbtn {
@@ -140,11 +133,6 @@
     border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 12px 22px; border-radius: 12px; font-size: 1rem; cursor: pointer; min-width: 110px;
   }
-  .cardnav .know { border-color: var(--good); color: var(--good); }
-  .cardnav .dontknow { border-color: var(--warn); color: var(--warn); }
-  .cardnav .know.marked { background: var(--good); color: #fff; }
-  .cardnav .dontknow.marked { background: var(--warn); color: #fff; }
-  #prev-card, #next-card { min-width: 64px; }
   .kbd-tip { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 14px; }
   kbd {
     background: var(--chip); border: 1px solid var(--line); border-bottom-width: 2px;
@@ -674,8 +662,6 @@
     body[data-view="cards"] main { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
     #view-cards .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     #view-cards .toolbar select, #view-cards .toolbar button { width: 100%; padding: 10px 8px; margin: 0; }
-    #view-cards .toolbar .seg { grid-column: 1 / -1; display: flex; }
-    #view-cards .toolbar .seg button { flex: 1; padding: 11px 8px; }
     #view-cards .toolbar #bookfilter { grid-column: 1 / -1; }
     #view-cards .counter { grid-column: 1 / -1; text-align: center; margin-left: 0; }
     #view-cards .cardnav {
@@ -687,9 +673,7 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
     #view-cards .cardnav button { min-width: 0; margin: 0; padding: 10px 4px; }
-    /* 手機換卡靠左右滑手勢，底部拇指列只留兩顆最高頻的鈕 */
-    #prev-card, #next-card { display: none; }
-    #mark-hard, #mark-known { min-height: 54px; font-size: 1.05rem; }
+    #prev-card, #next-card { min-height: 54px; font-size: 1.05rem; }
 
     /* 單字測驗：設定選單網格化、主要按鈕加大 */
     #view-quiz .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -829,20 +813,16 @@
   <!-- ================= 單字卡 ================= -->
   <section id="view-cards" class="hidden">
     <div class="toolbar">
-      <div class="seg" id="card-seg">
-        <button id="due-only">📅 今日複習</button>
-        <button id="browse-btn">瀏覽單字</button>
-      </div>
-      <select id="bookfilter" class="browse-ctl"></select>
-      <select id="range" class="browse-ctl"></select>
-      <select id="lvfilter" class="browse-ctl">
+      <select id="bookfilter"></select>
+      <select id="range"></select>
+      <select id="lvfilter">
         <option value="0">全部級距</option>
         <option value="1">基礎 250–545</option>
         <option value="2">中級 550–780</option>
         <option value="3">中高 785–940</option>
         <option value="4">高階 945+</option>
       </select>
-      <button id="shuffle" class="browse-ctl">🔀 隨機</button>
+      <button id="shuffle">🔀 隨機</button>
       <span class="counter" id="counter"></span>
     </div>
     <div class="cardwrap">
@@ -865,13 +845,11 @@
       </div>
     </div>
     <div class="cardnav">
-      <button id="prev-card" title="上一張">←</button>
-      <button class="dontknow" id="mark-hard">不熟</button>
-      <button class="know" id="mark-known">認識 ✓</button>
-      <button id="next-card" title="下一張">→</button>
+      <button id="prev-card">← 上一張</button>
+      <button id="next-card">下一張 →</button>
     </div>
     <p class="kbd-tip">
-      <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
+      <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>S</kbd> 發音
     </p>
   </section>
 
@@ -1625,7 +1603,6 @@ function stopAllPlayback() {
     speechSynthesis.cancel();   // 單字卡/單字測驗的語音發音
   }
 }
-let cardsSeen = false;
 function showView(v) {
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
   for (const k of ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
@@ -1635,11 +1612,6 @@ function showView(v) {
   document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
   if (v === 'home') renderHome();
-  if (v === 'cards') {
-    refreshDueBtn();
-    // 第一次進單字卡：有到期字就直接落在「今日複習」，沒有才進瀏覽模式
-    if (!cardsSeen) { cardsSeen = true; setDueOnly(dueCount() > 0); }
-  }
   if (v === 'quiz') refreshQDueBtn();
 }
 $('tab-home').onclick = () => showView('home');
@@ -1713,7 +1685,7 @@ function streak() {
 }
 
 /* ================= flashcards ================= */
-let deck = [], idx = 0, shuffled = false, dueOnly = false;
+let deck = [], idx = 0, shuffled = false;
 const LV = {1: '基礎 250–545', 2: '中級 550–780', 3: '中高 785–940', 4: '高階 945+'};
 
 const rangeSel = $('range');
@@ -1728,23 +1700,18 @@ function buildRange() {
 }
 function buildDeck() {
   let pool;
-  // 複習模式＝一條到期佇列，篩選全部收起來；瀏覽模式才顯示篩選列
-  document.querySelectorAll('#view-cards .browse-ctl').forEach(el => el.classList.toggle('hidden', dueOnly));
-  if (dueOnly) {
-    pool = getWords().filter(w => srsDue(w.w));
+  const bk = $('bookfilter').value;
+  if (bk) {
+    pool = bookWords(bk);
+    rangeSel.classList.add('hidden');
   } else {
-    const bk = $('bookfilter').value;
-    if (bk) {
-      pool = bookWords(bk);
-      rangeSel.classList.add('hidden');
-    } else {
-      const r = rangeSel.value;
-      pool = getWords();
-      if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
-    }
-    const lv = +$('lvfilter').value;
-    if (lv) pool = pool.filter(w => w.lv === lv);
+    pool = getWords();
+    rangeSel.classList.remove('hidden');
+    const r = rangeSel.value;
+    if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
   }
+  const lv = +$('lvfilter').value;
+  if (lv) pool = pool.filter(w => w.lv === lv);
   if (shuffled) {
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -1757,12 +1724,11 @@ function buildDeck() {
 function renderCard() {
   $('card').classList.remove('flip');
   if (!deck.length) {
-    $('f-word').textContent = '🎉';
-    $('f-pos').textContent = dueOnly ? '今天的單字複習都做完了！' : '這個範圍沒有符合的單字';
+    $('f-word').textContent = '🤔';
+    $('f-pos').textContent = '這個範圍沒有符合的單字';
     $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
-    $('counter').textContent = dueOnly ? '' : '0 / 0';
+    $('counter').textContent = '0 / 0';
     $('f-lv').classList.add('hidden');
-    $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
     $('fav-card').classList.add('hidden');
     $('add-book').classList.add('hidden');
     return;
@@ -1775,9 +1741,7 @@ function renderCard() {
   $('b-zh').textContent = w.zh;
   $('b-ex').textContent = w.ex;
   $('b-exzh').textContent = w.exzh;
-  $('counter').textContent = dueOnly ? `還剩 ${deck.length} 字` : `${idx + 1} / ${deck.length}`;
-  $('mark-known').classList.toggle('marked', marks[w.w] === 'known');
-  $('mark-hard').classList.toggle('marked', marks[w.w] === 'hard');
+  $('counter').textContent = `${idx + 1} / ${deck.length}`;
   updFavCard();
 }
 // 單字卡右上角愛心：切換目前單字在「最愛」單字本的狀態
@@ -1803,22 +1767,6 @@ function move(d) {
   if (!deck.length) return;
   idx = (idx + d + deck.length) % deck.length;
   renderCard();
-}
-function mark(kind) {
-  if (!deck.length) return;
-  const ok = kind === 'known';
-  const e = srsGrade(deck[idx].w, ok);
-  const gap = e.d - today();
-  srsToast(ok ? `認識 ✓ → ${gap} 天後再複習` : '不熟 → 今天再看一次');
-  if (dueOnly) {
-    // 複習佇列：答對就出隊，答錯打回第 1 盒、排到隊尾今天再遇一次
-    const [c] = deck.splice(idx, 1);
-    if (!ok) deck.push(c);
-    if (idx >= deck.length) idx = 0;
-    renderCard();
-  } else {
-    move(1);
-  }
 }
 /* 單字發音：國學 A/B 本單字 MP3 切出來的真人錄音（data/wordaudio.js，約 2,950 字）優先，
    查不到的字（例句、以及沒收錄的字）才退回瀏覽器語音合成。 */
@@ -1857,23 +1805,9 @@ $('card').addEventListener('touchend', e => {
 }, {passive: true});
 $('prev-card').onclick = () => move(-1);
 $('next-card').onclick = () => move(1);
-$('mark-known').onclick = () => mark('known');
-$('mark-hard').onclick = () => mark('hard');
 $('speak-word').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].w); };
 $('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].ex); };
 $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
-function setDueOnly(on) {
-  dueOnly = on;
-  $('due-only').classList.toggle('on', dueOnly);
-  $('browse-btn').classList.toggle('on', !dueOnly);
-  buildDeck();
-}
-$('due-only').onclick = () => setDueOnly(true);
-$('browse-btn').onclick = () => setDueOnly(false);
-function refreshDueBtn() {
-  const n = dueCount();
-  $('due-only').textContent = n ? `📅 今日複習 ${n}` : '📅 今日複習';
-}
 rangeSel.onchange = buildDeck;
 $('lvfilter').onchange = buildDeck;
 $('bookfilter').onchange = buildDeck;
@@ -1885,8 +1819,6 @@ document.addEventListener('keydown', e => {
   if (e.code === 'Space') { e.preventDefault(); $('card').classList.toggle('flip'); }
   else if (e.key === 'ArrowLeft') move(-1);
   else if (e.key === 'ArrowRight') move(1);
-  else if (e.key === '1') mark('hard');
-  else if (e.key === '2') mark('known');
   else if (e.key === 's' || e.key === 'S') { if (deck.length) speak(deck[idx].w); }
 });
 
@@ -4211,8 +4143,19 @@ function renderTasks() {
   };
   const cards = [
     {done: !due, lbl: '📅 單字複習', num: due, unit: '個到期',
-     sub: due ? '照間隔排程今天該複習的字' : '今天的單字都複習完了',
-     btn: '開始複習', act: () => { showView('cards'); setDueOnly(true); refreshDueBtn(); }},
+     sub: due ? '用英翻中測驗複習今天到期的字' : '今天的單字都複習完了',
+     btn: '開始複習', act: () => {
+       // 今日複習走「英翻中」單字測驗：答對往後排、答錯明天再考（srsGrade 在測驗裡）
+       showView('quiz');
+       // 可能停在上次的作答/結果畫面，先回到設定頁再開考
+       $('quiz-run').classList.add('hidden');
+       $('quiz-result').classList.add('hidden');
+       $('quiz-setup').classList.remove('hidden');
+       document.querySelector('.modes button[data-m="e2z"]').click();
+       if (!qDue) setQDue(true);
+       refreshQDueBtn();
+       if (due) $('q-start').click();
+     }},
     {done: !midue, lbl: '❌ 錯題複習', num: midue, unit: '題到期',
      sub: midue ? '答對往後排、答錯明天再考一次'
        : (MI.length ? '今天的錯題都複習完了' : '交卷後把錯題加進來'),
