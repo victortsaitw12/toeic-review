@@ -534,6 +534,14 @@
     border-radius: 14px; padding: 12px;
   }
   .qpick h4 { margin: 10px 2px 6px; font-size: .78rem; color: var(--muted); font-weight: 600; }
+  .srcpickrow { display: flex; gap: 8px; align-items: stretch; }
+  .srcpickrow .tsel { flex: 1; min-width: 0; }
+  .lfavbtn {
+    flex: none; width: 42px; border: 1px solid var(--line); background: var(--card);
+    color: var(--line); border-radius: 9px; font-size: 1.1rem; cursor: pointer;
+  }
+  .lfavbtn:hover { color: var(--warn); }
+  .lfavbtn.on { color: var(--warn); border-color: var(--warn); }
   .qpick .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .qpick .chips button {
     border: 1px solid var(--line); background: none; color: var(--ink);
@@ -1085,10 +1093,9 @@
     <div class="shadow-grid">
     <aside class="qcol">
       <div class="qpick">
-        <div class="chips" id="series-row"></div>
-        <div id="sh-pick-exams">
-          <h4>模擬考選項</h4>
-          <div class="chips" id="testnum-row"></div>
+        <div class="srcpickrow">
+          <select id="sh-src" class="tsel"></select>
+          <button id="sh-favbtn" class="lfavbtn" title="最愛練習本">★</button>
         </div>
         <div class="src-note" id="src-note"></div>
       </div>
@@ -1164,10 +1171,9 @@
     <div class="shadow-grid">
     <aside class="qcol">
       <div class="qpick">
-        <div class="chips" id="sp-series-row"></div>
-        <div id="sp-pick-exams">
-          <h4>模擬考選項</h4>
-          <div class="chips" id="sp-num-row"></div>
+        <div class="srcpickrow">
+          <select id="sp-srcsel" class="tsel"></select>
+          <button id="sp-favbtn" class="lfavbtn" title="最愛練習本">★</button>
         </div>
         <div class="src-note" id="sp-note"></div>
       </div>
@@ -1239,10 +1245,9 @@
     <div class="shadow-grid">
     <aside class="qcol">
       <div class="qpick">
-        <div class="chips" id="dt-series-row"></div>
-        <div id="dt-pick-exams">
-          <h4>模擬考選項</h4>
-          <div class="chips" id="dt-num-row"></div>
+        <div class="srcpickrow">
+          <select id="dt-srcsel" class="tsel"></select>
+          <button id="dt-favbtn" class="lfavbtn" title="最愛練習本">★</button>
         </div>
         <div class="src-note" id="dt-note"></div>
       </div>
@@ -2497,21 +2502,12 @@ const practiceSrcs = () => [{key: 'voa', name: 'VOA 跟讀教材'},
   ...Object.keys(TESTS).map(t => ({key: t, name: `${testName(t)} 聽力`}))];
 /* 跟讀/聽寫側邊欄上方的來源選項：系列（VOA/EZ/國學…）＋各練習本＋模擬考回數 */
 function buildPracticePick(p, cur, onSwitch) {
-  const curS = isFlatSrc(cur) ? cur : seriesOf(cur);
-  $(p + '-series-row').innerHTML =
-    [{k: 'voa', n: 'VOA'}, ...SERIES.filter(s => seriesTests(s.k).length),
-     ...lbooks.map(b => ({k: 'lb:' + b.name, n: (b.name === LFAV ? '★ ' : '📓 ') + b.name}))]
-    .map(s => `<button data-s="${s.k}" class="${s.k === curS ? 'cur' : ''}">${esc(s.n)}</button>`).join('');
-  $(p + '-series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (b.dataset.s === curS) return;
-    onSwitch(isFlatSrc(b.dataset.s) ? b.dataset.s : seriesTests(b.dataset.s)[0]);
-  });
-  $(p + '-pick-exams').classList.toggle('hidden', isFlatSrc(cur));
-  $(p + '-num-row').innerHTML = isFlatSrc(cur) ? '' : seriesTests(curS)
-    .map(t => `<button data-t="${t}" class="${t === cur ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
-  $(p + '-num-row').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (b.dataset.t !== cur) onSwitch(b.dataset.t);
-  });
+  const sel = $(p + '-srcsel');
+  sel.innerHTML = srcSelectHTML(cur, [['voa', 'VOA 跟讀教材']]);
+  sel.onchange = () => onSwitch(sel.value);
+  const fav = $(p + '-favbtn');
+  fav.classList.toggle('on', cur === 'lb:' + LFAV);
+  fav.onclick = () => { ensureLfav(); if (cur !== 'lb:' + LFAV) onSwitch('lb:' + LFAV); };
 }
 /* ===== 聽力練習本：多本、本機儲存；收藏單位＝整段音檔 src；預設「最愛」 =====
    聽力解析／口說跟讀／聽寫練習三頁共用。舊版單一 toeic-favs 會遷移進「最愛」。 */
@@ -4156,28 +4152,31 @@ let shBook = null;   // 側邊欄正在顯示的練習本名稱（null＝一般�
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
+/* 來源下拉共用：optgroup 分系列（每回一項）＋聽力練習本群組。extra 放最前（如 VOA） */
+function srcSelectHTML(cur, extra) {
+  const opt = (v, n) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(n)}</option>`;
+  return (extra || []).map(x => opt(x[0], x[1])).join('')
+    + SERIES.filter(sr => seriesTests(sr.k).length).map(sr =>
+        `<optgroup label="${esc(sr.n)}">${seriesTests(sr.k).map(t => opt(t, testName(t))).join('')}</optgroup>`).join('')
+    + `<optgroup label="聽力練習本">${lbooks.map(b =>
+        opt('lb:' + b.name, (b.name === LFAV ? '★ ' : '📓 ') + b.name)).join('')}</optgroup>`;
+}
 function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
   $('tsel-m').innerHTML = opts;
   $('tsel-m').value = curTest;
-  const cs = shBook ? 'lb:' + shBook : seriesOf(curTest);
-  $('series-row').innerHTML =
-    [...SERIES.filter(s => seriesTests(s.k).length),
-     ...lbooks.map(b => ({k: 'lb:' + b.name, n: (b.name === LFAV ? '★ ' : '📓 ') + b.name}))]
-    .map(s => `<button data-s="${s.k}" class="${s.k === cs ? 'cur' : ''}">${esc(s.n)}</button>`).join('');
-  $('series-row').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (b.dataset.s === cs) return;
-    if (b.dataset.s.startsWith('lb:')) { shBook = b.dataset.s.slice(3); buildTestSel(); buildQSel(); return; }
-    shBook = null;
-    if (b.dataset.s === seriesOf(curTest)) { buildTestSel(); buildQSel(); }
-    else switchTest(seriesTests(b.dataset.s)[0]);
-  });
-  $('sh-pick-exams').classList.toggle('hidden', !!shBook);
-  $('testnum-row').innerHTML = shBook ? '' : seriesTests(cs)
-    .map(t => `<button data-t="${t}" class="${t === curTest ? 'cur' : ''}">${t.replace(/\D/g, '')}</button>`).join('');
-  $('testnum-row').querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (b.dataset.t !== curTest) switchTest(b.dataset.t);
-  });
+  const cur = shBook ? 'lb:' + shBook : curTest;
+  $('sh-src').innerHTML = srcSelectHTML(cur);
+  $('sh-src').onchange = () => {
+    const v = $('sh-src').value;
+    if (v.startsWith('lb:')) { shBook = v.slice(3); buildTestSel(); buildQSel(); }
+    else switchTest(v);
+  };
+  $('sh-favbtn').classList.toggle('on', shBook === LFAV);
+  $('sh-favbtn').onclick = () => {
+    ensureLfav();
+    if (shBook !== LFAV) { shBook = LFAV; buildTestSel(); buildQSel(); }
+  };
   $('src-note').innerHTML = shBook ? esc(`📓 練習本「${shBook}」的題目（點 ★ 可移除）`) + favClearBtn('lb:' + shBook)
     : testSource(curTest) ? esc(`來源：${testSource(curTest)}（僅供個人學習）`) : '';
 }
