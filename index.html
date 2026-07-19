@@ -3384,6 +3384,27 @@ function ezqPickSingle(pick) {
   $('ezq-next').classList.remove('hidden');
   $('ezq-next').focus();
 }
+/* 全組答完後亮出的對話/獨白英中逐字稿（比照 Part 2 的題幹揭示）：
+   開頭的 Part 說明與「Questions X–Y refer to…」之前全部略過，
+   尾端唸題目（Number 32…）之後也略過——題目已經印在畫面上了 */
+function ezqTranscript(u) {
+  const T = (typeof TRANSCRIPTS !== 'undefined' && TRANSCRIPTS[u.test]) || {};
+  const segs = T[u.f] || [];
+  let start = 0;
+  segs.forEach((sg, i) => { if (/refer(?:red)?s? to the following/i.test(sg.t)) start = i + 1; });
+  const lines = [];
+  for (let i = start; i < segs.length; i++) {
+    const t = segs[i].t.trim();
+    const m = t.match(/^(?:Number|No\.?|Questions?)\s*(\d+)|^(\d+)\s*[-.．。、,，]/i);
+    if (m && u.qs.includes(+(m[1] || m[2]))) break;
+    lines.push(segs[i]);
+  }
+  if (!lines.length) return '';
+  return `<div class="passage" style="margin-top:12px;font-weight:400">
+      <span class="ptype">${u.p === 3 ? '對話' : '獨白'}原文</span>`
+    + lines.map(sg => `<div style="margin-top:5px">${esc(sg.t)}${sg.z ? `<div style="color:var(--muted);font-size:.88rem">${esc(sg.z)}</div>` : ''}</div>`).join('')
+    + '</div>';
+}
 /* Part 3/4：題組內單題作答，解析亮在該題下方；三題都答完才開放下一組 */
 function ezqPickGroup(n, pick) {
   const u = ezq.units[ezq.ui];
@@ -3413,7 +3434,8 @@ function ezqPickGroup(n, pick) {
     qaudio.pause();
     const src = `audio/${u.test}/${u.f}`;
     const allOK = ezq.gOK === u.qs.length;
-    $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}` + ezqFavBtn(src);
+    $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}`
+      + ezqTranscript(u) + ezqFavBtn(src);
     $('ezq-fb').className = 'feedback ' + (allOK ? 'good' : 'bad');
     ezqBindFav(src);
     ezqMarkCur(-1);
