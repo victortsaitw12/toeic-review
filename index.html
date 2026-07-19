@@ -511,10 +511,10 @@
   .qcol .qside { position: relative; top: 0; max-height: none; flex: 0 1 auto; min-height: 0; }
   /* ≥900px：題目選擇欄（.qcol）抽離內容區，停靠在全站側邊欄旁（滿高、同一視覺體） */
   @media (min-width: 900px) {
-    body[data-view="shadow"], body[data-view="speak"], body[data-view="dict"] { padding-left: 452px; }
-    body.sb-collapsed[data-view="shadow"], body.sb-collapsed[data-view="speak"], body.sb-collapsed[data-view="dict"] { padding-left: 302px; }
+    body[data-view="shadow"], body[data-view="speak"], body[data-view="dict"] { padding-left: 412px; }
+    body.sb-collapsed[data-view="shadow"], body.sb-collapsed[data-view="speak"], body.sb-collapsed[data-view="dict"] { padding-left: 262px; }
     .qcol {
-      position: fixed; left: 212px; top: 0; bottom: 0; width: 240px; z-index: 15;
+      position: fixed; left: 212px; top: 0; bottom: 0; width: 200px; z-index: 15;
       max-height: none; border-radius: 0; margin: 0;
       background: var(--card); border-right: 1px solid var(--line);
       padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
@@ -526,6 +526,7 @@
     .qcol .qside { border: none; background: none; padding: 0 2px; flex: 1 1 auto; min-height: 0; }
     /* 清單裡的 Part 標題吸頂，捲動時知道自己在哪一段 */
     .qside h4 { position: sticky; top: 0; background: var(--card); z-index: 1; margin: 0; padding: 10px 2px 6px; }
+    .qside .tm { display: none; }   /* 窄欄不顯示時長（練習完成標記保留） */
     .tpanel { margin-bottom: 0; }
   }
   /* ≥1180px：播放器與逐字稿並排（各有最小寬度、1:1.2 分配剩餘空間） */
@@ -2708,7 +2709,7 @@ function renderClipList() {
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src, spBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === spClipIdx ? 'cur' : ''}">${favStar(c.src, spBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('sp', c)}<span class="tm">${fmt(c.dur)}</span></span></button>`;
     }).join('')).join('');
   $('sp-side-list').querySelectorAll('button').forEach(b => b.onclick = () => openClip(+b.dataset.i, true));
   bindBookAdd($('sp-side-list'));
@@ -2920,7 +2921,7 @@ function renderDtSide() {
     : Object.entries(groups).map(([g, arr]) =>
     `<h4>${g}</h4>` + arr.map(i => {
       const c = clips[i];
-      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src, dtBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}${fmt(c.dur)}</span></button>`;
+      return `<button data-i="${i}" class="${i === dtClipIdx ? 'cur' : ''}">${favStar(c.src, dtBook)}${bookAddBtn(c.src, c.title)}<span class="lbl">${esc(c.title)}</span><span class="d">${doneBadge('dt', c)}<span class="tm">${fmt(c.dur)}</span></span></button>`;
     }).join('')).join('');
   $('dt-side-list').querySelectorAll('button').forEach(b => b.onclick = () => dtOpen(+b.dataset.i));
   bindBookAdd($('dt-side-list'));
@@ -4220,7 +4221,7 @@ function buildQSel() {
       ? '<div class="empty">這個練習本還沒有題目，點題目旁的 ★ 加入</div>'
       : Object.entries(byTest).map(([t, arr]) =>
       `<h4>${esc(testName(t))}</h4>` + arr.map(([i, it]) =>
-        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}${bookAddBtn(`audio/${t}/${it.f}`, it.part === '說明' ? it.label : it.part + '・' + it.label)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}${bookAddBtn(`audio/${t}/${it.f}`, it.part === '說明' ? it.label : it.part + '・' + it.label)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d"><span class="tm">${fmt(it.dur)}</span></span></button>`).join('')).join('');
     $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.t !== curTest) { curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest); }
       load(+b.dataset.i, true);
@@ -4232,7 +4233,7 @@ function buildQSel() {
   }
   $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
     `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
-      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}${bookAddBtn(`audio/${curTest}/${it.f}`, it.label)}<span class="lbl">${it.label}</span><span class="d">${fmt(it.dur)}</span></button>`).join('')).join('');
+      `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}${bookAddBtn(`audio/${curTest}/${it.f}`, it.label)}<span class="lbl">${it.label}</span><span class="d"><span class="tm">${fmt(it.dur)}</span></span></button>`).join('')).join('');
   $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => load(+b.dataset.i, true));
   bindBookAdd($('qside-list'));
   bindFavStars($('qside-list'));
