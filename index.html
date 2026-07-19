@@ -3423,7 +3423,7 @@ $('ezq-track').onclick = e => {
   if (qaudio.paused) qaudio.play();
 };
 const ezqZline = (txt, hot) => `<div style="margin-top:3px${hot ? ';color:var(--good);font-weight:600' : ''}">${txt}</div>`;
-const ezqFavBtn = src => `<button id="ezq-fav" style="margin-top:10px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
+const ezqFavBtn = src => `<button id="ezq-fav" style="margin-top:10px;margin-left:14px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
 function ezqBindFav(src) {
   $('ezq-fav').onclick = () => {
     ensureLfav(); toggleLbookClip(LFAV, src);
