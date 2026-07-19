@@ -683,17 +683,17 @@
   .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .formgrid .full { grid-column: 1 / -1; }
   .formgrid label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 3px; }
-  .formgrid input, .formgrid textarea, .formgrid select {
+  .formgrid input, .formgrid textarea, .formgrid select, .syncrow input {
     width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px;
     background: var(--bg); color: var(--ink); font-size: .95rem; font-family: inherit;
   }
   .formgrid textarea { resize: vertical; min-height: 44px; }
   .btnrow { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
-  .btnrow button {
+  .btnrow button, .syncrow button {
     border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 9px 18px; border-radius: 9px; cursor: pointer; font-size: .92rem;
   }
-  .btnrow .primary {
+  .btnrow .primary, .syncrow .primary {
     background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
   }
   .badge {
@@ -715,6 +715,11 @@
     padding: 4px 12px; border-radius: 7px; cursor: pointer; font-size: .82rem;
   }
   .wrow .act .del { color: var(--bad); border-color: var(--bad); }
+  .syncrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .syncrow input { flex: 1; min-width: 220px; }
+  #sync-status { font-size: .86rem; margin-top: 10px; min-height: 1.3em; }
+  #sync-status.ok { color: var(--good); }
+  #sync-status.err { color: var(--bad); }
   .morebtn { width: 100%; margin-top: 10px; padding: 9px; border: 1px dashed var(--line);
     background: none; color: var(--muted); border-radius: 9px; cursor: pointer; }
 
@@ -965,7 +970,8 @@
     <button data-v="dict" class="sb-sub" title="聽寫練習"><span class="ic">⌨️</span><span class="tx">聽寫練習</span></button>
     <div class="sb-group"><span class="tx">✍️ 練習與考試</span></div>
     <button data-v="mist" class="sb-sub" title="英文填空"><span class="ic">✏️</span><span class="tx">英文填空</span></button>
-    <button data-v="rp" class="sb-sub" title="閱讀練習"><span class="ic">📚</span><span class="tx">閱讀練習</span></button>
+    <button data-v="rp6" class="sb-sub" title="短文填空"><span class="ic">📄</span><span class="tx">短文填空</span></button>
+    <button data-v="rp7" class="sb-sub" title="閱讀測驗"><span class="ic">📚</span><span class="tx">閱讀測驗</span></button>
     <button data-v="exam" class="sb-sub" title="模擬考試"><span class="ic">📝</span><span class="tx">模擬考試</span></button>
     <div class="sb-group"></div>
     <button data-v="admin" title="單字管理"><span class="ic">⚙️</span><span class="tx">單字管理</span></button>
@@ -1488,8 +1494,10 @@
     <div id="mi-setup">
       <div class="panel">
         <h3>英文填空 <span class="badge zero" id="mi-count">0 題</span></h3>
-        <p class="desc">在「模擬考試」交卷後按<b>「加入英文填空」</b>，答錯的題目會自動收進這裡（本機保存）。
-          紙本模擬考的錯題則記在 repo 的 <code>review/*.md</code>，跟 Claude 說「匯入錯題」即可，格式見 <code>review/README.md</code>。</p>
+        <p class="desc">在「模擬考試」交卷後按<b>「加入英文填空」</b>，答錯的題目會自動收進這裡（本機保存）；
+          紙本模擬考的錯題記在 repo 的 <code>review/*.md</code>，跟 Claude 說「匯入錯題」即可。
+          另含 <b>Claude 題庫</b>（仿真題 Part 5 單句填空，含假設語氣專項）——題庫題練過才會進入到期排程，
+          想刷可把來源切到「Claude 題庫」或模式選「全部題目」。</p>
         <div class="toolbar">
           <select id="mi-src"></select>
           <select id="mi-cat"></select>
@@ -1530,16 +1538,14 @@
   <section id="view-rp" class="hidden">
     <div id="rp-setup">
       <div class="panel">
-        <h3>閱讀練習 <span class="badge" id="rp-count"></span></h3>
-        <p class="desc">Claude 依真題題型編寫的閱讀題庫。Part 5 一題一答立即回饋；
-          Part 6/7 整組作答、全部答完才對答案（對答案前可改選）。選項順序每次都會打亂。</p>
+        <h3><span id="rp-title">短文填空</span> <span class="badge" id="rp-count"></span></h3>
+        <p class="desc">Claude 依真題題型編寫的題庫：整組作答、全部答完才對答案（對答案前可改選），
+          選項順序每次都會打亂。Part 5 單句填空在「英文填空」分頁（來源選 Claude 題庫）。</p>
         <div class="toolbar">
-          <select id="rp-part">
-            <option value="p5">Part 5 單句填空</option>
+          <select id="rp-part" class="hidden">
             <option value="p6">Part 6 短文填空</option>
             <option value="p7">Part 7 閱讀測驗</option>
           </select>
-          <select id="rp-cat"></select>
           <select id="rp-mode">
             <option value="hard">還沒答對過的</option>
             <option value="all">全部隨機</option>
@@ -1587,17 +1593,29 @@
     </div>
 
     <div class="panel">
-      <h3>本機變更<span class="badge zero" id="pending">無本機變更</span></h3>
-      <p class="desc">在這裡新增或修改的單字會存在這個瀏覽器裡，只在這台裝置生效。</p>
+      <h3>同步到 GitHub<span class="badge zero" id="pending">無未同步變更</span></h3>
+      <p class="desc">
+        變更會先存在這個瀏覽器裡。按「同步」會把最新單字表 commit 到 GitHub repo，
+        約 1 分鐘後全站（含其他裝置）就會看到新單字。<br>
+        Token 建立方式：GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> →
+        Generate new token → Repository access 只勾 <b>toeic-review</b> → Permissions 給
+        <b>Contents: Read and write</b>。Token 只存在你這台瀏覽器的 localStorage。
+      </p>
+      <div class="syncrow">
+        <input type="password" id="gh-token" placeholder="GitHub fine-grained token（github_pat_…）">
+        <button id="save-token">儲存 Token</button>
+        <button class="primary" id="do-sync">⬆ 同步到 GitHub</button>
+      </div>
+      <div id="sync-status"></div>
       <div class="btnrow">
         <button id="export-json">📤 匯出單字備份 (JSON)</button>
-        <button id="discard-edits">🗑 放棄本機變更</button>
+        <button id="discard-edits">🗑 放棄未同步變更</button>
       </div>
     </div>
 
     <div class="panel">
       <h3>單字本管理<span class="badge zero" id="bcount"></span></h3>
-      <p class="desc">單字本可在「單字卡」頁把單字加入；這裡可以建立、刪除單字本或移除裡面的單字。</p>
+      <p class="desc">單字本可在「單字卡」頁把單字加入；這裡可以建立、刪除單字本或移除裡面的單字。單字本會隨「同步到 GitHub」一起保存。</p>
       <div class="btnrow" style="margin-top:0">
         <input id="nb-name" placeholder="新單字本名稱（如：常錯字）" style="flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)">
         <button id="nb-create">＋ 建立單字本</button>
@@ -1727,7 +1745,7 @@ function saveEdits() {
 }
 function updPending() {
   const n = pendingCount() + (booksDirty ? 1 : 0);
-  $('pending').textContent = n ? `${n} 筆本機變更` : '無本機變更';
+  $('pending').textContent = n ? `${n} 筆未同步` : '無未同步變更';
   $('pending').classList.toggle('zero', !n);
 }
 
@@ -1739,7 +1757,7 @@ let books = booksDirty
   : JSON.parse(JSON.stringify(BOOKS_BASE));
 
 const FAV = '最愛';
-// 「最愛」是內建預設單字本，永遠存在且排在最前；空的時候不算本機變更
+// 「最愛」是內建預設單字本，永遠存在且排在最前；空的時候不算待同步變更
 function ensureFav() {
   if (!getBook(FAV)) books.unshift({name: FAV, words: []});
 }
@@ -1875,11 +1893,12 @@ function stopAllPlayback() {
   }
 }
 /* 側邊選單導覽：桌面常駐 sidebar、手機 ☰ 抽屜 */
-const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'rp', 'admin'];
+const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'rp6', 'rp7', 'admin'];
+const VIEW_SEC = v => (v === 'rp6' || v === 'rp7') ? 'rp' : v;   // 短文填空/閱讀測驗兩個入口共用 view-rp
 function showView(v) {
   if (!ALL_VIEWS.includes(v)) v = 'home';
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
-  for (const k of ALL_VIEWS) $('view-' + k).classList.toggle('hidden', v !== k);
+  for (const k of new Set(ALL_VIEWS.map(VIEW_SEC))) $('view-' + k).classList.toggle('hidden', VIEW_SEC(v) !== k);
   $('sbnav').querySelectorAll('button[data-v]').forEach(b => b.classList.toggle('active', b.dataset.v === v));
   document.body.classList.remove('menu-open');
   document.body.dataset.view = v;
@@ -1887,6 +1906,7 @@ function showView(v) {
   if (v === 'home') renderHome();
   if (v === 'quiz') refreshQDueBtn();
   if (v === 'lq') renderLqHistory();
+  if (v === 'rp6' || v === 'rp7') rpEnter(v === 'rp6' ? 'p6' : 'p7');
 }
 $('sbnav').querySelectorAll('button[data-v]').forEach(b => b.onclick = () => showView(b.dataset.v));
 $('menubtn').onclick = () => document.body.classList.toggle('menu-open');
@@ -4002,7 +4022,11 @@ function renderExamHistory() {
 const miLocal = JSON.parse(localStorage.getItem('toeic-mistakes-local') || '[]');
 const saveMiLocal = () => localStorage.setItem('toeic-mistakes-local', JSON.stringify(miLocal));
 let MI = [];
-function rebuildMI() { MI = [...(typeof MISTAKES !== 'undefined' ? MISTAKES : []), ...miLocal]; }
+/* Claude 編寫的 Part 5 題庫（data/practice_r.js 的 RP5）：與錯題同場練，共用 SRS 與考點診斷。
+   沒練過的題庫題不算「今天到期」（miDue），練過之後才進入排程，避免灌爆每日複習量 */
+const RP5_MI = (typeof RP5 !== 'undefined' ? RP5 : []).map(q =>
+  ({id: q.id, src: 'Claude 題庫', no: '', q: q.q, opts: q.opts, ans: q.ans, exp: q.exp, tags: q.tags}));
+function rebuildMI() { MI = [...(typeof MISTAKES !== 'undefined' ? MISTAKES : []), ...miLocal, ...RP5_MI]; }
 rebuildMI();
 const miStat = JSON.parse(localStorage.getItem('toeic-mistakes-stat') || '{}');  // id -> {r, w}
 const saveMiStat = () => localStorage.setItem('toeic-mistakes-stat', JSON.stringify(miStat));
@@ -4033,7 +4057,7 @@ function miGrade(id, ok) {
   saveMiSrs();
   return e;
 }
-const miDue = id => !misrs[id] || misrs[id].d <= today();
+const miDue = id => misrs[id] ? misrs[id].d <= today() : !id.startsWith('p5-');
 const miDueCount = () => MI.reduce((n, m) => n + (miDue(m.id) ? 1 : 0), 0);
 function miBoxLabel(id) {
   const e = misrs[id];
@@ -4222,47 +4246,42 @@ $('mi-cat').onchange = miRenderSetup;
 $('mi-tag').onchange = miRenderSetup;
 $('mi-mode').onchange = miRenderSetup;
 
-/* ================= 閱讀練習（Part 5/6/7，data/practice_r.js 題庫）================= */
+/* ================= 短文填空/閱讀測驗（Part 6/7，data/practice_r.js 題庫）================= */
+/* 側邊欄兩個入口（rp6/rp7）共用本畫面；Part 5 題庫併在英文填空（RP5_MI） */
 const RP_BANKS = {
-  p5: typeof RP5 !== 'undefined' ? RP5 : [],
   p6: typeof RP6 !== 'undefined' ? RP6 : [],
   p7: typeof RP7 !== 'undefined' ? RP7 : [],
 };
-const RP_PNAME = {p5: 'Part 5', p6: 'Part 6', p7: 'Part 7'};
+const RP_PNAME = {p6: 'Part 6', p7: 'Part 7'};
 let rpStat = JSON.parse(localStorage.getItem('toeic-rp-stat') || '{}');   // 題目 id → {r, w}
 const saveRpStat = () => localStorage.setItem('toeic-rp-stat', JSON.stringify(rpStat));
 let rp = null;   // {part, pool, idx, right, done, order, picks, ready}
 
-/* 統計 id：P5 用題目 id；P6/P7 每小題＝組 id + 小題索引 */
+/* 統計 id：每小題＝組 id + 小題索引 */
 const rpQid = (set, qi) => `${set.id}.${qi}`;
 const rpRightEver = id => (rpStat[id] || {}).r > 0;
 const rpSetDone = set => set.qs.every((_, i) => rpRightEver(rpQid(set, i)));
 
+function rpEnter(part) {   // 從側邊欄進入：重置到設定畫面並鎖定 Part
+  rp = null;
+  $('rp-run').classList.add('hidden');
+  $('rp-setup').classList.remove('hidden');
+  $('rp-part').value = part;
+  $('rp-title').textContent = part === 'p6' ? '短文填空' : '閱讀測驗';
+  rpRenderSetup();
+}
 function rpRenderSetup() {
   const part = $('rp-part').value;
-  if (part === 'p5') {   // P5 才有考點篩選
-    const cats = [...new Set(RP_BANKS.p5.map(q => q.tags[0]))];
-    const prev = $('rp-cat').value;
-    $('rp-cat').innerHTML = '<option value="">全部考點</option>' + cats.map(c => `<option>${esc(c)}</option>`).join('');
-    if ([...$('rp-cat').options].some(o => o.value === prev)) $('rp-cat').value = prev;
-    $('rp-cat').classList.remove('hidden');
-  } else $('rp-cat').classList.add('hidden');
   const pool = rpFilterPool();
-  const unit = part === 'p5' ? '題' : '組';
-  $('rp-num').innerHTML = (part === 'p5' ? [5, 10, 20] : [1, 2, 3])
-    .map(n => `<option value="${n}">${n} ${unit}</option>`).join('') + `<option value="all">全部（${pool.length} ${unit}）</option>`;
-  $('rp-count').textContent = `${RP_PNAME[part]}｜可練 ${pool.length} / ${RP_BANKS[part].length} ${unit}`;
+  $('rp-num').innerHTML = [1, 2, 3].map(n => `<option value="${n}">${n} 組</option>`).join('')
+    + `<option value="all">全部（${pool.length} 組）</option>`;
+  $('rp-count').textContent = `${RP_PNAME[part]}｜可練 ${pool.length} / ${RP_BANKS[part].length} 組`;
   $('rp-count').classList.toggle('zero', !pool.length);
   $('rp-start').disabled = !pool.length;
 }
 function rpFilterPool() {
-  const part = $('rp-part').value, mode = $('rp-mode').value, cat = $('rp-cat').value;
-  let pool = RP_BANKS[part];
-  if (part === 'p5') {
-    if (cat) pool = pool.filter(q => q.tags[0] === cat);
-    if (mode === 'hard') pool = pool.filter(q => !rpRightEver(q.id));
-  } else if (mode === 'hard') pool = pool.filter(s => !rpSetDone(s));
-  return pool;
+  const pool = RP_BANKS[$('rp-part').value];
+  return $('rp-mode').value === 'hard' ? pool.filter(s => !rpSetDone(s)) : pool;
 }
 function rpStart() {
   const pool = miShuffle(rpFilterPool().slice());
@@ -4278,39 +4297,10 @@ function rpShow() {
   rp.picks = {}; rp.ready = false;
   $('rp-fb').textContent = ''; $('rp-fb').className = 'feedback';
   $('rp-next').classList.add('hidden');
-  const cur = rp.pool[rp.idx];
-  if (rp.part === 'p5') rpShowP5(cur); else rpShowSet(cur);
+  rpShowSet(rp.pool[rp.idx]);
   window.scrollTo({top: 0});
 }
-function rpShowP5(q) {
-  rp.order = miShuffle(q.opts.map((_, i) => i));   // 選項順序打亂，避免背答案位置
-  $('rp-prog').textContent = `第 ${rp.idx + 1} / ${rp.pool.length} 題・Part 5`;
-  $('rp-score').textContent = `答對 ${rp.right}`;
-  $('rp-area').innerHTML = `<div class="mi-q">${esc(q.q)}</div>
-    <div class="mi-srcline">${q.tags.map(t => `<span class="tag2">${esc(t)}</span>`).join('')}</div>
-    <div class="choices">${rp.order.map((oi, i) => `<button data-oi="${oi}"><span class="no">(${'ABCD'[i]})</span>${esc(q.opts[oi])}</button>`).join('')}</div>
-    <div class="mi-exp hidden" id="rp-exp"></div>`;
-  $('rp-area').querySelectorAll('.choices button').forEach(b => b.onclick = () => rpAnswerP5(+b.dataset.oi, b));
-}
-function rpAnswerP5(oi, btn) {
-  if (rp.ready) return;
-  rp.ready = true;
-  const q = rp.pool[rp.idx], ok = oi === q.ans;
-  rpMark(q.id, ok); rp.done++; if (ok) rp.right++;
-  $('rp-area').querySelectorAll('.choices button').forEach(b => {
-    b.disabled = true;
-    if (+b.dataset.oi === q.ans) b.classList.add('right');
-  });
-  if (!ok) btn.classList.add('wrongpick');
-  $('rp-score').textContent = `答對 ${rp.right}`;
-  $('rp-exp').textContent = `💡 ${q.exp}`;
-  $('rp-exp').classList.remove('hidden');
-  $('rp-fb').textContent = ok ? '✅ 答對了！' : '❌ 答錯了，看一下解析';
-  $('rp-fb').className = 'feedback ' + (ok ? 'good' : 'bad');
-  touchDay();
-  rpNextBtn();
-}
-/* Part 6/7 題組：整組作答、全答完才一次揭曉（同真題聽力 Part 3/4 的流程） */
+/* 題組：整組作答、全答完才一次揭曉（同真題聽力 Part 3/4 的流程） */
 function rpShowSet(set) {
   rp.order = {};
   $('rp-prog').textContent = `第 ${rp.idx + 1} / ${rp.pool.length} 組・${RP_PNAME[rp.part]}`;
@@ -4374,7 +4364,7 @@ function rpMark(id, ok) {
   saveRpStat();
 }
 function rpNextBtn() {
-  $('rp-next').textContent = rp.idx + 1 >= rp.pool.length ? '看結果 🏁' : (rp.part === 'p5' ? '下一題 ⏭' : '下一組 ⏭');
+  $('rp-next').textContent = rp.idx + 1 >= rp.pool.length ? '看結果 🏁' : '下一組 ⏭';
   $('rp-next').classList.remove('hidden');
   $('rp-next').focus({preventScroll: true});
 }
@@ -4389,9 +4379,7 @@ function rpFinish() {
 $('rp-start').onclick = rpStart;
 $('rp-next').onclick = () => { rp.idx++; rpShow(); };
 $('rp-quit').onclick = rpFinish;
-$('rp-part').onchange = rpRenderSetup;
 $('rp-mode').onchange = rpRenderSetup;
-$('rp-cat').onchange = rpRenderSetup;
 rpRenderSetup();
 
 /* ================= shadowing ================= */
@@ -4709,7 +4697,7 @@ $('save-word').onclick = () => {
   edits.del = edits.del.filter(k => k !== entry.w);
   edits.upsert[entry.w] = entry;
   saveEdits();
-  $('form-msg').textContent = `已儲存「${entry.w}」（存在此瀏覽器）`;
+  $('form-msg').textContent = `已儲存「${entry.w}」（記得同步到 GitHub）`;
   setTimeout(() => { $('form-msg').textContent = ''; }, 4000);
   clearForm();
   refreshWordViews();
@@ -4742,7 +4730,7 @@ function renderList() {
   $('wcount').textContent = `${list.length} 筆`;
   const shown = list.slice(0, listLimit);
   $('wlist').innerHTML = shown.map(w => {
-    const changed = edits.upsert[w.w] ? '<span class="tag">本機</span>' : '';
+    const changed = edits.upsert[w.w] ? '<span class="tag">未同步</span>' : '';
     const lv = w.lv ? `<span class="lvtag lv${w.lv}">${LV[w.lv].split(' ')[1]}</span>` : '';
     return `<div class="wrow"><b>${esc(w.w)}</b><span class="pos2">${esc(w.pos)}</span>
       ${lv}<span class="zh2">${esc(w.zh)}</span>${changed}
@@ -4757,7 +4745,7 @@ $('more').onclick = () => { listLimit += 100; renderList(); };
 
 $('discard-edits').onclick = () => {
   if (!pendingCount()) return;
-  if (!confirm(`放棄 ${pendingCount()} 筆本機變更？`)) return;
+  if (!confirm(`放棄 ${pendingCount()} 筆未同步的變更？`)) return;
   edits.upsert = {}; edits.del = [];
   saveEdits(); refreshWordViews();
 };
@@ -4769,6 +4757,74 @@ $('export-json').onclick = () => {
   a.download = 'toeic-words-backup.json';
   a.click();
   URL.revokeObjectURL(a.href);
+};
+
+/* ================= GitHub sync ================= */
+const GH_API = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/words.js';
+const GH_API_BOOKS = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/books.js';
+const GH_API_VERSION = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/version.txt';
+if (localStorage.getItem('toeic-token')) $('gh-token').value = '••••••••（已儲存）';
+$('save-token').onclick = () => {
+  const t = $('gh-token').value.trim();
+  if (!t || t.startsWith('••')) return;
+  localStorage.setItem('toeic-token', t);
+  $('gh-token').value = '••••••••（已儲存）';
+  syncStatus('Token 已儲存在此瀏覽器', 'ok');
+};
+function syncStatus(msg, cls) {
+  $('sync-status').textContent = msg;
+  $('sync-status').className = cls || '';
+}
+function b64utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+$('do-sync').onclick = async () => {
+  const token = localStorage.getItem('toeic-token');
+  if (!token) { syncStatus('請先貼上並儲存 GitHub token', 'err'); return; }
+  if (!pendingCount() && !booksDirty) { syncStatus('沒有需要同步的變更', 'ok'); return; }
+  const headers = {
+    'Authorization': 'Bearer ' + token,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const putFile = async (api, content, message) => {
+    const cur = await fetch(api + '?ref=main', {headers});
+    if (!cur.ok) throw new Error(`讀取失敗 HTTP ${cur.status}（token 權限或已過期？）`);
+    const sha = (await cur.json()).sha;
+    const put = await fetch(api, {
+      method: 'PUT', headers,
+      body: JSON.stringify({message, content: b64utf8(content), sha, branch: 'main'}),
+    });
+    if (!put.ok) throw new Error(`寫入失敗 HTTP ${put.status}`);
+  };
+  try {
+    syncStatus('同步中…');
+    if (pendingCount()) {
+      const merged = getWords();
+      await putFile(GH_API, 'const WORDS = ' + JSON.stringify(merged) + ';\n',
+        `更新單字表（${pendingCount()} 筆變更，共 ${merged.length} 字）`);
+      BASE = merged;
+      edits.upsert = {}; edits.del = [];
+      saveEdits(); refreshWordViews();
+    }
+    if (booksDirty) {
+      const clean = books.map(({name, words}) => ({name, words}));
+      await putFile(GH_API_BOOKS, 'const BOOKS = ' + JSON.stringify(clean) + ';\n',
+        `更新單字本（${clean.length} 本）`);
+      saveBooks(false);
+    }
+    // 更新部署版本號，讓其他裝置（含手機）強制重抓最新資料
+    await putFile(GH_API_VERSION,
+      new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14),
+      '更新部署版本號');
+    syncStatus('✅ 同步完成，網站約 1 分鐘後更新', 'ok');
+  } catch (e) {
+    syncStatus('❌ ' + e.message, 'err');
+  }
 };
 
 /* ================= 今天（儀表板） ================= */
