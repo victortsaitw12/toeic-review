@@ -333,6 +333,39 @@
   .abc button.wrongpick { border-color: var(--bad); background: rgba(214,69,69,.12); }
   .abc button:disabled { cursor: default; opacity: .92; }
   .lstatus { text-align: center; color: var(--muted); font-size: .88rem; min-height: 1.4em; margin: 6px 0; }
+  /* 真題聽力：音檔控制列 */
+  .ezq-audio {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+    padding: 8px 12px; margin: 10px 0 6px;
+  }
+  #ezq-play {
+    width: 44px; height: 44px; border-radius: 50%; flex: none; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-size: 1rem;
+  }
+  .ezq-track { flex: 1; height: 10px; border-radius: 5px; background: var(--chip); position: relative; cursor: pointer; }
+  .ezq-track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--accent); width: 0; }
+  .ezq-time { font-size: .78rem; color: var(--muted); min-width: 84px; text-align: right; font-variant-numeric: tabular-nums; flex: none; }
+  #ezq-replay {
+    flex: none; cursor: pointer; border: 1px solid var(--line); background: var(--card);
+    color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: .86rem;
+  }
+  /* 真題聽力：題組進度圓標與題卡 */
+  .ezq-chips { display: flex; gap: 8px; justify-content: center; margin: 8px 0 2px; }
+  .ezq-chips .chip3 {
+    min-width: 52px; padding: 7px 12px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted);
+    font-size: .88rem; font-weight: 700;
+  }
+  .ezq-chips .chip3.cur { border-color: var(--accent); color: var(--ink); box-shadow: 0 0 0 2px var(--chip); }
+  .ezq-chips .chip3.done-ok { border-color: var(--good); color: var(--good); background: rgba(31,157,99,.1); }
+  .ezq-chips .chip3.done-no { border-color: var(--bad); color: var(--bad); background: rgba(214,69,69,.1); }
+  #ezq-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+  #ezq-area .rq.qcur { border-color: var(--accent); box-shadow: 0 0 0 2px var(--chip); }
+  #ezq-area .rq.qdone .opts label { cursor: default; }
+  #ezq-area .rq.qdone .opts label:hover { background: transparent; }
+  #ezq-area .rq.qdone .opts label.rgt:hover { background: rgba(31,157,99,.1); }
+  #ezq-area .rq.qdone .opts label.wrg:hover { background: rgba(214,69,69,.1); }
   .examnote { color: var(--muted); font-size: .85rem; line-height: 1.7; }
 
   /* ---------- shadowing ---------- */
@@ -721,6 +754,25 @@
     .wrow .act { width: 100%; margin-left: 0; }
     .hist-row .act { width: 100%; margin-left: 0; }
     .hist-row .act button, .wrow .act button { padding: 8px 14px; }
+
+    /* 真題聽力快答：音檔列黏頂、下一組固定底部拇指區 */
+    body.ezq-on main { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
+    #exam-ezq .qprompt { margin: 4px 0 8px; }
+    #exam-ezq .qprompt .big { display: none; }
+    #exam-ezq .ezq-audio { position: sticky; top: 58px; z-index: 6; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    #exam-ezq .ezq-time { min-width: 0; font-size: .72rem; }
+    #ezq-replay { padding: 9px 9px; }
+    #exam-ezq .qnext {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin-top: 0;
+      background: var(--card); border-top: 1px solid var(--line);
+      box-shadow: 0 -4px 18px rgba(0,0,0,.12);
+      padding: 8px max(10px, env(safe-area-inset-right))
+               calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      display: flex; gap: 8px; align-items: stretch;
+    }
+    #ezq-next { flex: 1; min-height: 50px; font-size: 1rem !important; padding: 10px 8px !important; }
+    #ezq-quit { margin-left: 0 !important; padding: 0 16px; flex: none; }
+    #ezq-area .rq { padding: 11px 11px; }
 
     /* 口說跟讀：控制列固定在螢幕底部拇指區，句子卡置頂 */
     body[data-view="speak"] main { padding-bottom: calc(196px + env(safe-area-inset-bottom)); }
@@ -1257,11 +1309,17 @@
         <div class="qprompt">
           <div class="big" id="ezq-big">🎧</div>
           <div class="sub" id="ezq-sub"></div>
-          <button class="speak" id="ezq-replay">🔊 重聽本段</button>
         </div>
+        <div class="ezq-audio">
+          <button id="ezq-play" title="播放／暫停">⏸</button>
+          <div class="ezq-track" id="ezq-track"><i id="ezq-trackfill"></i></div>
+          <span class="ezq-time" id="ezq-time">0:00 / 0:00</span>
+          <button id="ezq-replay" title="從頭重聽">↻ 重聽</button>
+        </div>
+        <div class="ezq-chips hidden" id="ezq-chips"></div>
         <div id="ezq-area"></div>
         <div class="feedback" id="ezq-fb"></div>
-        <div class="qnext">
+        <div class="qnext" id="ezq-ctrls">
           <button id="ezq-next" class="hidden" style="border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 30px;border-radius:10px;cursor:pointer">下一題 →</button>
           <button id="ezq-quit" style="border:none;background:none;color:var(--muted);cursor:pointer;margin-left:14px">結束</button>
         </div>
@@ -2996,6 +3054,7 @@ const exGate = () => exPauseP || Promise.resolve();
 function examShow(panel) {
   for (const p of ['exam-setup', 'exam-listen', 'exam-ezq', 'exam-p2', 'exam-read', 'exam-result'])
     $(p).classList.toggle('hidden', p !== panel);
+  document.body.classList.toggle('ezq-on', panel === 'exam-ezq');
 }
 
 /* ----- 聽力單元（unit）列表：P2 每題一單元、P3/4 每題組一單元 ----- */
@@ -3215,8 +3274,59 @@ function ezqShow() {
       if (!(n in ezq.picks)) ezqPickGroup(n, +l.dataset.i);
     });
   }
+  // 題組進度圓標（P3/4）：未答灰、答對綠、答錯紅，點了捲到那一題
+  const chips = $('ezq-chips');
+  if (u.qs.length > 1) {
+    chips.classList.remove('hidden');
+    chips.innerHTML = u.qs.map(n => `<button class="chip3" data-n="${n}">${n}</button>`).join('');
+    chips.querySelectorAll('.chip3').forEach(c => c.onclick = () =>
+      area.querySelector(`.rq[data-q="${c.dataset.n}"]`)?.scrollIntoView({block: 'center', behavior: 'smooth'}));
+    ezqMarkCur(u.qs[0]);
+  } else {
+    chips.classList.add('hidden');
+  }
+  ezqAudioReset(u);
   playSnippet(ezqSeg(u));
 }
+/* 目前作答題的視覺標示（題卡框線＋圓標） */
+function ezqMarkCur(n) {
+  $('ezq-area').querySelectorAll('.rq').forEach(b => b.classList.toggle('qcur', +b.dataset.q === n));
+  $('ezq-chips').querySelectorAll('.chip3').forEach(c => c.classList.toggle('cur', +c.dataset.n === n));
+}
+/* ----- 音檔控制列：⏯／進度條（點選跳轉）／時間；與聽寫共用 qaudio，只在本畫面作用 ----- */
+const ezqAudioOn = () => ezq && !$('exam-ezq').classList.contains('hidden');
+const ezqCurSrc = () => ezq ? `audio/${ezq.units[ezq.ui].test}/${ezq.units[ezq.ui].f}` : '';
+const ezqSrcMatch = () => qaudio.src.includes(encodeURI(ezqCurSrc()));
+function ezqAudioReset(u) {
+  $('ezq-trackfill').style.width = '0';
+  $('ezq-time').textContent = `0:00 / ${fmt(u.dur || 0)}`;
+  $('ezq-play').textContent = '▶';   // 開始播放時由 play 事件切成 ⏸（autoplay 被擋也不會誤顯示）
+}
+function ezqAudioTick() {
+  if (!ezqAudioOn()) return;
+  const u = ezq.units[ezq.ui];
+  const dur = (ezqSrcMatch() && qaudio.duration) || u.dur || 0;
+  const cur = ezqSrcMatch() ? qaudio.currentTime : 0;
+  $('ezq-trackfill').style.width = dur ? Math.min(100, cur / dur * 100) + '%' : '0';
+  $('ezq-time').textContent = `${fmt(cur)} / ${fmt(dur)}`;
+  $('ezq-play').textContent = (!ezqSrcMatch() || qaudio.paused || qaudio.ended) ? '▶' : '⏸';
+}
+qaudio.addEventListener('timeupdate', ezqAudioTick);
+qaudio.addEventListener('play', ezqAudioTick);
+qaudio.addEventListener('pause', ezqAudioTick);
+qaudio.addEventListener('ended', ezqAudioTick);
+$('ezq-play').onclick = () => {
+  if (!ezq) return;
+  if (ezqSrcMatch() && !qaudio.paused) qaudio.pause();
+  else if (ezqSrcMatch() && !qaudio.ended && qaudio.currentTime > 0) qaudio.play();
+  else playSnippet(ezqSeg(ezq.units[ezq.ui]));
+};
+$('ezq-track').onclick = e => {
+  if (!ezq || !ezqSrcMatch() || !qaudio.duration) return;
+  const r = $('ezq-track').getBoundingClientRect();
+  qaudio.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * qaudio.duration;
+  if (qaudio.paused) qaudio.play();
+};
 const ezqZline = (txt, hot) => `<div style="margin-top:3px${hot ? ';color:var(--good);font-weight:600' : ''}">${txt}</div>`;
 const ezqFavBtn = src => `<button id="ezq-fav" style="margin-top:10px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
 function ezqBindFav(src) {
@@ -3294,6 +3404,9 @@ function ezqPickGroup(n, pick) {
     </div>`;
   $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
   $('ezq-prog').textContent = `第 ${Math.min(ezqDoneN() + 1, ezq.total)} / ${ezq.total} 題・真題聽力`;
+  box.classList.add('qdone');
+  const chip = $('ezq-chips').querySelector(`.chip3[data-n="${n}"]`);
+  if (chip) chip.classList.add(ok ? 'done-ok' : 'done-no');
   touchDay();
   if (Object.keys(ezq.picks).length === u.qs.length) {
     ezq.ready = true;
@@ -3303,8 +3416,15 @@ function ezqPickGroup(n, pick) {
     $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}` + ezqFavBtn(src);
     $('ezq-fb').className = 'feedback ' + (allOK ? 'good' : 'bad');
     ezqBindFav(src);
+    ezqMarkCur(-1);
     $('ezq-next').classList.remove('hidden');
     $('ezq-next').focus();
+  } else {
+    // 自動移到下一個還沒作答的題目
+    const next = u.qs.find(q => !(q in ezq.picks));
+    ezqMarkCur(next);
+    const nb = $('ezq-area').querySelector(`.rq[data-q="${next}"]`);
+    if (nb) nb.scrollIntoView({block: 'center', behavior: 'smooth'});
   }
 }
 $('ezq-replay').onclick = () => { if (ezq) playSnippet(ezqSeg(ezq.units[ezq.ui])); };
