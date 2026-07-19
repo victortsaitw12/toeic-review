@@ -683,17 +683,17 @@
   .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .formgrid .full { grid-column: 1 / -1; }
   .formgrid label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: 3px; }
-  .formgrid input, .formgrid textarea, .formgrid select, .syncrow input {
+  .formgrid input, .formgrid textarea, .formgrid select {
     width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 9px;
     background: var(--bg); color: var(--ink); font-size: .95rem; font-family: inherit;
   }
   .formgrid textarea { resize: vertical; min-height: 44px; }
   .btnrow { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
-  .btnrow button, .syncrow button {
+  .btnrow button {
     border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 9px 18px; border-radius: 9px; cursor: pointer; font-size: .92rem;
   }
-  .btnrow .primary, .syncrow .primary {
+  .btnrow .primary {
     background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
   }
   .badge {
@@ -715,11 +715,6 @@
     padding: 4px 12px; border-radius: 7px; cursor: pointer; font-size: .82rem;
   }
   .wrow .act .del { color: var(--bad); border-color: var(--bad); }
-  .syncrow { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .syncrow input { flex: 1; min-width: 220px; }
-  #sync-status { font-size: .86rem; margin-top: 10px; min-height: 1.3em; }
-  #sync-status.ok { color: var(--good); }
-  #sync-status.err { color: var(--bad); }
   .morebtn { width: 100%; margin-top: 10px; padding: 9px; border: 1px dashed var(--line);
     background: none; color: var(--muted); border-radius: 9px; cursor: pointer; }
 
@@ -1593,29 +1588,17 @@
     </div>
 
     <div class="panel">
-      <h3>同步到 GitHub<span class="badge zero" id="pending">無未同步變更</span></h3>
-      <p class="desc">
-        變更會先存在這個瀏覽器裡。按「同步」會把最新單字表 commit 到 GitHub repo，
-        約 1 分鐘後全站（含其他裝置）就會看到新單字。<br>
-        Token 建立方式：GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> →
-        Generate new token → Repository access 只勾 <b>toeic-review</b> → Permissions 給
-        <b>Contents: Read and write</b>。Token 只存在你這台瀏覽器的 localStorage。
-      </p>
-      <div class="syncrow">
-        <input type="password" id="gh-token" placeholder="GitHub fine-grained token（github_pat_…）">
-        <button id="save-token">儲存 Token</button>
-        <button class="primary" id="do-sync">⬆ 同步到 GitHub</button>
-      </div>
-      <div id="sync-status"></div>
+      <h3>本機變更<span class="badge zero" id="pending">無本機變更</span></h3>
+      <p class="desc">在這裡新增或修改的單字會存在這個瀏覽器裡，只在這台裝置生效。</p>
       <div class="btnrow">
         <button id="export-json">📤 匯出單字備份 (JSON)</button>
-        <button id="discard-edits">🗑 放棄未同步變更</button>
+        <button id="discard-edits">🗑 放棄本機變更</button>
       </div>
     </div>
 
     <div class="panel">
       <h3>單字本管理<span class="badge zero" id="bcount"></span></h3>
-      <p class="desc">單字本可在「單字卡」頁把單字加入；這裡可以建立、刪除單字本或移除裡面的單字。單字本會隨「同步到 GitHub」一起保存。</p>
+      <p class="desc">單字本可在「單字卡」頁把單字加入；這裡可以建立、刪除單字本或移除裡面的單字。</p>
       <div class="btnrow" style="margin-top:0">
         <input id="nb-name" placeholder="新單字本名稱（如：常錯字）" style="flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)">
         <button id="nb-create">＋ 建立單字本</button>
@@ -1745,7 +1728,7 @@ function saveEdits() {
 }
 function updPending() {
   const n = pendingCount() + (booksDirty ? 1 : 0);
-  $('pending').textContent = n ? `${n} 筆未同步` : '無未同步變更';
+  $('pending').textContent = n ? `${n} 筆本機變更` : '無本機變更';
   $('pending').classList.toggle('zero', !n);
 }
 
@@ -1757,7 +1740,7 @@ let books = booksDirty
   : JSON.parse(JSON.stringify(BOOKS_BASE));
 
 const FAV = '最愛';
-// 「最愛」是內建預設單字本，永遠存在且排在最前；空的時候不算待同步變更
+// 「最愛」是內建預設單字本，永遠存在且排在最前；空的時候不算本機變更
 function ensureFav() {
   if (!getBook(FAV)) books.unshift({name: FAV, words: []});
 }
@@ -4697,7 +4680,7 @@ $('save-word').onclick = () => {
   edits.del = edits.del.filter(k => k !== entry.w);
   edits.upsert[entry.w] = entry;
   saveEdits();
-  $('form-msg').textContent = `已儲存「${entry.w}」（記得同步到 GitHub）`;
+  $('form-msg').textContent = `已儲存「${entry.w}」（存在此瀏覽器）`;
   setTimeout(() => { $('form-msg').textContent = ''; }, 4000);
   clearForm();
   refreshWordViews();
@@ -4730,7 +4713,7 @@ function renderList() {
   $('wcount').textContent = `${list.length} 筆`;
   const shown = list.slice(0, listLimit);
   $('wlist').innerHTML = shown.map(w => {
-    const changed = edits.upsert[w.w] ? '<span class="tag">未同步</span>' : '';
+    const changed = edits.upsert[w.w] ? '<span class="tag">本機</span>' : '';
     const lv = w.lv ? `<span class="lvtag lv${w.lv}">${LV[w.lv].split(' ')[1]}</span>` : '';
     return `<div class="wrow"><b>${esc(w.w)}</b><span class="pos2">${esc(w.pos)}</span>
       ${lv}<span class="zh2">${esc(w.zh)}</span>${changed}
@@ -4745,7 +4728,7 @@ $('more').onclick = () => { listLimit += 100; renderList(); };
 
 $('discard-edits').onclick = () => {
   if (!pendingCount()) return;
-  if (!confirm(`放棄 ${pendingCount()} 筆未同步的變更？`)) return;
+  if (!confirm(`放棄 ${pendingCount()} 筆本機變更？`)) return;
   edits.upsert = {}; edits.del = [];
   saveEdits(); refreshWordViews();
 };
@@ -4757,74 +4740,6 @@ $('export-json').onclick = () => {
   a.download = 'toeic-words-backup.json';
   a.click();
   URL.revokeObjectURL(a.href);
-};
-
-/* ================= GitHub sync ================= */
-const GH_API = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/words.js';
-const GH_API_BOOKS = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/books.js';
-const GH_API_VERSION = 'https://api.github.com/repos/victortsaitw12/toeic-review/contents/data/version.txt';
-if (localStorage.getItem('toeic-token')) $('gh-token').value = '••••••••（已儲存）';
-$('save-token').onclick = () => {
-  const t = $('gh-token').value.trim();
-  if (!t || t.startsWith('••')) return;
-  localStorage.setItem('toeic-token', t);
-  $('gh-token').value = '••••••••（已儲存）';
-  syncStatus('Token 已儲存在此瀏覽器', 'ok');
-};
-function syncStatus(msg, cls) {
-  $('sync-status').textContent = msg;
-  $('sync-status').className = cls || '';
-}
-function b64utf8(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = '';
-  for (let i = 0; i < bytes.length; i += 0x8000)
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-  return btoa(bin);
-}
-$('do-sync').onclick = async () => {
-  const token = localStorage.getItem('toeic-token');
-  if (!token) { syncStatus('請先貼上並儲存 GitHub token', 'err'); return; }
-  if (!pendingCount() && !booksDirty) { syncStatus('沒有需要同步的變更', 'ok'); return; }
-  const headers = {
-    'Authorization': 'Bearer ' + token,
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28',
-  };
-  const putFile = async (api, content, message) => {
-    const cur = await fetch(api + '?ref=main', {headers});
-    if (!cur.ok) throw new Error(`讀取失敗 HTTP ${cur.status}（token 權限或已過期？）`);
-    const sha = (await cur.json()).sha;
-    const put = await fetch(api, {
-      method: 'PUT', headers,
-      body: JSON.stringify({message, content: b64utf8(content), sha, branch: 'main'}),
-    });
-    if (!put.ok) throw new Error(`寫入失敗 HTTP ${put.status}`);
-  };
-  try {
-    syncStatus('同步中…');
-    if (pendingCount()) {
-      const merged = getWords();
-      await putFile(GH_API, 'const WORDS = ' + JSON.stringify(merged) + ';\n',
-        `更新單字表（${pendingCount()} 筆變更，共 ${merged.length} 字）`);
-      BASE = merged;
-      edits.upsert = {}; edits.del = [];
-      saveEdits(); refreshWordViews();
-    }
-    if (booksDirty) {
-      const clean = books.map(({name, words}) => ({name, words}));
-      await putFile(GH_API_BOOKS, 'const BOOKS = ' + JSON.stringify(clean) + ';\n',
-        `更新單字本（${clean.length} 本）`);
-      saveBooks(false);
-    }
-    // 更新部署版本號，讓其他裝置（含手機）強制重抓最新資料
-    await putFile(GH_API_VERSION,
-      new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14),
-      '更新部署版本號');
-    syncStatus('✅ 同步完成，網站約 1 分鐘後更新', 'ok');
-  } catch (e) {
-    syncStatus('❌ ' + e.message, 'err');
-  }
 };
 
 /* ================= 今天（儀表板） ================= */
