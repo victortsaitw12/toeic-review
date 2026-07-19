@@ -1242,7 +1242,8 @@
       <div class="panel">
         <h3>真題聽力（逐題快答）</h3>
         <p class="examnote">
-          <b>EZ 模擬考 5 回＋國學聽力藍本 10 回</b>的真題音檔，一題一題練、答完立刻對<b>官方答案卷</b>：
+          <b>EZ 模擬考 5 回＋國學聽力藍本 10 回</b>（Part 1–4，對官方答案卷）＋
+          <b>國學 A/B 本 12 回</b>（僅 Part 2，答案由 Claude 判定並經官方卷抽驗）的真題音檔，一題一題練、答完立刻對答案：
           Part 1 看題本圖片聽四個描述、Part 2 純聽力選 (A)(B)(C)、
           Part 3/4 播完整段對話（一段連答三題），<b>題目與四個選項印在畫面上</b>（由 Claude 依逐字稿撰寫，
           正解位置與官方答案卷一致；圖表題請對照題本）。答錯可收進聽力練習本。
@@ -1263,22 +1264,6 @@
             <option value="100">整回 100 題</option>
           </select>
           <button id="ezq-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>真人聽力 Part 2 快答</h3>
-        <p class="examnote">
-          從 27 回模擬考真人音檔抽 Part 2 應答題：聽題目與三個回應選出最合適的，
-          選項不印出來（比照真實考試），答完亮出英中逐字稿，答錯可收進聽力練習本。
-        </p>
-        <div class="toolbar">
-          <select id="p2-test"></select>
-          <select id="p2-count">
-            <option value="10">10 題</option>
-            <option value="20" selected>20 題</option>
-            <option value="50">50 題</option>
-          </select>
-          <button id="p2-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練</button>
         </div>
       </div>
       <div class="panel">
@@ -1322,23 +1307,6 @@
         <div class="qnext" id="ezq-ctrls">
           <button id="ezq-next" class="hidden" style="border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 30px;border-radius:10px;cursor:pointer">下一題 →</button>
           <button id="ezq-quit" style="border:none;background:none;color:var(--muted);cursor:pointer;margin-left:14px">結束</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="exam-p2" class="hidden">
-      <div class="panel">
-        <div class="qmeta"><span id="p2-prog"></span><span id="p2-score"></span></div>
-        <div class="qprompt">
-          <div class="big">🎧</div>
-          <div class="sub" id="p2-sub"></div>
-          <button class="speak" id="p2-replay">🔊 再聽一次</button>
-        </div>
-        <div class="choices" id="p2-choices"></div>
-        <div class="feedback" id="p2-fb"></div>
-        <div class="qnext">
-          <button id="p2-next" class="hidden" style="border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 30px;border-radius:10px;cursor:pointer">下一題 →</button>
-          <button id="p2-quit" style="border:none;background:none;color:var(--muted);cursor:pointer;margin-left:14px">結束</button>
         </div>
       </div>
     </div>
@@ -1728,7 +1696,7 @@ function stopAllPlayback() {
   audio.pause();      // EZ 聽力解析
   spStopAll();        // 口說跟讀（含錄音、自動跟讀計時器、我的錄音）
   dtAudio.pause();    // 聽寫練習
-  qaudio.pause();     // 單字測驗聽寫片段與 Part 2 快答
+  qaudio.pause();     // 單字測驗聽寫片段與真題聽力快答
   wordAudio.pause();  // 單字卡/單字測驗的真人單字發音（EZ 快答與 Part 2 快答共用 qaudio，上面已停）
   if (!('speechSynthesis' in window)) return;
   if (exam && !$('exam-listen').classList.contains('hidden')) {
@@ -1975,18 +1943,8 @@ $('q-dtest').innerHTML = Object.keys(TESTS).map(t =>
   `<option value="${t}">${testName(t)}</option>`).join('');
 
 /* ----- 真人聽力 Part 2 題庫（data/listen2.js，題目與回應皆為真人音檔）----- */
-/* 練習入口在「模擬考試」分頁（exam-p2），這裡只放題庫轉換，因為重聽沿用本區的 playSnippet */
+/* 題庫供「真題聽力（逐題快答）」的 Part 2 使用（27 回都有）；重聽沿用本區的 playSnippet */
 const P2 = (typeof LISTEN2 !== 'undefined') ? LISTEN2 : [];
-// 出成跟 dict segment 同形狀（test/f/s/e/t/z），重聽與答錯清單就能沿用既有機制
-function p2Pool(test) {
-  return P2.filter(it => test === 'all' || it.id.startsWith(test + '/'))
-    .map(it => {
-      const [t, f] = it.id.split('/');
-      return {...it, test: t, f, s: 0, e: (it.dur || 0) + 1,
-              t: `${it.q}　(A) ${it.opts[0]} (B) ${it.opts[1]} (C) ${it.opts[2]}`,
-              z: it.qz ? `${it.qz}　(A) ${it.optsz[0]} (B) ${it.optsz[1]} (C) ${it.optsz[2]}` : ''};
-    });
-}
 
 /* ----- dictation (listening) helpers ----- */
 const qaudio = new Audio();
@@ -3052,7 +3010,7 @@ const exWait = ms => new Promise(res => {
 const exGate = () => exPauseP || Promise.resolve();
 
 function examShow(panel) {
-  for (const p of ['exam-setup', 'exam-listen', 'exam-ezq', 'exam-p2', 'exam-read', 'exam-result'])
+  for (const p of ['exam-setup', 'exam-listen', 'exam-ezq', 'exam-read', 'exam-result'])
     $(p).classList.toggle('hidden', p !== panel);
   document.body.classList.toggle('ezq-on', panel === 'exam-ezq');
 }
@@ -3209,6 +3167,7 @@ function ezqUnits(test, part) {
     const m = it.f.match(/Part(\d)_Q(\d+)(?:-(\d+))?/);
     if (!m) continue;
     const p = +m[1], a = +m[2], b = +(m[3] || m[2]);
+    if (!(test in EZ_KEY) && p !== 2) continue;   // 無官方答案卷的回數（國學 A/B）只練 Part 2
     if (part !== 'all' && p !== +part) continue;
     if (p === 2) {
       const item = P2.find(x => x.id === `${test}/${it.f}`);
@@ -3226,6 +3185,7 @@ function startEzq() {
   const tests = sel === 'all' ? EZ_TESTS
     : sel === 'allez' ? EZ_TESTS.filter(t => seriesOf(t) === '')
     : sel === 'allblue' ? EZ_TESTS.filter(t => seriesOf(t) === 'C')
+    : sel === 'allab' ? seriesTests('A').concat(seriesTests('B'))
     : [sel];
   const pool = sample(tests.flatMap(t => ezqUnits(t, part)), 9999);
   const units = [];
@@ -3476,99 +3436,16 @@ function ezqFinish() {
   showExamResult(rec);
 }
 
-/* ================= 真人聽力 Part 2 快答（入口在模擬考分頁） ================= */
-let p2run = null;
-function p2Start() {
-  const pool = p2Pool($('p2-test').value);
-  if (!pool.length) { alert('這一回還沒有 Part 2 題庫'); return; }
-  p2run = {qs: sample(pool, Math.min(+$('p2-count').value, pool.length)),
-           i: 0, correct: 0, wrong: [], answered: false};
-  examShow('exam-p2');
-  p2Show();
-}
-$('p2-start').onclick = p2Start;
-function p2Show() {
-  const e = p2run.qs[p2run.i];
-  p2run.answered = false;
-  $('p2-prog').textContent = `第 ${p2run.i + 1} / ${p2run.qs.length} 題・真人聽力 Part 2`;
-  $('p2-score').textContent = `答對 ${p2run.correct}｜答錯 ${p2run.wrong.length}`;
-  $('p2-sub').textContent = `${segLabel(e)}｜聽題目與三個回應，選出最合適的（可重聽）`;
-  $('p2-fb').textContent = ''; $('p2-fb').className = 'feedback';
-  $('p2-next').classList.add('hidden');
-  const box = $('p2-choices');
-  box.innerHTML = [0, 1, 2].map(i =>
-    `<button data-i="${i}" style="text-align:center;font-weight:600">(${'ABC'[i]})</button>`).join('');
-  box.querySelectorAll('button').forEach(b => b.onclick = () => {
-    if (p2run.answered) return;
-    p2Pick(+b.dataset.i, e, b);
-  });
-  playSnippet(e);
-}
-/* 答完才亮英中逐字稿，答錯可把整段音檔收進聽力練習本 */
-function p2Pick(pick, e, btn) {
-  const ok = pick === e.ans;
-  p2run.answered = true;
-  qaudio.pause();
-  ok ? p2run.correct++ : p2run.wrong.push(e);
-  $('p2-choices').querySelectorAll('button').forEach(b => {
-    b.disabled = true;
-    if (+b.dataset.i === e.ans) b.classList.add('right');
-    else if (b === btn) b.classList.add('wrongpick');
-  });
-  const line = i => `<div style="margin-top:3px${i === e.ans ? ';color:var(--good);font-weight:600' : ''}">
-      (${'ABC'[i]}) ${esc(e.opts[i])}${e.optsz[i] ? `<span style="color:var(--muted);font-weight:400">　${esc(e.optsz[i])}</span>` : ''}</div>`;
-  const src = `audio/${e.test}/${e.f}`;
-  $('p2-fb').innerHTML = (ok ? '✅ 答對了！' : `❌ 正確答案是 (${'ABC'[e.ans]})`)
-    + `<div style="font-weight:400;margin-top:8px">${esc(e.q)}`
-    + (e.qz ? `<span style="color:var(--muted)">　${esc(e.qz)}</span>` : '')
-    + [0, 1, 2].map(line).join('') + '</div>'
-    + `<button id="p2-fav" style="margin-top:10px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
-  $('p2-fb').className = 'feedback ' + (ok ? 'good' : 'bad');
-  $('p2-fav').onclick = () => {
-    ensureLfav(); toggleLbookClip(LFAV, src);
-    $('p2-fav').textContent = inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本';
-  };
-  touchDay();
-  $('p2-next').classList.remove('hidden');
-  $('p2-next').focus();
-}
-$('p2-replay').onclick = () => { if (p2run) playSnippet(p2run.qs[p2run.i]); };
-$('p2-next').onclick = () => {
-  if (!p2run || !p2run.answered) return;
-  if (p2run.i + 1 >= p2run.qs.length) { p2Finish(); return; }
-  p2run.i++;
-  p2Show();
-};
-$('p2-quit').onclick = () => {
-  const done = p2run ? p2run.correct + p2run.wrong.length : 0;
-  if (done && !confirm('要結束這回快答嗎？已作答的部分會存入紀錄。')) return;
-  qaudio.pause();
-  if (done) { p2Finish(); return; }
-  p2run = null;
-  examShow('exam-setup'); renderExamHistory();
-}
-function p2Finish() {
-  qaudio.pause();
-  const rec = {t: Date.now(), type: 'p2', lC: p2run.correct,
-               lT: p2run.correct + p2run.wrong.length, rC: 0, rT: 0, wrong: p2run.wrong};
-  p2run = null;
-  exHistory.unshift(rec);
-  exHistory = exHistory.slice(0, 20);
-  localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
-  touchDay();
-  showExamResult(rec);
-}
-
-/* 兩個新入口的下拉（EZ 與藍本分系列） */
+/* 來源下拉：EZ／藍本（Part 1–4 全部）＋國學 A/B（僅 Part 2，答案由 Claude 判定並經抽驗） */
 (() => {
   const ez = EZ_TESTS.filter(t => seriesOf(t) === ''), blue = EZ_TESTS.filter(t => seriesOf(t) === 'C');
+  const ab = seriesTests('A').concat(seriesTests('B'));
   const opt = t => `<option value="${t}">${esc(testName(t))}</option>`;
   $('ezq-test').innerHTML = `<option value="all">全部 ${EZ_TESTS.length} 回隨機</option>`
     + (ez.length ? `<optgroup label="EZ 模擬考"><option value="allez">EZ 全 ${ez.length} 回隨機</option>${ez.map(opt).join('')}</optgroup>` : '')
-    + (blue.length ? `<optgroup label="國學聽力藍本"><option value="allblue">藍本全 ${blue.length} 回隨機</option>${blue.map(opt).join('')}</optgroup>` : '');
+    + (blue.length ? `<optgroup label="國學聽力藍本"><option value="allblue">藍本全 ${blue.length} 回隨機</option>${blue.map(opt).join('')}</optgroup>` : '')
+    + (ab.length ? `<optgroup label="國學 A/B 本（僅 Part 2）"><option value="allab">A/B 全 ${ab.length} 回隨機</option>${ab.map(opt).join('')}</optgroup>` : '');
 })();
-$('p2-test').innerHTML = `<option value="all">全部 ${Object.keys(TESTS).length} 回隨機</option>`
-  + Object.keys(TESTS).map(t => `<option value="${t}">${testName(t)}</option>`).join('');
 
 /* ----- 閱讀 ----- */
 const READ_MIN = 55;
