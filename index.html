@@ -49,6 +49,17 @@
   }
   nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   #logout { border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; white-space: nowrap; }
+  #subnav {
+    display: flex; gap: 8px; max-width: 880px; margin: 10px auto -6px;
+    padding: 0 16px; overflow-x: auto; scrollbar-width: none;
+  }
+  #subnav::-webkit-scrollbar { display: none; }
+  #subnav button {
+    border: 1px solid var(--line); background: var(--card); color: var(--muted);
+    padding: 7px 15px; border-radius: 999px; font-size: .88rem; cursor: pointer;
+    white-space: nowrap; flex: none;
+  }
+  #subnav button.active { background: var(--chip); color: var(--ink); border-color: var(--accent); font-weight: 600; }
   main {
     max-width: 880px; margin: 0 auto; padding: 22px 16px 60px;
     padding-left: max(16px, env(safe-area-inset-left));
@@ -756,7 +767,7 @@
     .hist-row .act button, .wrow .act button { padding: 8px 14px; }
 
     /* 真題聽力快答：音檔列黏頂、下一組固定底部拇指區 */
-    body.ezq-on main { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
+    body[data-view="lq"].ezq-on main { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
     #exam-ezq .qprompt { margin: 4px 0 8px; }
     #exam-ezq .qprompt .big { display: none; }
     #exam-ezq .ezq-audio { position: sticky; top: 58px; z-index: 6; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
@@ -838,17 +849,16 @@
   <h1>📚<span class="ttl"> 多益複習</span></h1>
   <nav>
     <button id="tab-home" class="active">今天</button>
-    <button id="tab-cards">單字卡</button>
-    <button id="tab-quiz">單字測驗</button>
-    <button id="tab-shadow">聽力解析</button>
-    <button id="tab-speak">口說跟讀</button>
-    <button id="tab-dict">聽寫練習</button>
+    <button id="tab-glisten">英文聽力</button>
+    <button id="tab-gvocab">英文單字</button>
+    <button id="tab-mist">英文填空</button>
     <button id="tab-exam">模擬考試</button>
-    <button id="tab-mist">錯題複習</button>
     <button id="tab-admin">單字管理</button>
   </nav>
   <button id="logout" title="登出後需重新輸入密碼">登出</button>
 </header>
+
+<div id="subnav" class="hidden"></div>
 
 <main>
   <!-- ================= 今天（儀表板） ================= -->
@@ -1223,22 +1233,9 @@
   </section>
 
   <!-- ================= 模擬考試 ================= -->
-  <section id="view-exam" class="hidden">
-
-    <div id="exam-setup">
-      <div class="panel">
-        <h3>TOEIC 模擬考試（Claude 出題）</h3>
-        <p class="examnote">
-          聽力 <b>94 題</b>（Part 2 應答 25、Part 3 對話 39、Part 4 獨白 30，語音自動播放、比照真實考試節奏）＋
-          閱讀 <b>68 題</b>（Part 5 單句 30、Part 6 段落填空 16、Part 7 閱讀 22，限時 55 分鐘）。<br>
-          聽力採用瀏覽器語音合成播放，Part 1 因需照片素材暫不提供。交卷後自動閱卷、附中文詳解與粗估分數。
-        </p>
-        <div class="btnrow">
-          <button class="primary" id="ex-start-full">▶ 完整模擬考（聽力＋閱讀）</button>
-          <button id="ex-start-l">只考聽力</button>
-          <button id="ex-start-r">只考閱讀</button>
-        </div>
-      </div>
+  <!-- ================= 真題聽力（英文聽力類） ================= -->
+  <section id="view-lq" class="hidden">
+    <div id="lq-setup">
       <div class="panel">
         <h3>真題聽力（逐題快答）</h3>
         <p class="examnote">
@@ -1267,24 +1264,8 @@
         </div>
       </div>
       <div class="panel">
-        <h3>考試紀錄</h3>
-        <div id="ex-history"></div>
-      </div>
-    </div>
-
-    <div id="exam-listen" class="hidden">
-      <div class="exambar">
-        <b id="el-part">Part 2</b>
-        <span id="el-prog" style="color:var(--muted);font-size:.9rem"></span>
-        <span class="grow2"></span>
-        <button id="el-pause">⏸ 暫停</button>
-        <button id="el-replay">↻ 重播本題</button>
-        <button id="el-skipwait">⏩ 跳過等待</button>
-        <button id="el-quit" style="color:var(--bad)">結束</button>
-      </div>
-      <div class="panel">
-        <div class="lstatus" id="el-status"></div>
-        <div id="el-area"></div>
+        <h3>練習紀錄</h3>
+        <div id="lq-history"></div>
       </div>
     </div>
 
@@ -1308,6 +1289,57 @@
           <button id="ezq-next" class="hidden" style="border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 30px;border-radius:10px;cursor:pointer">下一題 →</button>
           <button id="ezq-quit" style="border:none;background:none;color:var(--muted);cursor:pointer;margin-left:14px">結束</button>
         </div>
+      </div>
+    </div>
+
+    <div id="lq-result" class="hidden">
+      <div class="panel">
+        <div class="resultbig" id="lq-score"></div>
+        <div class="resultsub" id="lq-sub"></div>
+        <div class="btnrow" style="justify-content:center">
+          <button id="lq-review-btn">📖 檢討答錯題目</button>
+          <button id="lq-back">回真題聽力</button>
+        </div>
+        <div id="lq-review"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-exam" class="hidden">
+
+    <div id="exam-setup">
+      <div class="panel">
+        <h3>TOEIC 模擬考試（Claude 出題）</h3>
+        <p class="examnote">
+          聽力 <b>94 題</b>（Part 2 應答 25、Part 3 對話 39、Part 4 獨白 30，語音自動播放、比照真實考試節奏）＋
+          閱讀 <b>68 題</b>（Part 5 單句 30、Part 6 段落填空 16、Part 7 閱讀 22，限時 55 分鐘）。<br>
+          聽力採用瀏覽器語音合成播放，Part 1 因需照片素材暫不提供。交卷後自動閱卷、附中文詳解與粗估分數。
+        </p>
+        <div class="btnrow">
+          <button class="primary" id="ex-start-full">▶ 完整模擬考（聽力＋閱讀）</button>
+          <button id="ex-start-l">只考聽力</button>
+          <button id="ex-start-r">只考閱讀</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>考試紀錄</h3>
+        <div id="ex-history"></div>
+      </div>
+    </div>
+
+    <div id="exam-listen" class="hidden">
+      <div class="exambar">
+        <b id="el-part">Part 2</b>
+        <span id="el-prog" style="color:var(--muted);font-size:.9rem"></span>
+        <span class="grow2"></span>
+        <button id="el-pause">⏸ 暫停</button>
+        <button id="el-replay">↻ 重播本題</button>
+        <button id="el-skipwait">⏩ 跳過等待</button>
+        <button id="el-quit" style="color:var(--bad)">結束</button>
+      </div>
+      <div class="panel">
+        <div class="lstatus" id="el-status"></div>
+        <div id="el-area"></div>
       </div>
     </div>
 
@@ -1344,8 +1376,8 @@
   <section id="view-mist" class="hidden">
     <div id="mi-setup">
       <div class="panel">
-        <h3>錯題複習 <span class="badge zero" id="mi-count">0 題</span></h3>
-        <p class="desc">在「模擬考試」交卷後按<b>「加入錯題複習」</b>，答錯的題目會自動收進這裡（本機保存）。
+        <h3>英文填空 <span class="badge zero" id="mi-count">0 題</span></h3>
+        <p class="desc">在「模擬考試」交卷後按<b>「加入英文填空」</b>，答錯的題目會自動收進這裡（本機保存）。
           紙本模擬考的錯題則記在 repo 的 <code>review/*.md</code>，跟 Claude 說「匯入錯題」即可，格式見 <code>review/README.md</code>。</p>
         <div class="toolbar">
           <select id="mi-src"></select>
@@ -1363,7 +1395,7 @@
       </div>
       <div class="panel" id="mi-catpanel">
         <h3>考點診斷</h3>
-        <p class="desc">依每題第一個標籤歸類，統計你在錯題複習裡的作答正確率（紅色是最弱的考點）。點一列就只練那個考點。</p>
+        <p class="desc">依每題第一個標籤歸類，統計你在英文填空裡的作答正確率（紅色是最弱的考點）。點一列就只練那個考點。</p>
         <div id="mi-cats"></div>
       </div>
     </div>
@@ -1706,23 +1738,43 @@ function stopAllPlayback() {
     speechSynthesis.cancel();   // 單字卡/單字測驗的語音發音
   }
 }
+/* 兩層導覽：英文聽力／英文單字底下各有子分頁，其餘為單頁 */
+const NAV_GROUPS = {
+  listen: {views: {lq: '真題聽力', shadow: '聽力解析', speak: '口說跟讀', dict: '聽寫練習'}},
+  vocab: {views: {cards: '單字卡', quiz: '單字測驗'}},
+};
+const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'admin'];
+const groupOf = v => v in NAV_GROUPS.listen.views ? 'listen' : v in NAV_GROUPS.vocab.views ? 'vocab' : null;
 function showView(v) {
+  if (!ALL_VIEWS.includes(v)) v = 'home';
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
-  for (const k of ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
-    $('view-' + k).classList.toggle('hidden', v !== k);
-    $('tab-' + k).classList.toggle('active', v === k);
+  for (const k of ALL_VIEWS) $('view-' + k).classList.toggle('hidden', v !== k);
+  const g = groupOf(v);
+  $('tab-home').classList.toggle('active', v === 'home');
+  $('tab-mist').classList.toggle('active', v === 'mist');
+  $('tab-exam').classList.toggle('active', v === 'exam');
+  $('tab-admin').classList.toggle('active', v === 'admin');
+  $('tab-glisten').classList.toggle('active', g === 'listen');
+  $('tab-gvocab').classList.toggle('active', g === 'vocab');
+  const sub = $('subnav');
+  if (g) {
+    localStorage.setItem('toeic-sub-' + g, v);
+    sub.classList.remove('hidden');
+    sub.innerHTML = Object.entries(NAV_GROUPS[g].views).map(([k, name]) =>
+      `<button data-v="${k}" class="${k === v ? 'active' : ''}">${name}</button>`).join('');
+    sub.querySelectorAll('button').forEach(b => b.onclick = () => showView(b.dataset.v));
+  } else {
+    sub.classList.add('hidden');
   }
   document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
   if (v === 'home') renderHome();
   if (v === 'quiz') refreshQDueBtn();
+  if (v === 'lq') renderLqHistory();
 }
 $('tab-home').onclick = () => showView('home');
-$('tab-cards').onclick = () => showView('cards');
-$('tab-quiz').onclick = () => showView('quiz');
-$('tab-shadow').onclick = () => showView('shadow');
-$('tab-speak').onclick = () => showView('speak');
-$('tab-dict').onclick = () => showView('dict');
+$('tab-glisten').onclick = () => showView(localStorage.getItem('toeic-sub-listen') || 'lq');
+$('tab-gvocab').onclick = () => showView(localStorage.getItem('toeic-sub-vocab') || 'cards');
 $('tab-exam').onclick = () => showView('exam');
 $('tab-mist').onclick = () => showView('mist');
 $('tab-admin').onclick = () => showView('admin');
@@ -3010,9 +3062,8 @@ const exWait = ms => new Promise(res => {
 const exGate = () => exPauseP || Promise.resolve();
 
 function examShow(panel) {
-  for (const p of ['exam-setup', 'exam-listen', 'exam-ezq', 'exam-read', 'exam-result'])
+  for (const p of ['exam-setup', 'exam-listen', 'exam-read', 'exam-result'])
     $(p).classList.toggle('hidden', p !== panel);
-  document.body.classList.toggle('ezq-on', panel === 'exam-ezq');
 }
 
 /* ----- 聽力單元（unit）列表：P2 每題一單元、P3/4 每題組一單元 ----- */
@@ -3193,7 +3244,7 @@ function startEzq() {
   for (const u of pool) { if (count >= want) break; units.push(u); count += u.qs.length; }
   if (!units.length) { alert('這個範圍沒有題目'); return; }
   ezq = {units, ui: 0, correct: 0, wrong: [], ps: {}, total: count, picks: {}, ready: false, gOK: 0};
-  examShow('exam-ezq');
+  lqShow('exam-ezq');
   ezqShow();
 }
 $('ezq-start').onclick = startEzq;
@@ -3422,7 +3473,7 @@ $('ezq-quit').onclick = () => {
   qaudio.pause();
   if (done) { ezqFinish(); return; }
   ezq = null;
-  examShow('exam-setup'); renderExamHistory();
+  lqShow('lq-setup'); renderLqHistory();
 };
 function ezqFinish() {
   qaudio.pause();
@@ -3433,7 +3484,50 @@ function ezqFinish() {
   exHistory = exHistory.slice(0, 20);
   localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
   touchDay();
-  showExamResult(rec);
+  lqResult(rec);
+}
+/* ----- 真題聽力頁的面板切換／結果／紀錄 ----- */
+function lqShow(panel) {
+  for (const p of ['lq-setup', 'exam-ezq', 'lq-result'])
+    $(p).classList.toggle('hidden', p !== panel);
+  document.body.classList.toggle('ezq-on', panel === 'exam-ezq');
+}
+function lqResult(rec, withReview) {
+  lqShow('lq-result');
+  const pct = rec.lT ? Math.round(rec.lC / rec.lT * 100) : 0;
+  $('lq-score').textContent = `${rec.lC} / ${rec.lT}`;
+  const bits = rec.ps ? Object.keys(rec.ps).sort()
+    .map(p => `Part ${p} ${rec.ps[p][0]}/${rec.ps[p][1]}`).join('・') : '';
+  $('lq-sub').innerHTML = `${rec.type === 'p2' ? 'Part 2 快答' : '真題聽力快答'}・答對率 ${pct}%` + (bits ? `<br>${bits}` : '');
+  const fill = () => {
+    $('lq-review').innerHTML = `<div class="panel" style="padding:0;border:none;background:none"><h3>答錯題目</h3>${
+      (rec.wrong || []).length ? wrongListHTML(rec.wrong) : '<p class="desc">全對，太強了！</p>'}</div>`;
+    bindSpeakBtns($('lq-review'));
+  };
+  $('lq-review').innerHTML = '';
+  $('lq-review-btn').onclick = fill;
+  if (withReview) fill();
+}
+$('lq-back').onclick = () => { lqShow('lq-setup'); renderLqHistory(); };
+function renderLqHistory() {
+  const list = exHistory.map((h, i) => [h, i]).filter(([h]) => h.type === 'ezq' || h.type === 'p2');
+  if (!list.length) {
+    $('lq-history').innerHTML = '<p style="color:var(--muted);font-size:.88rem">還沒有練習紀錄</p>';
+    return;
+  }
+  $('lq-history').innerHTML = list.map(([h, i]) => {
+    const d = new Date(h.t);
+    const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    return `<div class="hist-row"><span class="score">${h.lC}/${h.lT}</span>
+      <span>${h.type === 'p2' ? 'Part 2 快答' : '真題聽力'}</span><span class="when">${when}</span>
+      <span class="act"><button data-lqrev="${i}">檢討</button><button data-lqdel="${i}">刪除</button></span></div>`;
+  }).join('');
+  $('lq-history').querySelectorAll('[data-lqrev]').forEach(b => b.onclick = () => lqResult(exHistory[+b.dataset.lqrev], true));
+  $('lq-history').querySelectorAll('[data-lqdel]').forEach(b => b.onclick = () => {
+    exHistory.splice(+b.dataset.lqdel, 1);
+    localStorage.setItem('toeic-exam-history', JSON.stringify(exHistory));
+    renderLqHistory();
+  });
 }
 
 /* 來源下拉：EZ／藍本（Part 1–4 全部）＋國學 A/B（僅 Part 2，答案由 Claude 判定並經抽驗） */
@@ -3591,13 +3685,13 @@ function updExAddMi(rec) {
   const fresh = items.filter(m => !have.has(m.id));
   btn.classList.toggle('hidden', !items.length);
   btn.disabled = !fresh.length;
-  btn.textContent = fresh.length ? `➕ 把答錯的 ${fresh.length} 題加入錯題複習`
-    : `✓ 這回的錯題已在錯題本（${items.length} 題）`;
+  btn.textContent = fresh.length ? `➕ 把答錯的 ${fresh.length} 題加入英文填空`
+    : `✓ 這回的錯題已在英文填空（${items.length} 題）`;
   btn.onclick = () => {
     miLocal.push(...fresh);
     saveMiLocal(); rebuildMI(); miRenderSetup();
     updExAddMi(rec);
-    srsToast(`已加入 ${fresh.length} 題到錯題複習`);
+    srsToast(`已加入 ${fresh.length} 題到英文填空`);
   };
 }
 function showExamResult(rec) {
@@ -3737,14 +3831,15 @@ function renderExamReview(rec) {
 }
 $('ex-back').onclick = () => { examShow('exam-setup'); renderExamHistory(); };
 function renderExamHistory() {
-  if (!exHistory.length) {
+  // 真題聽力/Part 2 快答（type ezq/p2）的紀錄顯示在真題聽力頁，這裡只留模擬考
+  const exList = exHistory.map((h, i) => [h, i]).filter(([h]) => ['full', 'l', 'r'].includes(h.type));
+  if (!exList.length) {
     $('ex-history').innerHTML = '<p style="color:var(--muted);font-size:.88rem">還沒有考試紀錄</p>';
     return;
   }
   const TYPE = {full: '聽力＋閱讀', l: '聽力', r: '閱讀'};
-  const typeLabel = h => h.type === 'ezq' ? '真題聽力'
-    : h.type === 'p2' ? 'Part 2 快答' : TYPE[h.type];
-  $('ex-history').innerHTML = exHistory.map((h, i) => {
+  const typeLabel = h => TYPE[h.type];
+  $('ex-history').innerHTML = exList.map(([h, i]) => {
     const d = new Date(h.t);
     const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     const s = [];
@@ -3894,7 +3989,7 @@ function miRenderSetup() {
       ? ($('mi-mode').value === 'due'
         ? '這個條件下今天沒有到期的題目 🎉 換成「全部題目」可以繼續練。'
         : '這個篩選條件下沒有題目')
-      : '還沒有錯題。去「模擬考試」考一回，交卷後按「加入錯題複習」，答錯的題目就會自動收進這裡。'}</p>`;
+      : '還沒有錯題。去「模擬考試」考一回，交卷後按「加入英文填空」，答錯的題目就會自動收進這裡。'}</p>`;
   $('mi-list').querySelectorAll('[data-midel]').forEach(b => b.onclick = () => {
     const i = miLocal.findIndex(m => m.id === b.dataset.midel);
     if (i < 0) return;
@@ -4439,7 +4534,7 @@ const PART_HINT = {
   2: '應答問題：去「聽力解析」把 Part 2 逐句聽熟',
   3: '簡短對話：用「聽寫練習」逼自己聽出每個字',
   4: '簡短獨白：用「口說跟讀」練語速與連音',
-  5: '單句填空：文法與字彙，練「錯題複習」最有效',
+  5: '單句填空：文法與字彙，練「英文填空」最有效',
   6: '段落填空：回「模擬考試」重做並檢討上下文線索',
   7: '閱讀理解：回「模擬考試」練長文速讀',
 };
@@ -4545,7 +4640,7 @@ function renderTasks() {
        refreshQDueBtn();
        if (due) $('q-start').click();
      }},
-    {done: !midue, lbl: '❌ 錯題複習', num: midue, unit: '題到期',
+    {done: !midue, lbl: '❌ 英文填空', num: midue, unit: '題到期',
      sub: midue ? '答對往後排、答錯明天再考一次'
        : (MI.length ? '今天的錯題都複習完了' : '交卷後把錯題加進來'),
      btn: MI.length ? '開始練' : '去考一回', dis: !MI.length,
@@ -4561,7 +4656,7 @@ function renderTasks() {
     const [p, s] = weak;
     cards.push({lbl: '🎯 最弱項目', num: Math.round(s.c / s.t * 100), unit: '% ' + PART_NAME[p],
       sub: PART_HINT[p] || '', btn: '去練這一項',
-      act: +p === 5 ? goMist('all', 'all') : () => showView(+p <= 4 ? 'shadow' : 'exam')});
+      act: +p === 5 ? goMist('all', 'all') : () => showView(+p <= 4 ? 'lq' : 'exam')});
   } else {
     cards.push({lbl: '🎯 最弱項目', num: '—', unit: '',
       sub: '考過模擬考之後，這裡會指出你最該補的 Part', btn: '去考模擬考',
@@ -4605,7 +4700,7 @@ addEventListener('resize', () => {           // viewBox 綁著容器寬度，轉
 
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending(); miRenderSetup();
-buildQRange(); renderHistory(); renderExamHistory(); renderClipList(); renderDtSide();
+buildQRange(); renderHistory(); renderExamHistory(); renderLqHistory(); renderClipList(); renderDtSide();
 buildBookSels(); renderBooksAdmin();
 showView(localStorage.getItem('toeic-view') || 'home');
 </script>
