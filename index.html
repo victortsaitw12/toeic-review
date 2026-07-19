@@ -911,9 +911,11 @@
     .qcol { gap: 8px; }
     #ezq-area .rq { margin: 8px 0; }
     .qside button { padding: 6px 8px; }
-    /* 聽寫輸入框是主工作區，加大不受 compact 影響 */
-    #dt-input { font-size: 1.3rem; min-height: 104px; line-height: 1.6; padding: 12px 14px; }
-    #dt-check, #dt-show { font-size: 1rem; }
+    /* 聽寫輸入框是主工作區，加大不受 compact 影響；按鈕移到輸入框下方一排 */
+    #dt-dictbox .spellrow { flex-wrap: wrap; gap: 10px; }
+    #dt-input { flex: 1 1 100%; font-size: 1.3rem; min-height: 104px; line-height: 1.6; padding: 12px 14px; }
+    #dt-check { flex: 1; min-height: 46px; font-size: 1.05rem; }
+    #dt-show { min-height: 46px; font-size: 1rem; padding: 0 24px !important; }
     #sidebar { padding-top: 10px; }
     .sb-brand { padding-bottom: 8px; }
     #sbnav button { padding: 7px 11px; }
