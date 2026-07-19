@@ -75,7 +75,7 @@
   }
   .hidden { display: none !important; }
   /* 聽力三頁（解析/跟讀/聽寫）用寬版工作區，其他頁維持 880 閱讀寬度 */
-  body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1280px; }
+  body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1160px; }
   @media (min-width: 701px) {
     header { display: none; }
     body { padding-left: 212px; }
@@ -464,18 +464,17 @@
   }
   .time { color: var(--muted); font-size: .82rem; display: flex; justify-content: space-between; }
   /* 電腦版：左側題目 sidebar＋右側逐字稿；手機版：單欄＋頂部下拉選單 */
-  body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1380px; }
   .shadow-grid {
-    display: grid; grid-template-columns: 250px minmax(0, 1fr) minmax(300px, 480px);
+    display: grid; grid-template-columns: 260px minmax(0, 1fr);
     gap: 20px; align-items: start;
   }
-  /* 三欄只在扣掉側邊選單後仍夠寬時啟用（<1120 走單欄＋下拉版型） */
-  @media (min-width: 1120px) {
-    .tpanel {
-      position: sticky; top: 12px; margin-bottom: 0;
-      max-height: calc(100vh - 24px); display: flex; flex-direction: column;
-    }
-    .tpanel #tlist, .tpanel #sp-list, .tpanel #dt-list { max-height: none; flex: 1; }
+  /* 桌面兩欄：左＝來源與清單（sticky 滿高），右＝播放器（sticky 頂）＋逐字稿全寬堆疊。
+     中間工作區不再與逐字稿搶寬度（先前三欄在筆電上會把播放器擠到 <300px） */
+  @media (min-width: 900px) {
+    .shadow-grid { grid-template-rows: auto 1fr; }   /* 右欄：播放器列取內容高，逐字稿緊貼其下 */
+    .shadow-grid > .qcol { grid-row: 1 / 3; }
+    .tpanel { grid-column: 2; margin-bottom: 0; }
+    #tlist, #sp-list, #dt-list { max-height: 62vh; }
   }
   .qside {
     position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow-y: auto;
@@ -527,7 +526,7 @@
   .qside button .bookadd { flex: none; margin-right: 7px; cursor: pointer; opacity: .5; font-size: .92em; }
   .qside button .bookadd:hover { opacity: 1; }
   .qside .empty { color: var(--muted); font-size: .85rem; padding: 10px 8px; line-height: 1.6; }
-  @media (max-width: 1119px) {
+  @media (max-width: 899px) {
     /* 單欄；minmax(0,1fr)＋子項 min-width:0 避免長標題/句子撐爆欄位而溢出畫面 */
     .shadow-grid { grid-template-columns: minmax(0, 1fr); }
     .shadow-grid > * { min-width: 0; }
@@ -537,7 +536,7 @@
   }
   .qpickrow { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
   .qpickrow .tsel { flex: 1 1 100%; }
-  @media (min-width: 1120px) { .qpickrow { display: none; } }
+  @media (min-width: 900px) { .qpickrow { display: none; } }
   .qpickrow select {
     flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink);
     padding: 11px 12px; border-radius: 10px; font-size: 1rem; cursor: pointer;
