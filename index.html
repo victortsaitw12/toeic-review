@@ -88,6 +88,17 @@
   /* 聽力三頁（解析/跟讀/聽寫）用寬版工作區，其他頁維持 880 閱讀寬度 */
   body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1120px; }
   @media (min-width: 701px) {
+    /* 桌面 compact：整體字級縮一級（rem 級距全體縮放）＋收斂留白 */
+    html { font-size: 14.5px; }
+    main { padding-top: 16px; padding-bottom: 44px; }
+    .panel { padding: 14px 16px; margin-bottom: 14px; border-radius: 14px; }
+    .player { padding: 12px 16px; }
+    .qpick { padding: 10px; }
+    .qside button { padding: 7px 8px; }
+    #sidebar { padding-top: 10px; }
+    .sb-brand { padding-bottom: 8px; }
+    #sbnav button { padding: 7px 11px; }
+    .sb-group { padding: 9px 10px 3px; }
     header { display: none; }
     body { padding-left: 212px; }
     .exambar { top: 12px; }
