@@ -992,6 +992,7 @@
         <option value="4">高階 945+</option>
       </select>
       <button id="shuffle">🔀 隨機</button>
+      <button id="autospeak" title="翻頁時自動念單字">🔊 自動發音</button>
       <span class="counter" id="counter"></span>
     </div>
     <div class="cardwrap">
@@ -1627,7 +1628,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'speak', 'books', 'listen2'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'speak', 'books', 'listen2', 'listen2_carol'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -2009,6 +2010,7 @@ function move(d) {
   if (!deck.length) return;
   idx = (idx + d + deck.length) % deck.length;
   renderCard();
+  if (autoSpeak) speak(deck[idx].w);
 }
 /* 單字發音：國學 A/B 本單字 MP3 切出來的真人錄音（data/wordaudio.js，約 2,950 字）優先，
    查不到的字（例句、以及沒收錄的字）才退回瀏覽器語音合成。 */
@@ -2050,6 +2052,15 @@ $('next-card').onclick = () => move(1);
 $('speak-word').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].w); };
 $('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].ex); };
 $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
+// 自動發音：開啟後翻頁（上一張/下一張/滑動/方向鍵）就念單字，狀態記在本機
+let autoSpeak = localStorage.getItem('toeic-autospeak') === '1';
+$('autospeak').classList.toggle('on', autoSpeak);
+$('autospeak').onclick = () => {
+  autoSpeak = !autoSpeak;
+  localStorage.setItem('toeic-autospeak', autoSpeak ? '1' : '0');
+  $('autospeak').classList.toggle('on', autoSpeak);
+  if (autoSpeak && deck.length) speak(deck[idx].w);  // 立即念一次當回饋
+};
 rangeSel.onchange = buildDeck;
 $('lvfilter').onchange = buildDeck;
 $('bookfilter').onchange = buildDeck;
@@ -2083,7 +2094,8 @@ $('q-dtest').innerHTML = Object.keys(TESTS).map(t =>
 
 /* ----- 真人聽力 Part 2 題庫（data/listen2.js，題目與回應皆為真人音檔）----- */
 /* 題庫供「真題聽力（逐題快答）」的 Part 2 使用（27 回都有）；重聽沿用本區的 playSnippet */
-const P2 = (typeof LISTEN2 !== 'undefined') ? LISTEN2 : [];
+const P2 = ((typeof LISTEN2 !== 'undefined') ? LISTEN2 : [])
+  .concat(typeof LISTEN2_CAROL !== 'undefined' ? LISTEN2_CAROL : []);
 
 /* ----- dictation (listening) helpers ----- */
 const qaudio = new Audio();
@@ -2512,8 +2524,8 @@ document.addEventListener('keydown', e => {
 /* ================= speaking practice ================= */
 const SPEAK_DATA = typeof SPEAK !== 'undefined' ? SPEAK : [];
 /* 模擬考系列（跟讀/聽寫/聽力解析側邊欄共用） */
-const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}, {k: 'C', n: '國學藍'}];
-const seriesOf = t => (t.match(/^Test([A-C]?)/) || [])[1] || '';
+const SERIES = [{k: '', n: 'EZ'}, {k: 'A', n: '國學A'}, {k: 'B', n: '國學B'}, {k: 'C', n: '國學藍'}, {k: 'D', n: 'Carol P2'}];
+const seriesOf = t => (t.match(/^Test([A-D]?)/) || [])[1] || '';
 const seriesTests = k => Object.keys(TESTS).filter(t => seriesOf(t) === k)
   .sort((a, b) => parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, '')));
 /* 練習材料來源（跟讀/聽寫共用）：VOA 教材＋模擬考聽力題＋我的最愛 */
@@ -3315,6 +3327,7 @@ function startEzq() {
     : sel === 'allez' ? EZ_TESTS.filter(t => seriesOf(t) === '')
     : sel === 'allblue' ? EZ_TESTS.filter(t => seriesOf(t) === 'C')
     : sel === 'allab' ? seriesTests('A').concat(seriesTests('B'))
+    : sel === 'allcarol' ? seriesTests('D')
     : [sel];
   const pool = sample(tests.flatMap(t => ezqUnits(t, part)), 9999);
   const units = [];
@@ -3602,15 +3615,18 @@ function renderLqHistory() {
   });
 }
 
-/* 來源下拉：EZ／藍本（Part 1–4 全部）＋國學 A/B（僅 Part 2，答案由 Claude 判定並經抽驗） */
+/* 來源下拉：EZ／藍本（Part 1–4 全部）＋國學 A/B（僅 Part 2，答案由 Claude 判定並經抽驗）
+   ＋Carol P2（僅 Part 2，YouTube 題庫，答案取自影片口播） */
 (() => {
   const ez = EZ_TESTS.filter(t => seriesOf(t) === ''), blue = EZ_TESTS.filter(t => seriesOf(t) === 'C');
   const ab = seriesTests('A').concat(seriesTests('B'));
+  const carol = seriesTests('D');
   const opt = t => `<option value="${t}">${esc(testName(t))}</option>`;
   $('ezq-test').innerHTML = `<option value="all">全部 ${EZ_TESTS.length} 回隨機</option>`
     + (ez.length ? `<optgroup label="EZ 模擬考"><option value="allez">EZ 全 ${ez.length} 回隨機</option>${ez.map(opt).join('')}</optgroup>` : '')
     + (blue.length ? `<optgroup label="國學聽力藍本"><option value="allblue">藍本全 ${blue.length} 回隨機</option>${blue.map(opt).join('')}</optgroup>` : '')
-    + (ab.length ? `<optgroup label="國學 A/B 本（僅 Part 2）"><option value="allab">A/B 全 ${ab.length} 回隨機</option>${ab.map(opt).join('')}</optgroup>` : '');
+    + (ab.length ? `<optgroup label="國學 A/B 本（僅 Part 2）"><option value="allab">A/B 全 ${ab.length} 回隨機</option>${ab.map(opt).join('')}</optgroup>` : '')
+    + (carol.length ? `<optgroup label="Carol P2（僅 Part 2）"><option value="allcarol">Carol 全 ${carol.length} 回隨機</option>${carol.map(opt).join('')}</optgroup>` : '');
 })();
 
 /* ----- 閱讀 ----- */
