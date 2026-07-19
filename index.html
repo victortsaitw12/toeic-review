@@ -417,17 +417,7 @@
     flex: none; cursor: pointer; border: 1px solid var(--line); background: var(--card);
     color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: .86rem;
   }
-  /* 真題聽力：題組進度圓標與題卡 */
-  .ezq-chips { display: flex; gap: 8px; justify-content: center; margin: 8px 0 2px; }
-  .ezq-chips .chip3 {
-    min-width: 52px; padding: 7px 12px; border-radius: 999px; cursor: pointer;
-    border: 1px solid var(--line); background: var(--card); color: var(--muted);
-    font-size: .88rem; font-weight: 700;
-  }
-  .ezq-chips .chip3.cur { border-color: var(--accent); color: var(--ink); box-shadow: 0 0 0 2px var(--chip); }
-  .ezq-chips .chip3.picked { background: var(--chip); color: var(--ink); }
-  .ezq-chips .chip3.done-ok { border-color: var(--good); color: var(--good); background: rgba(31,157,99,.1); }
-  .ezq-chips .chip3.done-no { border-color: var(--bad); color: var(--bad); background: rgba(214,69,69,.1); }
+  /* 真題聽力：題卡 */
   #ezq-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
   #ezq-area .rq.qcur { border-color: var(--accent); box-shadow: 0 0 0 2px var(--chip); }
   #ezq-area .rq.qdone .opts label { cursor: default; }
@@ -1381,7 +1371,6 @@
           <span class="ezq-time" id="ezq-time">0:00 / 0:00</span>
           <button id="ezq-replay" title="從頭重聽">↻ 重聽</button>
         </div>
-        <div class="ezq-chips hidden" id="ezq-chips"></div>
         <div id="ezq-area"></div>
         <div class="feedback" id="ezq-fb"></div>
         <div class="qnext" id="ezq-ctrls">
@@ -3361,24 +3350,13 @@ function ezqShow() {
       if (!ezq.ready) ezqPickGroup(+l.dataset.n, +l.dataset.i);   // 對答案前都可改選
     });
   }
-  // 題組進度圓標（P3/4）：未答灰、答對綠、答錯紅，點了捲到那一題
-  const chips = $('ezq-chips');
-  if (u.qs.length > 1) {
-    chips.classList.remove('hidden');
-    chips.innerHTML = u.qs.map(n => `<button class="chip3" data-n="${n}">${n}</button>`).join('');
-    chips.querySelectorAll('.chip3').forEach(c => c.onclick = () =>
-      area.querySelector(`.rq[data-q="${c.dataset.n}"]`)?.scrollIntoView({block: 'center', behavior: 'smooth'}));
-    ezqMarkCur(u.qs[0]);
-  } else {
-    chips.classList.add('hidden');
-  }
+  if (u.qs.length > 1) ezqMarkCur(u.qs[0]);
   ezqAudioReset(u);
   playSnippet(ezqSeg(u));
 }
 /* 目前作答題的視覺標示（題卡框線＋圓標） */
 function ezqMarkCur(n) {
   $('ezq-area').querySelectorAll('.rq').forEach(b => b.classList.toggle('qcur', +b.dataset.q === n));
-  $('ezq-chips').querySelectorAll('.chip3').forEach(c => c.classList.toggle('cur', +c.dataset.n === n));
 }
 /* ----- 音檔控制列：⏯／進度條（點選跳轉）／時間；與聽寫共用 qaudio，只在本畫面作用 ----- */
 const ezqAudioOn = () => ezq && !$('exam-ezq').classList.contains('hidden');
@@ -3499,8 +3477,6 @@ function ezqPickGroup(n, pick) {
   const box = $('ezq-area').querySelector(`.rq[data-q="${n}"]`);
   box.querySelectorAll('.opts label').forEach(l =>
     l.classList.toggle('picked', +l.dataset.i === pick));
-  const chip = $('ezq-chips').querySelector(`.chip3[data-n="${n}"]`);
-  if (chip) chip.classList.add('picked');
   const next = u.qs.find(q => !(q in ezq.picks));
   if (next !== undefined) {   // 還有沒作答的：移過去，先不揭曉
     ezqMarkCur(next);
@@ -3530,8 +3506,6 @@ function ezqGradeGroup(u) {
         ${d.optsz.map((z, i) => ezqZline(`(${ABCD[i]}) ${esc(z)}`, i === ai)).join('')}
         <div style="margin-top:6px">💡 ${esc(d.exp)}</div>
       </div>`;
-    const chip = $('ezq-chips').querySelector(`.chip3[data-n="${n}"]`);
-    if (chip) { chip.classList.remove('picked'); chip.classList.add(ok ? 'done-ok' : 'done-no'); }
   }
   $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
   $('ezq-prog').textContent = `第 ${Math.min(ezqDoneN() + 1, ezq.total)} / ${ezq.total} 題・真題聽力`;
