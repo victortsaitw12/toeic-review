@@ -2656,6 +2656,10 @@ function renderLbmList() {
 function closeLbookModal() {
   $('lbmodal').classList.add('hidden');
   renderClipList(); renderDtSide(); buildQSel();   // 同步三頁的收藏狀態
+  // 真題聽力揭曉區的 ☆ 也要同步（在 modal 裡把這段加進/移出「最愛」時）
+  const ef = $('ezq-fav');
+  if (ef && lbmClip && ef.dataset.src === lbmClip.src)
+    ef.textContent = inFav(lbmClip.src) ? '★ 已在最愛' : '☆ 加入最愛';
 }
 $('lbm-close').onclick = closeLbookModal;
 $('lbmodal').onclick = e => { if (e.target === $('lbmodal')) closeLbookModal(); };
@@ -3423,11 +3427,17 @@ $('ezq-track').onclick = e => {
   if (qaudio.paused) qaudio.play();
 };
 const ezqZline = (txt, hot) => `<div style="margin-top:3px${hot ? ';color:var(--good);font-weight:600' : ''}">${txt}</div>`;
-const ezqFavBtn = src => `<button id="ezq-fav" style="margin-top:10px;margin-left:14px;padding:6px 14px">${inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本'}</button>`;
+const ezqFavBtn = src => `<button id="ezq-fav" data-src="${src}" style="margin-top:10px;margin-left:14px;padding:6px 14px">${inFav(src) ? '★ 已在最愛' : '☆ 加入最愛'}</button>
+  <button id="ezq-book" style="margin-top:10px;margin-left:8px;padding:6px 10px" title="加入其他聽力練習本">📓</button>`;
 function ezqBindFav(src) {
   $('ezq-fav').onclick = () => {
     ensureLfav(); toggleLbookClip(LFAV, src);
-    $('ezq-fav').textContent = inFav(src) ? '★ 已在聽力練習本' : '☆ 加入聽力練習本';
+    $('ezq-fav').textContent = inFav(src) ? '★ 已在最愛' : '☆ 加入最愛';
+  };
+  $('ezq-book').onclick = () => {
+    const u = ezq.units[ezq.ui];
+    const label = u.qs.length > 1 ? `第 ${u.qs[0]}–${u.qs[u.qs.length - 1]} 題` : `第 ${u.qs[0]} 題`;
+    openLbookModal({src, title: `${testName(u.test)}・Part ${u.p}・${label}`});
   };
 }
 /* 共同計分＋答錯收集（收成 dict segment 形狀，檢討清單的「▶ 重聽」沿用既有機制） */
