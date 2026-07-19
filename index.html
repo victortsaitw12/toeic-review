@@ -400,6 +400,8 @@
     flex: none; cursor: pointer; border: 1px solid var(--line); background: var(--card);
     color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: .86rem;
   }
+  /* 真題聽力：揭曉後的逐字稿（播放器正下方）；捲動定位要讓出上方 sticky 列 */
+  #ezq-ts { scroll-margin-top: 70px; }
   /* 真題聽力：題卡 */
   #ezq-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
   #ezq-area .rq.qcur { border-color: var(--accent); box-shadow: 0 0 0 2px var(--chip); }
@@ -833,6 +835,7 @@
     #exam-ezq .qprompt { margin: 4px 0 8px; }
     #exam-ezq .qprompt .big { display: none; }
     #exam-ezq .ezq-audio { position: sticky; top: 58px; z-index: 6; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    #ezq-ts { scroll-margin-top: 128px; }   /* header 58 ＋ sticky 音檔列高度 */
     #exam-ezq .ezq-time { min-width: 0; font-size: .72rem; }
     #ezq-replay { padding: 9px 9px; }
     #exam-ezq .qnext {
@@ -1384,6 +1387,7 @@
           <span class="ezq-time" id="ezq-time">0:00 / 0:00</span>
           <button id="ezq-replay" title="從頭重聽">↻ 重聽</button>
         </div>
+        <div id="ezq-ts"></div>
         <div id="ezq-area"></div>
         <div class="feedback" id="ezq-fb"></div>
         <div class="qnext" id="ezq-ctrls">
@@ -3347,6 +3351,7 @@ function ezqShow() {
   $('ezq-prog').textContent = `第 ${ezqDoneN() + 1} / ${ezq.total} 題・真題聽力`;
   $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
   $('ezq-fb').textContent = ''; $('ezq-fb').className = 'feedback';
+  $('ezq-ts').innerHTML = '';
   $('ezq-next').classList.add('hidden');
   $('ezq-next').textContent = u.qs.length > 1 ? '下一組 →' : '下一題 →';
   const label = u.qs.length > 1 ? `第 ${u.qs[0]}–${u.qs[u.qs.length - 1]} 題` : `第 ${u.qs[0]} 題`;
@@ -3490,9 +3495,9 @@ function ezqTranscript(u) {
     lines.push(segs[i]);
   }
   if (!lines.length) return '';
-  return `<div class="passage" style="margin-top:12px;font-weight:400">
+  return `<div class="passage" style="margin-top:8px;font-weight:400;line-height:1.4">
       <span class="ptype">${u.p === 3 ? '對話' : '獨白'}原文</span>`
-    + lines.map(sg => `<div style="margin-top:5px">${esc(sg.t)}${sg.z ? `<div style="color:var(--muted);font-size:.88rem">${esc(sg.z)}</div>` : ''}</div>`).join('')
+    + lines.map(sg => `<div style="margin-top:2px">${esc(sg.t)}${sg.z ? ` <span style="color:var(--muted);font-size:.82rem">${esc(sg.z)}</span>` : ''}</div>`).join('')
     + '</div>';
 }
 /* Part 3/4 題組：先全部作答（可改答），三題都答完才一次揭曉對錯與解析 */
@@ -3537,13 +3542,15 @@ function ezqGradeGroup(u) {
   ezqMarkCur(-1);
   const src = `audio/${u.test}/${u.f}`;
   const allOK = ezq.gOK === u.qs.length;
-  $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}`
-    + ezqTranscript(u) + ezqFavBtn(src);
+  // 逐字稿放播放器正下方（緊鄰重聽控制），底部回饋只留成績與收藏
+  $('ezq-ts').innerHTML = ezqTranscript(u);
+  $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}` + ezqFavBtn(src);
   $('ezq-fb').className = 'feedback ' + (allOK ? 'good' : 'bad');
   ezqBindFav(src);
   touchDay();
   $('ezq-next').classList.remove('hidden');
-  $('ezq-next').focus();
+  $('ezq-next').focus({preventScroll: true});   // Enter 可下一組，但捲動要停在逐字稿
+  if ($('ezq-ts').innerHTML) $('ezq-ts').scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 $('ezq-replay').onclick = () => { if (ezq) playSnippet(ezqSeg(ezq.units[ezq.ui])); };
 $('ezq-next').onclick = () => {
