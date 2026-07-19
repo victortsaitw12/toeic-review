@@ -55,20 +55,17 @@
     padding: 14px 10px calc(14px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   }
   .sb-brand {
-    font-weight: 700; font-size: 1.05rem; padding: 4px 10px 12px; white-space: nowrap;
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    font-weight: 700; font-size: 1.05rem; padding: 4px 6px 12px 10px; white-space: nowrap;
+    display: flex; align-items: center; gap: 2px;
   }
+  .sb-brand .tx { flex: 1; }
   #sb-collapse {
     border: 1px solid var(--line); background: var(--bg); color: var(--muted);
-    border-radius: 8px; padding: 2px 9px; font-size: .9rem; cursor: pointer;
+    border-radius: 8px; padding: 2px 9px; font-size: .9rem; cursor: pointer; flex: none;
   }
-  #sb-expand {
-    display: none; position: fixed; left: 10px; top: 10px; z-index: 40;
-    border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    border-radius: 10px; padding: 7px 13px; font-size: 1rem; cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0,0,0,.1);
-  }
-  #sidebar { transition: transform .2s ease; }
+  #sidebar { transition: width .18s ease, transform .2s ease; }
+  #sbnav button .ic, #sb-logout .ic { width: 1.35em; text-align: center; flex: none; }
+  #sbnav button, #sb-logout { display: flex; align-items: center; gap: 9px; }
   #sbnav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
   #sbnav button {
     border: none; background: none; color: var(--ink); text-align: left; cursor: pointer;
@@ -95,9 +92,17 @@
     body { padding-left: 212px; }
     .exambar { top: 12px; }
     .player { top: 12px; }
-    body.sb-collapsed { padding-left: 0; }
-    body.sb-collapsed #sidebar { transform: translateX(-105%); }
-    body.sb-collapsed #sb-expand { display: block; }
+    body.sb-collapsed { padding-left: 62px; }
+    body.sb-collapsed #sidebar { width: 62px; padding-left: 7px; padding-right: 7px; }
+    body.sb-collapsed .sb-brand { flex-direction: column; gap: 8px; padding: 4px 0 10px; }
+    body.sb-collapsed #sidebar .tx { display: none; }
+    body.sb-collapsed #sbnav button, body.sb-collapsed #sb-logout {
+      justify-content: center; padding: 11px 0;
+    }
+    body.sb-collapsed #sbnav .sb-sub { padding-left: 0; }
+    body.sb-collapsed .sb-group {
+      padding: 0; margin: 7px 10px; border-top: 1px solid var(--line); height: 0; overflow: hidden;
+    }
   }
   @media (max-width: 700px) { #sb-collapse { display: none; } }
 
@@ -898,26 +903,25 @@
 </header>
 
 <div id="scrim"></div>
-<button id="sb-expand" title="展開選單">☰</button>
 <aside id="sidebar">
-  <div class="sb-brand">📚 多益複習<button id="sb-collapse" title="收合選單">⟨</button></div>
+  <div class="sb-brand"><span class="ic">📚</span><span class="tx"> 多益複習</span><button id="sb-collapse" title="收合／展開選單">⟨</button></div>
   <nav id="sbnav">
-    <button data-v="home" class="active">📅 今天</button>
-    <div class="sb-group">🎧 英文聽力</div>
-    <button data-v="lq" class="sb-sub">真題聽力</button>
-    <button data-v="shadow" class="sb-sub">聽力解析</button>
-    <button data-v="speak" class="sb-sub">口說跟讀</button>
-    <button data-v="dict" class="sb-sub">聽寫練習</button>
-    <div class="sb-group">📖 英文單字</div>
-    <button data-v="cards" class="sb-sub">單字卡</button>
-    <button data-v="quiz" class="sb-sub">單字測驗</button>
-    <div class="sb-group">✍️ 練習與考試</div>
-    <button data-v="mist" class="sb-sub">英文填空</button>
-    <button data-v="exam" class="sb-sub">模擬考試</button>
+    <button data-v="home" class="active" title="今天"><span class="ic">📅</span><span class="tx">今天</span></button>
+    <div class="sb-group"><span class="tx">🎧 英文聽力</span></div>
+    <button data-v="lq" class="sb-sub" title="真題聽力"><span class="ic">🎯</span><span class="tx">真題聽力</span></button>
+    <button data-v="shadow" class="sb-sub" title="聽力解析"><span class="ic">🎧</span><span class="tx">聽力解析</span></button>
+    <button data-v="speak" class="sb-sub" title="口說跟讀"><span class="ic">🗣️</span><span class="tx">口說跟讀</span></button>
+    <button data-v="dict" class="sb-sub" title="聽寫練習"><span class="ic">⌨️</span><span class="tx">聽寫練習</span></button>
+    <div class="sb-group"><span class="tx">📖 英文單字</span></div>
+    <button data-v="cards" class="sb-sub" title="單字卡"><span class="ic">🃏</span><span class="tx">單字卡</span></button>
+    <button data-v="quiz" class="sb-sub" title="單字測驗"><span class="ic">🧠</span><span class="tx">單字測驗</span></button>
+    <div class="sb-group"><span class="tx">✍️ 練習與考試</span></div>
+    <button data-v="mist" class="sb-sub" title="英文填空"><span class="ic">✏️</span><span class="tx">英文填空</span></button>
+    <button data-v="exam" class="sb-sub" title="模擬考試"><span class="ic">📝</span><span class="tx">模擬考試</span></button>
     <div class="sb-group"></div>
-    <button data-v="admin">⚙️ 單字管理</button>
+    <button data-v="admin" title="單字管理"><span class="ic">⚙️</span><span class="tx">單字管理</span></button>
   </nav>
-  <button id="sb-logout">登出</button>
+  <button id="sb-logout" title="登出"><span class="ic">🚪</span><span class="tx">登出</span></button>
 </aside>
 
 <main>
@@ -1816,15 +1820,15 @@ $('sbnav').querySelectorAll('button[data-v]').forEach(b => b.onclick = () => sho
 $('menubtn').onclick = () => document.body.classList.toggle('menu-open');
 $('scrim').onclick = () => document.body.classList.remove('menu-open');
 $('sb-logout').onclick = () => $('logout').click();
-/* 桌面側邊欄收合（記在本機；收合時內容區吃滿寬度） */
+/* 桌面側邊欄收合成 icon 窄欄（圖示仍可點；記在本機） */
 function sbSet(c) {
   document.body.classList.toggle('sb-collapsed', c);
+  $('sb-collapse').textContent = c ? '⟩' : '⟨';
   localStorage.setItem('toeic-sb', c ? '1' : '');
   window.dispatchEvent(new Event('resize'));   // 首頁趨勢圖等依容器寬度的元件重算
 }
-$('sb-collapse').onclick = () => sbSet(true);
-$('sb-expand').onclick = () => sbSet(false);
-if (localStorage.getItem('toeic-sb') === '1') document.body.classList.add('sb-collapsed');
+$('sb-collapse').onclick = () => sbSet(!document.body.classList.contains('sb-collapsed'));
+if (localStorage.getItem('toeic-sb') === '1') sbSet(true);
 
 /* ================= SRS：Leitner 五盒間隔複習 ================= */
 // 答對往上一盒（間隔拉長），答錯打回第 1 盒（今天再看）。marks 仍同步維護，
