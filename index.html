@@ -402,6 +402,13 @@
   }
   /* 真題聽力：揭曉後的逐字稿（播放器正下方）；捲動定位要讓出上方 sticky 列 */
   #ezq-ts { scroll-margin-top: 70px; }
+  /* 閱讀練習：Part 6 填空標記與題卡（沿用 .rq/.opts 基底，補上卡片外框） */
+  #rp-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+  #rp-area .rq.qdone .opts label { cursor: default; }
+  #rp-area .rq.qdone .opts label:hover { background: transparent; }
+  .rpblank { border-bottom: 2px solid var(--accent); padding: 0 4px; font-weight: 600; white-space: normal; }
+  .rpblank.ok { color: var(--good); border-color: var(--good); }
+  .rpblank.no { color: var(--bad); border-color: var(--bad); }
   /* 真題聽力：題卡 */
   #ezq-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
   #ezq-area .rq.qcur { border-color: var(--accent); box-shadow: 0 0 0 2px var(--chip); }
@@ -801,6 +808,9 @@
     #view-mist .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     #view-mist .toolbar select, #view-mist .toolbar button { width: 100%; margin: 0; }
     #mi-start { grid-column: 1 / -1; padding: 13px !important; font-size: 1rem; }
+    #view-rp .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    #view-rp .toolbar select, #view-rp .toolbar button { width: 100%; margin: 0; }
+    #rp-start { grid-column: 1 / -1; padding: 13px !important; font-size: 1rem; }
     .catrow .cn { width: 76px; }
     .catrow .pct { min-width: 86px; }
 
@@ -960,6 +970,7 @@
     <button data-v="dict" class="sb-sub" title="聽寫練習"><span class="ic">⌨️</span><span class="tx">聽寫練習</span></button>
     <div class="sb-group"><span class="tx">✍️ 練習與考試</span></div>
     <button data-v="mist" class="sb-sub" title="英文填空"><span class="ic">✏️</span><span class="tx">英文填空</span></button>
+    <button data-v="rp" class="sb-sub" title="閱讀練習"><span class="ic">📚</span><span class="tx">閱讀練習</span></button>
     <button data-v="exam" class="sb-sub" title="模擬考試"><span class="ic">📝</span><span class="tx">模擬考試</span></button>
     <div class="sb-group"></div>
     <button data-v="admin" title="單字管理"><span class="ic">⚙️</span><span class="tx">單字管理</span></button>
@@ -1520,6 +1531,43 @@
     </div>
   </section>
 
+  <!-- ================= 閱讀練習（Part 5/6/7 題庫練習） ================= -->
+  <section id="view-rp" class="hidden">
+    <div id="rp-setup">
+      <div class="panel">
+        <h3>閱讀練習 <span class="badge" id="rp-count"></span></h3>
+        <p class="desc">Claude 依真題題型編寫的閱讀題庫。Part 5 一題一答立即回饋；
+          Part 6/7 整組作答、全部答完才對答案（對答案前可改選）。選項順序每次都會打亂。</p>
+        <div class="toolbar">
+          <select id="rp-part">
+            <option value="p5">Part 5 單句填空</option>
+            <option value="p6">Part 6 短文填空</option>
+            <option value="p7">Part 7 閱讀測驗</option>
+          </select>
+          <select id="rp-cat"></select>
+          <select id="rp-mode">
+            <option value="hard">還沒答對過的</option>
+            <option value="all">全部隨機</option>
+          </select>
+          <select id="rp-num"></select>
+          <button id="rp-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練習</button>
+        </div>
+        <div id="rp-result"></div>
+      </div>
+    </div>
+    <div id="rp-run" class="hidden">
+      <div class="panel">
+        <div class="qmeta"><span id="rp-prog"></span><span id="rp-score"></span></div>
+        <div id="rp-area"></div>
+        <div class="feedback" id="rp-fb"></div>
+        <div class="btnrow">
+          <button id="rp-next" class="primary hidden">下一題 ⏭</button>
+          <button id="rp-quit">結束練習</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="view-admin" class="hidden">
     <div class="panel">
       <h3 id="form-title">新增單字</h3>
@@ -1632,7 +1680,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'speak', 'books', 'listen2', 'listen2_carol'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'practice_r', 'speak', 'books', 'listen2', 'listen2_carol'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -1844,7 +1892,7 @@ function stopAllPlayback() {
   }
 }
 /* 側邊選單導覽：桌面常駐 sidebar、手機 ☰ 抽屜 */
-const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'admin'];
+const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'rp', 'admin'];
 function showView(v) {
   if (!ALL_VIEWS.includes(v)) v = 'home';
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
@@ -4190,6 +4238,178 @@ $('mi-src').onchange = miRenderSetup;
 $('mi-cat').onchange = miRenderSetup;
 $('mi-tag').onchange = miRenderSetup;
 $('mi-mode').onchange = miRenderSetup;
+
+/* ================= 閱讀練習（Part 5/6/7，data/practice_r.js 題庫）================= */
+const RP_BANKS = {
+  p5: typeof RP5 !== 'undefined' ? RP5 : [],
+  p6: typeof RP6 !== 'undefined' ? RP6 : [],
+  p7: typeof RP7 !== 'undefined' ? RP7 : [],
+};
+const RP_PNAME = {p5: 'Part 5', p6: 'Part 6', p7: 'Part 7'};
+let rpStat = JSON.parse(localStorage.getItem('toeic-rp-stat') || '{}');   // 題目 id → {r, w}
+const saveRpStat = () => localStorage.setItem('toeic-rp-stat', JSON.stringify(rpStat));
+let rp = null;   // {part, pool, idx, right, done, order, picks, ready}
+
+/* 統計 id：P5 用題目 id；P6/P7 每小題＝組 id + 小題索引 */
+const rpQid = (set, qi) => `${set.id}.${qi}`;
+const rpRightEver = id => (rpStat[id] || {}).r > 0;
+const rpSetDone = set => set.qs.every((_, i) => rpRightEver(rpQid(set, i)));
+
+function rpRenderSetup() {
+  const part = $('rp-part').value;
+  if (part === 'p5') {   // P5 才有考點篩選
+    const cats = [...new Set(RP_BANKS.p5.map(q => q.tags[0]))];
+    const prev = $('rp-cat').value;
+    $('rp-cat').innerHTML = '<option value="">全部考點</option>' + cats.map(c => `<option>${esc(c)}</option>`).join('');
+    if ([...$('rp-cat').options].some(o => o.value === prev)) $('rp-cat').value = prev;
+    $('rp-cat').classList.remove('hidden');
+  } else $('rp-cat').classList.add('hidden');
+  const pool = rpFilterPool();
+  const unit = part === 'p5' ? '題' : '組';
+  $('rp-num').innerHTML = (part === 'p5' ? [5, 10, 20] : [1, 2, 3])
+    .map(n => `<option value="${n}">${n} ${unit}</option>`).join('') + `<option value="all">全部（${pool.length} ${unit}）</option>`;
+  $('rp-count').textContent = `${RP_PNAME[part]}｜可練 ${pool.length} / ${RP_BANKS[part].length} ${unit}`;
+  $('rp-count').classList.toggle('zero', !pool.length);
+  $('rp-start').disabled = !pool.length;
+}
+function rpFilterPool() {
+  const part = $('rp-part').value, mode = $('rp-mode').value, cat = $('rp-cat').value;
+  let pool = RP_BANKS[part];
+  if (part === 'p5') {
+    if (cat) pool = pool.filter(q => q.tags[0] === cat);
+    if (mode === 'hard') pool = pool.filter(q => !rpRightEver(q.id));
+  } else if (mode === 'hard') pool = pool.filter(s => !rpSetDone(s));
+  return pool;
+}
+function rpStart() {
+  const pool = miShuffle(rpFilterPool().slice());
+  if (!pool.length) return;
+  const n = $('rp-num').value;
+  rp = {part: $('rp-part').value, pool: n === 'all' ? pool : pool.slice(0, +n), idx: 0, right: 0, done: 0};
+  $('rp-setup').classList.add('hidden');
+  $('rp-run').classList.remove('hidden');
+  rpShow();
+}
+function rpShow() {
+  if (rp.idx >= rp.pool.length) { rpFinish(); return; }
+  rp.picks = {}; rp.ready = false;
+  $('rp-fb').textContent = ''; $('rp-fb').className = 'feedback';
+  $('rp-next').classList.add('hidden');
+  const cur = rp.pool[rp.idx];
+  if (rp.part === 'p5') rpShowP5(cur); else rpShowSet(cur);
+  window.scrollTo({top: 0});
+}
+function rpShowP5(q) {
+  rp.order = miShuffle(q.opts.map((_, i) => i));   // 選項順序打亂，避免背答案位置
+  $('rp-prog').textContent = `第 ${rp.idx + 1} / ${rp.pool.length} 題・Part 5`;
+  $('rp-score').textContent = `答對 ${rp.right}`;
+  $('rp-area').innerHTML = `<div class="mi-q">${esc(q.q)}</div>
+    <div class="mi-srcline">${q.tags.map(t => `<span class="tag2">${esc(t)}</span>`).join('')}</div>
+    <div class="choices">${rp.order.map((oi, i) => `<button data-oi="${oi}"><span class="no">(${'ABCD'[i]})</span>${esc(q.opts[oi])}</button>`).join('')}</div>
+    <div class="mi-exp hidden" id="rp-exp"></div>`;
+  $('rp-area').querySelectorAll('.choices button').forEach(b => b.onclick = () => rpAnswerP5(+b.dataset.oi, b));
+}
+function rpAnswerP5(oi, btn) {
+  if (rp.ready) return;
+  rp.ready = true;
+  const q = rp.pool[rp.idx], ok = oi === q.ans;
+  rpMark(q.id, ok); rp.done++; if (ok) rp.right++;
+  $('rp-area').querySelectorAll('.choices button').forEach(b => {
+    b.disabled = true;
+    if (+b.dataset.oi === q.ans) b.classList.add('right');
+  });
+  if (!ok) btn.classList.add('wrongpick');
+  $('rp-score').textContent = `答對 ${rp.right}`;
+  $('rp-exp').textContent = `💡 ${q.exp}`;
+  $('rp-exp').classList.remove('hidden');
+  $('rp-fb').textContent = ok ? '✅ 答對了！' : '❌ 答錯了，看一下解析';
+  $('rp-fb').className = 'feedback ' + (ok ? 'good' : 'bad');
+  touchDay();
+  rpNextBtn();
+}
+/* Part 6/7 題組：整組作答、全答完才一次揭曉（同真題聽力 Part 3/4 的流程） */
+function rpShowSet(set) {
+  rp.order = {};
+  $('rp-prog').textContent = `第 ${rp.idx + 1} / ${rp.pool.length} 組・${RP_PNAME[rp.part]}`;
+  $('rp-score').textContent = `答對 ${rp.right}`;
+  let html = `<div class="mi-srcline">${esc(set.src)}</div>`;
+  if (rp.part === 'p6') {
+    const txt = esc(set.text).replace(/___\((\d)\)___/g, (_, n) => `<span class="rpblank" data-n="${n}">(${n}) ______</span>`);
+    html += `<div class="passage">${txt}</div>`;
+  } else {
+    html += set.passages.map(p => `<div class="passage"><span class="ptype">${esc(p.type)}</span>${esc(p.text)}</div>`).join('');
+  }
+  html += set.qs.map((q, qi) => {
+    const ord = miShuffle(q.opts.map((_, i) => i));
+    rp.order[qi] = ord;
+    return `<div class="rq" data-qi="${qi}"><span class="qno">${rp.part === 'p6' ? `(${qi + 1})` : `${qi + 1}.`}</span>${q.q ? esc(q.q) : ''}<div class="opts">${ord.map((oi, i) => `<label data-qi="${qi}" data-i="${oi}"><b>(${'ABCD'[i]})</b> ${esc(q.opts[oi])}</label>`).join('')}</div><div class="ezq-qfb"></div></div>`;
+  }).join('');
+  $('rp-area').innerHTML = html;
+  $('rp-area').querySelectorAll('.opts label').forEach(l => l.onclick = () => {
+    if (!rp.ready) rpPickGroup(+l.dataset.qi, +l.dataset.i);   // 對答案前都可改選
+  });
+}
+function rpPickGroup(qi, oi) {
+  const set = rp.pool[rp.idx];
+  rp.picks[qi] = oi;
+  const box = $('rp-area').querySelector(`.rq[data-qi="${qi}"]`);
+  box.querySelectorAll('.opts label').forEach(l => l.classList.toggle('picked', +l.dataset.i === oi));
+  if (rp.part === 'p6') {   // 把選的答案即時填進文章空格，幫助讀上下文
+    const blank = $('rp-area').querySelector(`.rpblank[data-n="${qi + 1}"]`);
+    if (blank) blank.textContent = `(${qi + 1}) ${set.qs[qi].opts[oi]}`;
+  }
+  if (set.qs.every((_, i) => i in rp.picks)) rpGradeSet(set);
+}
+function rpGradeSet(set) {
+  rp.ready = true;
+  let gOK = 0;
+  set.qs.forEach((q, qi) => {
+    const pick = rp.picks[qi], ok = pick === q.ans;
+    rpMark(rpQid(set, qi), ok); rp.done++;
+    if (ok) { gOK++; rp.right++; }
+    const box = $('rp-area').querySelector(`.rq[data-qi="${qi}"]`);
+    box.classList.add('qdone');
+    box.querySelectorAll('.opts label').forEach(l => {
+      if (+l.dataset.i === q.ans) l.classList.add('rgt');
+      else if (+l.dataset.i === pick) l.classList.add('wrg');
+    });
+    box.querySelector('.ezq-qfb').innerHTML = `<div class="exp" style="margin-top:8px"><b>${ok ? '✅ 答對了！' : `❌ 正解 (${'ABCD'[rp.order[qi].indexOf(q.ans)]})`}</b><div style="margin-top:4px">💡 ${esc(q.exp)}</div></div>`;
+    if (rp.part === 'p6') {
+      const blank = $('rp-area').querySelector(`.rpblank[data-n="${qi + 1}"]`);
+      if (blank) { blank.textContent = `(${qi + 1}) ${q.opts[q.ans]}`; blank.classList.add(ok ? 'ok' : 'no'); }
+    }
+  });
+  $('rp-score').textContent = `答對 ${rp.right}`;
+  $('rp-fb').textContent = `${gOK === set.qs.length ? '✅' : '📝'} 本組答對 ${gOK} / ${set.qs.length}`;
+  $('rp-fb').className = 'feedback ' + (gOK === set.qs.length ? 'good' : 'bad');
+  touchDay();
+  rpNextBtn();
+}
+function rpMark(id, ok) {
+  const st = rpStat[id] ||= {r: 0, w: 0};
+  ok ? st.r++ : st.w++;
+  saveRpStat();
+}
+function rpNextBtn() {
+  $('rp-next').textContent = rp.idx + 1 >= rp.pool.length ? '看結果 🏁' : (rp.part === 'p5' ? '下一題 ⏭' : '下一組 ⏭');
+  $('rp-next').classList.remove('hidden');
+  $('rp-next').focus({preventScroll: true});
+}
+function rpFinish() {
+  const {done, right} = rp;
+  $('rp-run').classList.add('hidden');
+  $('rp-setup').classList.remove('hidden');
+  $('rp-result').textContent = done ? `上一輪：${done} 題答對 ${right} 題（${Math.round(right / done * 100)}%）` : '';
+  rp = null;
+  rpRenderSetup();
+}
+$('rp-start').onclick = rpStart;
+$('rp-next').onclick = () => { rp.idx++; rpShow(); };
+$('rp-quit').onclick = rpFinish;
+$('rp-part').onchange = rpRenderSetup;
+$('rp-mode').onchange = rpRenderSetup;
+$('rp-cat').onchange = rpRenderSetup;
+rpRenderSetup();
 
 /* ================= shadowing ================= */
 const audio = $('audio');
