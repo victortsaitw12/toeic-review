@@ -37,35 +37,49 @@
     flex-wrap: nowrap; position: sticky; top: 0; z-index: 10;
   }
   header h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; white-space: nowrap; }
-  nav {
-    display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto;
-    scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1;
+  #logout { border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; white-space: nowrap; margin-left: auto; }
+  #menubtn {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 9px; padding: 5px 12px; font-size: 1.05rem; cursor: pointer; flex: none;
   }
-  nav::-webkit-scrollbar { display: none; }
-  nav button {
-    border: 1px solid var(--line); background: transparent; color: var(--ink);
-    padding: 8px 16px; border-radius: 999px; font-size: .95rem; cursor: pointer;
-    white-space: nowrap; flex: none;
+  /* ---------- 側邊選單（桌面常駐、手機抽屜） ---------- */
+  #scrim {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 60;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
   }
-  nav button.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-  #logout { border: none; background: none; color: var(--muted); cursor: pointer; font-size: .82rem; white-space: nowrap; }
-  #subnav {
-    display: flex; gap: 8px; max-width: 880px; margin: 10px auto -6px;
-    padding: 0 16px; overflow-x: auto; scrollbar-width: none;
+  body.menu-open #scrim { opacity: 1; pointer-events: auto; }
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: 212px; z-index: 65;
+    background: var(--card); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column; overflow-y: auto;
+    padding: 14px 10px calc(14px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   }
-  #subnav::-webkit-scrollbar { display: none; }
-  #subnav button {
-    border: 1px solid var(--line); background: var(--card); color: var(--muted);
-    padding: 7px 15px; border-radius: 999px; font-size: .88rem; cursor: pointer;
-    white-space: nowrap; flex: none;
+  .sb-brand { font-weight: 700; font-size: 1.05rem; padding: 4px 10px 12px; white-space: nowrap; }
+  #sbnav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+  #sbnav button {
+    border: none; background: none; color: var(--ink); text-align: left; cursor: pointer;
+    padding: 9px 12px; border-radius: 9px; font-size: .93rem; white-space: nowrap;
   }
-  #subnav button.active { background: var(--chip); color: var(--ink); border-color: var(--accent); font-weight: 600; }
+  #sbnav button:hover { background: var(--chip); }
+  #sbnav button.active { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  #sbnav .sb-sub { padding-left: 28px; font-size: .9rem; }
+  .sb-group { color: var(--muted); font-size: .76rem; padding: 12px 10px 4px; white-space: nowrap; }
+  #sb-logout {
+    border: none; background: none; color: var(--muted); cursor: pointer;
+    font-size: .82rem; padding: 10px; text-align: left;
+  }
   main {
     max-width: 880px; margin: 0 auto; padding: 22px 16px 60px;
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
   .hidden { display: none !important; }
+  @media (min-width: 701px) {
+    header { display: none; }
+    body { padding-left: 212px; }
+    .exambar { top: 12px; }
+    .player { top: 12px; }
+  }
 
   /* ---------- login gate ---------- */
   #gate {
@@ -692,8 +706,11 @@
   /* ---------- mobile ---------- */
   @media (max-width: 700px) {
     header { padding-top: 8px; padding-bottom: 8px; gap: 10px; }
-    header .ttl { display: none; }
-    nav button { padding: 8px 13px; font-size: .9rem; }
+    #sidebar {
+      transform: translateX(-106%); transition: transform .22s ease;
+      width: 250px; box-shadow: 4px 0 24px rgba(0,0,0,.2);
+    }
+    body.menu-open #sidebar { transform: none; }
     main { padding-top: 14px; padding-bottom: 48px; }
 
     /* 觸控目標與 iOS 聚焦縮放：輸入類字級固定 ≥16px */
@@ -846,19 +863,32 @@
 </div>
 
 <header>
+  <button id="menubtn" aria-label="開啟選單">☰</button>
   <h1>📚<span class="ttl"> 多益複習</span></h1>
-  <nav>
-    <button id="tab-home" class="active">今天</button>
-    <button id="tab-glisten">英文聽力</button>
-    <button id="tab-gvocab">英文單字</button>
-    <button id="tab-mist">英文填空</button>
-    <button id="tab-exam">模擬考試</button>
-    <button id="tab-admin">單字管理</button>
-  </nav>
   <button id="logout" title="登出後需重新輸入密碼">登出</button>
 </header>
 
-<div id="subnav" class="hidden"></div>
+<div id="scrim"></div>
+<aside id="sidebar">
+  <div class="sb-brand">📚 多益複習</div>
+  <nav id="sbnav">
+    <button data-v="home" class="active">📅 今天</button>
+    <div class="sb-group">🎧 英文聽力</div>
+    <button data-v="lq" class="sb-sub">真題聽力</button>
+    <button data-v="shadow" class="sb-sub">聽力解析</button>
+    <button data-v="speak" class="sb-sub">口說跟讀</button>
+    <button data-v="dict" class="sb-sub">聽寫練習</button>
+    <div class="sb-group">📖 英文單字</div>
+    <button data-v="cards" class="sb-sub">單字卡</button>
+    <button data-v="quiz" class="sb-sub">單字測驗</button>
+    <div class="sb-group">✍️ 練習與考試</div>
+    <button data-v="mist" class="sb-sub">英文填空</button>
+    <button data-v="exam" class="sb-sub">模擬考試</button>
+    <div class="sb-group"></div>
+    <button data-v="admin">⚙️ 單字管理</button>
+  </nav>
+  <button id="sb-logout">登出</button>
+</aside>
 
 <main>
   <!-- ================= 今天（儀表板） ================= -->
@@ -1738,46 +1768,24 @@ function stopAllPlayback() {
     speechSynthesis.cancel();   // 單字卡/單字測驗的語音發音
   }
 }
-/* 兩層導覽：英文聽力／英文單字底下各有子分頁，其餘為單頁 */
-const NAV_GROUPS = {
-  listen: {views: {lq: '真題聽力', shadow: '聽力解析', speak: '口說跟讀', dict: '聽寫練習'}},
-  vocab: {views: {cards: '單字卡', quiz: '單字測驗'}},
-};
+/* 側邊選單導覽：桌面常駐 sidebar、手機 ☰ 抽屜 */
 const ALL_VIEWS = ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'lq', 'exam', 'mist', 'admin'];
-const groupOf = v => v in NAV_GROUPS.listen.views ? 'listen' : v in NAV_GROUPS.vocab.views ? 'vocab' : null;
 function showView(v) {
   if (!ALL_VIEWS.includes(v)) v = 'home';
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
   for (const k of ALL_VIEWS) $('view-' + k).classList.toggle('hidden', v !== k);
-  const g = groupOf(v);
-  $('tab-home').classList.toggle('active', v === 'home');
-  $('tab-mist').classList.toggle('active', v === 'mist');
-  $('tab-exam').classList.toggle('active', v === 'exam');
-  $('tab-admin').classList.toggle('active', v === 'admin');
-  $('tab-glisten').classList.toggle('active', g === 'listen');
-  $('tab-gvocab').classList.toggle('active', g === 'vocab');
-  const sub = $('subnav');
-  if (g) {
-    localStorage.setItem('toeic-sub-' + g, v);
-    sub.classList.remove('hidden');
-    sub.innerHTML = Object.entries(NAV_GROUPS[g].views).map(([k, name]) =>
-      `<button data-v="${k}" class="${k === v ? 'active' : ''}">${name}</button>`).join('');
-    sub.querySelectorAll('button').forEach(b => b.onclick = () => showView(b.dataset.v));
-  } else {
-    sub.classList.add('hidden');
-  }
+  $('sbnav').querySelectorAll('button[data-v]').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  document.body.classList.remove('menu-open');
   document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
   if (v === 'home') renderHome();
   if (v === 'quiz') refreshQDueBtn();
   if (v === 'lq') renderLqHistory();
 }
-$('tab-home').onclick = () => showView('home');
-$('tab-glisten').onclick = () => showView(localStorage.getItem('toeic-sub-listen') || 'lq');
-$('tab-gvocab').onclick = () => showView(localStorage.getItem('toeic-sub-vocab') || 'cards');
-$('tab-exam').onclick = () => showView('exam');
-$('tab-mist').onclick = () => showView('mist');
-$('tab-admin').onclick = () => showView('admin');
+$('sbnav').querySelectorAll('button[data-v]').forEach(b => b.onclick = () => showView(b.dataset.v));
+$('menubtn').onclick = () => document.body.classList.toggle('menu-open');
+$('scrim').onclick = () => document.body.classList.remove('menu-open');
+$('sb-logout').onclick = () => $('logout').click();
 
 /* ================= SRS：Leitner 五盒間隔複習 ================= */
 // 答對往上一盒（間隔拉長），答錯打回第 1 盒（今天再看）。marks 仍同步維護，
