@@ -88,23 +88,6 @@
   /* 聽力三頁（解析/跟讀/聽寫）用寬版工作區，其他頁維持 880 閱讀寬度 */
   body[data-view="shadow"] main, body[data-view="speak"] main, body[data-view="dict"] main { max-width: 1120px; }
   @media (min-width: 701px) {
-    /* 桌面 compact：整體字級縮一級（rem 級距全體縮放）＋收斂留白、圓角降一級 */
-    html { font-size: 14.5px; }
-    main { padding-top: 12px; padding-bottom: 40px; }
-    .panel { padding: 12px 14px; margin-bottom: 10px; border-radius: 10px; }
-    .player { padding: 10px 14px; border-radius: 10px; }
-    .exambar { border-radius: 10px; }
-    .passage { border-radius: 8px; }
-    .qpick { padding: 8px; border-radius: 10px; }
-    .qside { border-radius: 10px; }
-    .shadow-grid { gap: 14px; }
-    .ezq-audio { border-radius: 10px; }
-    #ezq-area .rq { border-radius: 10px; }
-    .qside button { padding: 6px 8px; }
-    #sidebar { padding-top: 10px; }
-    .sb-brand { padding-bottom: 8px; }
-    #sbnav button { padding: 7px 11px; }
-    .sb-group { padding: 9px 10px 3px; }
     header { display: none; }
     body { padding-left: 212px; }
     .exambar { top: 12px; }
@@ -909,6 +892,30 @@
   .bar { height: 22px; padding: 6px 0; background-clip: content-box; }
   .bar .fill { border-radius: 999px; }
   .bar .ab { top: 3px; bottom: 3px; }
+
+  /* ===== 桌面 compact（放在樣式表最尾端，避免被後面的基底規則蓋掉） ===== */
+  @media (min-width: 701px) {
+    /* 桌面 compact：整體字級縮一級（rem 級距全體縮放）＋收斂留白、卡片圓角壓到 6px */
+    html { font-size: 14.5px; }
+    main { padding-top: 10px; padding-bottom: 36px; }
+    .panel, .player, .tpanel, .qpick, .qside, .exambar, .ezq-audio, .passage,
+    .task, .wreview, .badmin, .flashcard, .face, .sp-now, .nowline,
+    #ezq-area .rq, .lq-now, #ezq-area .rq.qcur { border-radius: 6px; }
+    .panel { padding: 12px 14px; margin-bottom: 8px; }
+    .tpanel { margin-bottom: 8px; }
+    .player { padding: 10px 14px; }
+    .qpick { padding: 8px; }
+    .task { padding: 12px 14px; }
+    .tasks { gap: 8px; margin-bottom: 10px; }
+    .shadow-grid { gap: 10px; }
+    .qcol { gap: 8px; }
+    #ezq-area .rq { margin: 8px 0; }
+    .qside button { padding: 6px 8px; }
+    #sidebar { padding-top: 10px; }
+    .sb-brand { padding-bottom: 8px; }
+    #sbnav button { padding: 7px 11px; }
+    .sb-group { padding: 9px 10px 3px; }
+  }
 </style>
 </head>
 <body>
