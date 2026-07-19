@@ -425,6 +425,7 @@
     font-size: .88rem; font-weight: 700;
   }
   .ezq-chips .chip3.cur { border-color: var(--accent); color: var(--ink); box-shadow: 0 0 0 2px var(--chip); }
+  .ezq-chips .chip3.picked { background: var(--chip); color: var(--ink); }
   .ezq-chips .chip3.done-ok { border-color: var(--good); color: var(--good); background: rgba(31,157,99,.1); }
   .ezq-chips .chip3.done-no { border-color: var(--bad); color: var(--bad); background: rgba(214,69,69,.1); }
   #ezq-area .rq { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
@@ -3351,14 +3352,13 @@ function ezqShow() {
     // Part 3/4 是題組：一段音檔配三題同一畫面，比照真考邊聽邊答；每題點了立刻亮對錯與解析
     const D = EZ_L34[u.test];
     $('ezq-big').textContent = u.p === 3 ? '💬' : '📢';
-    area.innerHTML = `<p class="desc" style="text-align:center">聽完整段${u.p === 3 ? '對話' : '獨白'}，作答以下 ${u.qs.length} 題（可重聽）</p>`
+    area.innerHTML = `<p class="desc" style="text-align:center">聽完整段${u.p === 3 ? '對話' : '獨白'}，作答以下 ${u.qs.length} 題，全部答完才對答案（可重聽、可改答）</p>`
       + u.qs.map(n => `<div class="rq" data-q="${n}"><span class="qno">${n}.</span>${esc(D[n].q)}
           <div class="opts">${D[n].opts.map((o, i) => `<label data-n="${n}" data-i="${i}"><b>(${ABCD[i]})</b> ${esc(o)}</label>`).join('')}</div>
           <div class="ezq-qfb"></div>
         </div>`).join('');
     area.querySelectorAll('.opts label').forEach(l => l.onclick = () => {
-      const n = +l.dataset.n;
-      if (!(n in ezq.picks)) ezqPickGroup(n, +l.dataset.i);
+      if (!ezq.ready) ezqPickGroup(+l.dataset.n, +l.dataset.i);   // 對答案前都可改選
     });
   }
   // 題組進度圓標（P3/4）：未答灰、答對綠、答錯紅，點了捲到那一題
@@ -3492,49 +3492,59 @@ function ezqTranscript(u) {
     + lines.map(sg => `<div style="margin-top:5px">${esc(sg.t)}${sg.z ? `<div style="color:var(--muted);font-size:.88rem">${esc(sg.z)}</div>` : ''}</div>`).join('')
     + '</div>';
 }
-/* Part 3/4：題組內單題作答，解析亮在該題下方；三題都答完才開放下一組 */
+/* Part 3/4 題組：先全部作答（可改答），三題都答完才一次揭曉對錯與解析 */
 function ezqPickGroup(n, pick) {
   const u = ezq.units[ezq.ui];
   ezq.picks[n] = pick;
-  const {ai, ok} = ezqGrade(u, n, pick);
-  if (ok) ezq.gOK++;
-  const d = EZ_L34[u.test][n];
   const box = $('ezq-area').querySelector(`.rq[data-q="${n}"]`);
-  box.querySelectorAll('.opts label').forEach(l => {
-    if (+l.dataset.i === ai) l.classList.add('rgt');
-    else if (+l.dataset.i === pick) l.classList.add('wrg');
-  });
-  box.querySelector('.ezq-qfb').innerHTML = `<div class="exp" style="margin-top:8px">
-      <b>${ok ? '✅ 答對了！' : `❌ 正解 (${ABCD[ai]})`}</b>
-      <div style="color:var(--muted);margin-top:4px">${esc(d.qz)}</div>
-      ${d.optsz.map((z, i) => ezqZline(`(${ABCD[i]}) ${esc(z)}`, i === ai)).join('')}
-      <div style="margin-top:6px">💡 ${esc(d.exp)}</div>
-    </div>`;
-  $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
-  $('ezq-prog').textContent = `第 ${Math.min(ezqDoneN() + 1, ezq.total)} / ${ezq.total} 題・真題聽力`;
-  box.classList.add('qdone');
+  box.querySelectorAll('.opts label').forEach(l =>
+    l.classList.toggle('picked', +l.dataset.i === pick));
   const chip = $('ezq-chips').querySelector(`.chip3[data-n="${n}"]`);
-  if (chip) chip.classList.add(ok ? 'done-ok' : 'done-no');
-  touchDay();
-  if (Object.keys(ezq.picks).length === u.qs.length) {
-    ezq.ready = true;
-    qaudio.pause();
-    const src = `audio/${u.test}/${u.f}`;
-    const allOK = ezq.gOK === u.qs.length;
-    $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}`
-      + ezqTranscript(u) + ezqFavBtn(src);
-    $('ezq-fb').className = 'feedback ' + (allOK ? 'good' : 'bad');
-    ezqBindFav(src);
-    ezqMarkCur(-1);
-    $('ezq-next').classList.remove('hidden');
-    $('ezq-next').focus();
-  } else {
-    // 自動移到下一個還沒作答的題目
-    const next = u.qs.find(q => !(q in ezq.picks));
+  if (chip) chip.classList.add('picked');
+  const next = u.qs.find(q => !(q in ezq.picks));
+  if (next !== undefined) {   // 還有沒作答的：移過去，先不揭曉
     ezqMarkCur(next);
     const nb = $('ezq-area').querySelector(`.rq[data-q="${next}"]`);
     if (nb) nb.scrollIntoView({block: 'center', behavior: 'smooth'});
+    return;
   }
+  ezqGradeGroup(u);
+}
+function ezqGradeGroup(u) {
+  ezq.ready = true;
+  qaudio.pause();
+  for (const n of u.qs) {
+    const pick = ezq.picks[n];
+    const {ai, ok} = ezqGrade(u, n, pick);
+    if (ok) ezq.gOK++;
+    const d = EZ_L34[u.test][n];
+    const box = $('ezq-area').querySelector(`.rq[data-q="${n}"]`);
+    box.classList.add('qdone');
+    box.querySelectorAll('.opts label').forEach(l => {
+      if (+l.dataset.i === ai) l.classList.add('rgt');
+      else if (+l.dataset.i === pick) l.classList.add('wrg');
+    });
+    box.querySelector('.ezq-qfb').innerHTML = `<div class="exp" style="margin-top:8px">
+        <b>${ok ? '✅ 答對了！' : `❌ 正解 (${ABCD[ai]})`}</b>
+        <div style="color:var(--muted);margin-top:4px">${esc(d.qz)}</div>
+        ${d.optsz.map((z, i) => ezqZline(`(${ABCD[i]}) ${esc(z)}`, i === ai)).join('')}
+        <div style="margin-top:6px">💡 ${esc(d.exp)}</div>
+      </div>`;
+    const chip = $('ezq-chips').querySelector(`.chip3[data-n="${n}"]`);
+    if (chip) { chip.classList.remove('picked'); chip.classList.add(ok ? 'done-ok' : 'done-no'); }
+  }
+  $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
+  $('ezq-prog').textContent = `第 ${Math.min(ezqDoneN() + 1, ezq.total)} / ${ezq.total} 題・真題聽力`;
+  ezqMarkCur(-1);
+  const src = `audio/${u.test}/${u.f}`;
+  const allOK = ezq.gOK === u.qs.length;
+  $('ezq-fb').innerHTML = `${allOK ? '✅' : '📝'} 本組答對 ${ezq.gOK} / ${u.qs.length}`
+    + ezqTranscript(u) + ezqFavBtn(src);
+  $('ezq-fb').className = 'feedback ' + (allOK ? 'good' : 'bad');
+  ezqBindFav(src);
+  touchDay();
+  $('ezq-next').classList.remove('hidden');
+  $('ezq-next').focus();
 }
 $('ezq-replay').onclick = () => { if (ezq) playSnippet(ezqSeg(ezq.units[ezq.ui])); };
 $('ezq-next').onclick = () => {
