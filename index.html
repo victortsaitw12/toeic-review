@@ -88,6 +88,13 @@
   }
   .toolbar .on { border-color: var(--accent); color: var(--accent); }
   .counter { margin-left: auto; color: var(--muted); font-size: .9rem; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .seg button {
+    border: none; background: var(--card); color: var(--muted);
+    padding: 8px 16px; font-size: .92rem; cursor: pointer;
+  }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 
   .cardwrap { perspective: 1200px; position: relative; }
   .favbtn {
@@ -97,6 +104,7 @@
     line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
   .favbtn.on { border-color: #d64545; box-shadow: 0 0 0 2px rgba(214,69,69,.25); }
+  .favbtn.bookbtn { left: 62px; font-size: 1.05rem; }
   .flashcard {
     position: relative; width: 100%; min-height: 320px; cursor: pointer;
     transform-style: preserve-3d; transition: transform .45s;
@@ -136,6 +144,7 @@
   .cardnav .dontknow { border-color: var(--warn); color: var(--warn); }
   .cardnav .know.marked { background: var(--good); color: #fff; }
   .cardnav .dontknow.marked { background: var(--warn); color: #fff; }
+  #prev-card, #next-card { min-width: 64px; }
   .kbd-tip { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 14px; }
   kbd {
     background: var(--chip); border: 1px solid var(--line); border-bottom-width: 2px;
@@ -241,8 +250,6 @@
   .prow.weak .track i { background: var(--bad); }
 
   /* ---------- SRS ---------- */
-  #srs-note { text-align: center; font-size: .82rem; color: var(--muted); margin: 10px 0 0; min-height: 1.3em; }
-  #srs-note .box { color: var(--ink); font-weight: 600; }
   #srs-toast {
     position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom));
     background: var(--ink); color: var(--bg); padding: 9px 18px; border-radius: 999px;
@@ -664,9 +671,11 @@
     .flashcard { min-height: 300px; }
     .kbd-tip { display: none; }
     .hint { font-size: .72rem; }
-    body[data-view="cards"] main { padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
+    body[data-view="cards"] main { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
     #view-cards .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     #view-cards .toolbar select, #view-cards .toolbar button { width: 100%; padding: 10px 8px; margin: 0; }
+    #view-cards .toolbar .seg { grid-column: 1 / -1; display: flex; }
+    #view-cards .toolbar .seg button { flex: 1; padding: 11px 8px; }
     #view-cards .toolbar #bookfilter { grid-column: 1 / -1; }
     #view-cards .counter { grid-column: 1 / -1; text-align: center; margin-left: 0; }
     #view-cards .cardnav {
@@ -675,14 +684,12 @@
       box-shadow: 0 -4px 18px rgba(0,0,0,.12);
       padding: 8px max(10px, env(safe-area-inset-right))
                calc(8px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
     }
     #view-cards .cardnav button { min-width: 0; margin: 0; padding: 10px 4px; }
-    #mark-hard  { grid-area: 1 / 1 / 2 / 4; min-height: 50px; font-size: 1.02rem; }
-    #mark-known { grid-area: 1 / 4 / 2 / 7; min-height: 50px; font-size: 1.02rem; }
-    #prev-card  { grid-area: 2 / 1 / 3 / 3; }
-    #add-book   { grid-area: 2 / 3 / 3 / 5; }
-    #next-card  { grid-area: 2 / 5 / 3 / 7; }
+    /* 手機換卡靠左右滑手勢，底部拇指列只留兩顆最高頻的鈕 */
+    #prev-card, #next-card { display: none; }
+    #mark-hard, #mark-known { min-height: 54px; font-size: 1.05rem; }
 
     /* 單字測驗：設定選單網格化、主要按鈕加大 */
     #view-quiz .toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -822,22 +829,25 @@
   <!-- ================= 單字卡 ================= -->
   <section id="view-cards" class="hidden">
     <div class="toolbar">
-      <select id="bookfilter"></select>
-      <select id="range"></select>
-      <select id="lvfilter">
+      <div class="seg" id="card-seg">
+        <button id="due-only">📅 今日複習</button>
+        <button id="browse-btn">瀏覽單字</button>
+      </div>
+      <select id="bookfilter" class="browse-ctl"></select>
+      <select id="range" class="browse-ctl"></select>
+      <select id="lvfilter" class="browse-ctl">
         <option value="0">全部級距</option>
         <option value="1">基礎 250–545</option>
         <option value="2">中級 550–780</option>
         <option value="3">中高 785–940</option>
         <option value="4">高階 945+</option>
       </select>
-      <button id="shuffle">🔀 隨機</button>
-      <button id="due-only">📅 今日複習</button>
-      <button id="only-hard">只看不熟</button>
+      <button id="shuffle" class="browse-ctl">🔀 隨機</button>
       <span class="counter" id="counter"></span>
     </div>
     <div class="cardwrap">
       <button id="fav-card" class="favbtn" title="加入最愛">🤍</button>
+      <button id="add-book" class="favbtn bookbtn" title="加入其他單字本">📓</button>
       <div class="flashcard" id="card">
         <div class="face front">
           <span class="lvchip hidden" id="f-lv"></span>
@@ -855,13 +865,11 @@
       </div>
     </div>
     <div class="cardnav">
-      <button id="prev-card">← 上一張</button>
+      <button id="prev-card" title="上一張">←</button>
       <button class="dontknow" id="mark-hard">不熟</button>
       <button class="know" id="mark-known">認識 ✓</button>
-      <button id="next-card">下一張 →</button>
-      <button id="add-book">📓 其他單字本</button>
+      <button id="next-card" title="下一張">→</button>
     </div>
-    <p id="srs-note"></p>
     <p class="kbd-tip">
       <kbd>空白鍵</kbd> 翻面　<kbd>←</kbd><kbd>→</kbd> 切換　<kbd>1</kbd> 不熟　<kbd>2</kbd> 認識　<kbd>S</kbd> 發音
     </p>
@@ -1617,6 +1625,7 @@ function stopAllPlayback() {
     speechSynthesis.cancel();   // 單字卡/單字測驗的語音發音
   }
 }
+let cardsSeen = false;
 function showView(v) {
   if (document.body.dataset.view && document.body.dataset.view !== v) stopAllPlayback();
   for (const k of ['home', 'cards', 'quiz', 'shadow', 'speak', 'dict', 'exam', 'mist', 'admin']) {
@@ -1626,7 +1635,11 @@ function showView(v) {
   document.body.dataset.view = v;
   localStorage.setItem('toeic-view', v);
   if (v === 'home') renderHome();
-  if (v === 'cards') refreshDueBtn();
+  if (v === 'cards') {
+    refreshDueBtn();
+    // 第一次進單字卡：有到期字就直接落在「今日複習」，沒有才進瀏覽模式
+    if (!cardsSeen) { cardsSeen = true; setDueOnly(dueCount() > 0); }
+  }
   if (v === 'quiz') refreshQDueBtn();
 }
 $('tab-home').onclick = () => showView('home');
@@ -1674,13 +1687,6 @@ function srsGrade(w, ok) {
 }
 const srsDue = w => !!srs[w] && srs[w].d <= today();
 const dueCount = () => getWords().reduce((n, w) => n + (srsDue(w.w) ? 1 : 0), 0);
-function srsLabel(w) {
-  const e = srs[w];
-  if (!e) return '還沒排程過，按「認識／不熟」開始記憶排程';
-  const gap = e.d - today();
-  const when = gap <= 0 ? '今天要複習' : `${gap} 天後複習`;
-  return `<span class="box">第 ${e.b} 盒</span>・${when}・練過 ${e.n} 次`;
-}
 let toastT = null;
 function srsToast(msg) {
   const el = $('srs-toast');
@@ -1707,7 +1713,7 @@ function streak() {
 }
 
 /* ================= flashcards ================= */
-let deck = [], idx = 0, shuffled = false, onlyHard = false, dueOnly = false;
+let deck = [], idx = 0, shuffled = false, dueOnly = false;
 const LV = {1: '基礎 250–545', 2: '中級 550–780', 3: '中高 785–940', 4: '高階 945+'};
 
 const rangeSel = $('range');
@@ -1722,26 +1728,23 @@ function buildRange() {
 }
 function buildDeck() {
   let pool;
+  // 複習模式＝一條到期佇列，篩選全部收起來；瀏覽模式才顯示篩選列
+  document.querySelectorAll('#view-cards .browse-ctl').forEach(el => el.classList.toggle('hidden', dueOnly));
   if (dueOnly) {
-    // 今日複習是一條複習佇列：無視範圍／單字本／級距，到期的字全部撈出來
     pool = getWords().filter(w => srsDue(w.w));
-    rangeSel.classList.add('hidden');
   } else {
     const bk = $('bookfilter').value;
     if (bk) {
       pool = bookWords(bk);
       rangeSel.classList.add('hidden');
     } else {
-      pool = getWords();
-      rangeSel.classList.remove('hidden');
       const r = rangeSel.value;
+      pool = getWords();
       if (r !== 'all') pool = pool.slice(r * 100, r * 100 + 100);
     }
     const lv = +$('lvfilter').value;
     if (lv) pool = pool.filter(w => w.lv === lv);
-    if (onlyHard) pool = pool.filter(w => marks[w.w] === 'hard');
   }
-  for (const id of ['bookfilter', 'lvfilter', 'only-hard']) $(id).disabled = dueOnly;
   if (shuffled) {
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -1757,11 +1760,11 @@ function renderCard() {
     $('f-word').textContent = '🎉';
     $('f-pos').textContent = dueOnly ? '今天的單字複習都做完了！' : '這個範圍沒有符合的單字';
     $('b-zh').textContent = ''; $('b-ex').textContent = ''; $('b-exzh').textContent = '';
-    $('counter').textContent = '0 / 0';
-    $('srs-note').innerHTML = '';
+    $('counter').textContent = dueOnly ? '' : '0 / 0';
     $('f-lv').classList.add('hidden');
     $('mark-known').classList.remove('marked'); $('mark-hard').classList.remove('marked');
     $('fav-card').classList.add('hidden');
+    $('add-book').classList.add('hidden');
     return;
   }
   const w = deck[idx];
@@ -1772,8 +1775,7 @@ function renderCard() {
   $('b-zh').textContent = w.zh;
   $('b-ex').textContent = w.ex;
   $('b-exzh').textContent = w.exzh;
-  $('counter').textContent = `${idx + 1} / ${deck.length}`;
-  $('srs-note').innerHTML = srsLabel(w.w);
+  $('counter').textContent = dueOnly ? `還剩 ${deck.length} 字` : `${idx + 1} / ${deck.length}`;
   $('mark-known').classList.toggle('marked', marks[w.w] === 'known');
   $('mark-hard').classList.toggle('marked', marks[w.w] === 'hard');
   updFavCard();
@@ -1781,6 +1783,7 @@ function renderCard() {
 // 單字卡右上角愛心：切換目前單字在「最愛」單字本的狀態
 function updFavCard() {
   const btn = $('fav-card');
+  $('add-book').classList.toggle('hidden', !deck.length);
   if (!deck.length) { btn.classList.add('hidden'); return; }
   btn.classList.remove('hidden');
   const fav = getBook(FAV);
@@ -1859,14 +1862,14 @@ $('mark-hard').onclick = () => mark('hard');
 $('speak-word').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].w); };
 $('speak-ex').onclick = e => { e.stopPropagation(); if (deck.length) speak(deck[idx].ex); };
 $('shuffle').onclick = () => { shuffled = !shuffled; $('shuffle').classList.toggle('on', shuffled); buildDeck(); };
-$('only-hard').onclick = () => { onlyHard = !onlyHard; $('only-hard').classList.toggle('on', onlyHard); buildDeck(); };
 function setDueOnly(on) {
   dueOnly = on;
-  if (dueOnly && onlyHard) { onlyHard = false; $('only-hard').classList.remove('on'); }
   $('due-only').classList.toggle('on', dueOnly);
+  $('browse-btn').classList.toggle('on', !dueOnly);
   buildDeck();
 }
-$('due-only').onclick = () => setDueOnly(!dueOnly);
+$('due-only').onclick = () => setDueOnly(true);
+$('browse-btn').onclick = () => setDueOnly(false);
 function refreshDueBtn() {
   const n = dueCount();
   $('due-only').textContent = n ? `📅 今日複習 ${n}` : '📅 今日複習';
