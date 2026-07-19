@@ -3495,8 +3495,8 @@ function ezqTranscript(u) {
     lines.push(segs[i]);
   }
   if (!lines.length) return '';
-  return `<div class="passage" style="margin-top:8px;font-weight:400;line-height:1.4">
-      <span class="ptype">${u.p === 3 ? '對話' : '獨白'}原文</span>`
+  // .passage 是 pre-wrap（閱讀文章用），這裡逐句已各自成 div，要改回 normal 才不會把模板換行印出來
+  return `<div class="passage" style="margin-top:8px;font-weight:400;line-height:1.4;white-space:normal"><span class="ptype">${u.p === 3 ? '對話' : '獨白'}原文</span>`
     + lines.map(sg => `<div style="margin-top:2px">${esc(sg.t)}${sg.z ? ` <span style="color:var(--muted);font-size:.82rem">${esc(sg.z)}</span>` : ''}</div>`).join('')
     + '</div>';
 }
