@@ -1188,9 +1188,9 @@
         </div>
       </div>
       <div class="panel">
-        <h3>EZ 真題聽力（逐題快答）</h3>
+        <h3>真題聽力（逐題快答）</h3>
         <p class="examnote">
-          EZ 全真模擬 Test 1–5 的真題音檔，一題一題練、答完立刻對 <b>EZ 官方答案卷</b>：
+          <b>EZ 模擬考 5 回＋國學聽力藍本 10 回</b>的真題音檔，一題一題練、答完立刻對<b>官方答案卷</b>：
           Part 1 看題本圖片聽四個描述、Part 2 純聽力選 (A)(B)(C)、
           Part 3/4 播完整段對話（一段連答三題），<b>題目與四個選項印在畫面上</b>（由 Claude 依逐字稿撰寫，
           正解位置與官方答案卷一致；圖表題請對照題本）。答錯可收進聽力練習本。
@@ -1469,7 +1469,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'mistakes', 'speak', 'books', 'listen2'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'speak', 'books', 'listen2'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -3129,12 +3129,17 @@ $('el-quit').onclick = () => {
   exam.type === 'full' ? startReading() : finishExam();
 };
 
-/* ================= EZ 真題聽力（逐題快答） ================= */
-// 答案卷 data/exam_ez.js（EZ_ANSWERS，1–100 聽力、101–200 閱讀備用）；
-// Part 3/4 的題目與選項在 data/exam_ez34.js（EZ_LQ，Claude 依逐字稿撰寫，正解放官方字母位置）。
-// Part 2 直接沿用真人 Part 2 題庫（LISTEN2，EZ 五回已對過官方答案卷全數一致）。
-const EZ_KEY = typeof EZ_ANSWERS !== 'undefined' ? EZ_ANSWERS : {};
-const EZ_L34 = typeof EZ_LQ !== 'undefined' ? EZ_LQ : {};
+/* ================= 真題聽力（逐題快答） ================= */
+// 答案卷：EZ 五回 data/exam_ez.js（EZ_ANSWERS，1–100 聽力、101–200 閱讀備用）＋
+// 國學藍本十回 data/exam_blue.js（BLUE_ANSWERS）。Part 3/4 的題目與選項在
+// data/exam_ez34.js（EZ_LQ）與 exam_blue.js（BLUE_LQ），皆為 Claude 依逐字稿撰寫、正解放官方字母位置。
+// Part 2 直接沿用真人 Part 2 題庫（LISTEN2；EZ 125 題全對、藍本 250 題僅 1 題修正，皆對過官方答案卷）。
+const EZ_KEY = Object.assign({},
+  typeof EZ_ANSWERS !== 'undefined' ? EZ_ANSWERS : {},
+  typeof BLUE_ANSWERS !== 'undefined' ? BLUE_ANSWERS : {});
+const EZ_L34 = Object.assign({},
+  typeof EZ_LQ !== 'undefined' ? EZ_LQ : {},
+  typeof BLUE_LQ !== 'undefined' ? BLUE_LQ : {});
 const EZ_TESTS = Object.keys(EZ_KEY).filter(t => TESTS[t]);
 const ezAnsIdx = (test, n) => ABCD.indexOf((EZ_KEY[test] || {})[n]);
 let ezq = null;   // {units, ui, qi, correct, wrong:[], answered, ps:{part:[對,總]}}
@@ -3159,7 +3164,10 @@ const ezqSeg = u => ({test: u.test, f: u.f, s: 0, e: (u.dur || 0) + 1});
 const ezqDoneN = () => ezq.correct + ezq.wrong.length;
 function startEzq() {
   const sel = $('ezq-test').value, part = $('ezq-part').value, want = +$('ezq-count').value;
-  const tests = sel === 'all' ? EZ_TESTS : [sel];
+  const tests = sel === 'all' ? EZ_TESTS
+    : sel === 'allez' ? EZ_TESTS.filter(t => seriesOf(t) === '')
+    : sel === 'allblue' ? EZ_TESTS.filter(t => seriesOf(t) === 'C')
+    : [sel];
   const pool = sample(tests.flatMap(t => ezqUnits(t, part)), 9999);
   const units = [];
   let count = 0;
@@ -3173,7 +3181,7 @@ $('ezq-start').onclick = startEzq;
 function ezqShow() {
   const u = ezq.units[ezq.ui], n = u.qs[ezq.qi];
   ezq.answered = false;
-  $('ezq-prog').textContent = `第 ${ezqDoneN() + 1} / ${ezq.total} 題・EZ 真題聽力`;
+  $('ezq-prog').textContent = `第 ${ezqDoneN() + 1} / ${ezq.total} 題・真題聽力`;
   $('ezq-score').textContent = `答對 ${ezq.correct}｜答錯 ${ezq.wrong.length}`;
   $('ezq-fb').textContent = ''; $('ezq-fb').className = 'feedback';
   $('ezq-next').classList.add('hidden');
@@ -3211,10 +3219,11 @@ function ezqPick(pick) {
   const zline = (txt, hot) => `<div style="margin-top:3px${hot ? ';color:var(--good);font-weight:600' : ''}">${txt}</div>`;
   let detail = '';
   if (u.p === 1) {
+    // 藍本的選項標記是小寫（a. b. c. d.），比對一律轉大寫
     const T = (typeof TRANSCRIPTS !== 'undefined' && TRANSCRIPTS[u.test]) || {};
-    detail = (T[u.f] || []).filter(s => /^[A-D][.。]/.test(s.t.trim()))
+    detail = (T[u.f] || []).filter(s => /^[A-Da-d][.。]/.test(s.t.trim()))
       .map(s => zline(esc(s.t) + (s.z ? `<span style="color:var(--muted);font-weight:400">　${esc(s.z)}</span>` : ''),
-                      s.t.trim().startsWith(ABCD[ai]))).join('');
+                      s.t.trim().toUpperCase().startsWith(ABCD[ai]))).join('');
   } else if (u.p === 2) {
     const e = u.p2;
     detail = `<div style="margin-top:8px">${esc(e.q)}${e.qz ? `<span style="color:var(--muted)">　${esc(e.qz)}</span>` : ''}</div>`
@@ -3367,9 +3376,14 @@ function p2Finish() {
   showExamResult(rec);
 }
 
-/* 兩個新入口的下拉 */
-$('ezq-test').innerHTML = `<option value="all">全部 ${EZ_TESTS.length} 回隨機</option>`
-  + EZ_TESTS.map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
+/* 兩個新入口的下拉（EZ 與藍本分系列） */
+(() => {
+  const ez = EZ_TESTS.filter(t => seriesOf(t) === ''), blue = EZ_TESTS.filter(t => seriesOf(t) === 'C');
+  const opt = t => `<option value="${t}">${esc(testName(t))}</option>`;
+  $('ezq-test').innerHTML = `<option value="all">全部 ${EZ_TESTS.length} 回隨機</option>`
+    + (ez.length ? `<optgroup label="EZ 模擬考"><option value="allez">EZ 全 ${ez.length} 回隨機</option>${ez.map(opt).join('')}</optgroup>` : '')
+    + (blue.length ? `<optgroup label="國學聽力藍本"><option value="allblue">藍本全 ${blue.length} 回隨機</option>${blue.map(opt).join('')}</optgroup>` : '');
+})();
 $('p2-test').innerHTML = `<option value="all">全部 ${Object.keys(TESTS).length} 回隨機</option>`
   + Object.keys(TESTS).map(t => `<option value="${t}">${testName(t)}</option>`).join('');
 
@@ -3532,7 +3546,7 @@ function showExamResult(rec) {
   if (rec.type === 'p2' || rec.type === 'ezq') {   // 快答練習：顯示答對率就好，不換算粗估分數
     const pct = rec.lT ? Math.round(rec.lC / rec.lT * 100) : 0;
     $('ex-score').textContent = `${rec.lC} / ${rec.lT}`;
-    const name = rec.type === 'p2' ? '真人聽力 Part 2 快答' : 'EZ 真題聽力';
+    const name = rec.type === 'p2' ? '真人聽力 Part 2 快答' : '真題聽力快答';
     const bits = rec.ps ? Object.keys(rec.ps).sort()
       .map(p => `Part ${p} ${rec.ps[p][0]}/${rec.ps[p][1]}`).join('・') : '';
     $('ex-sub').innerHTML = `${name}・答對率 ${pct}%` + (bits ? `<br>${bits}` : '');
@@ -3668,7 +3682,7 @@ function renderExamHistory() {
     return;
   }
   const TYPE = {full: '聽力＋閱讀', l: '聽力', r: '閱讀'};
-  const typeLabel = h => h.type === 'ezq' ? 'EZ 真題聽力'
+  const typeLabel = h => h.type === 'ezq' ? '真題聽力'
     : h.type === 'p2' ? 'Part 2 快答' : TYPE[h.type];
   $('ex-history').innerHTML = exHistory.map((h, i) => {
     const d = new Date(h.t);
