@@ -1184,6 +1184,7 @@
         <button id="clear-ab">清 A-B</button>
       </div>
     </div>
+    <div id="sh-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel" id="tpanel">
       <div class="thead">
@@ -1264,6 +1265,7 @@
       「下一句 ⏭」繼續（新句子會重新遮住）。「🎙 自動跟讀模式」會播一句、留時間複誦、再自動播下一句；
       不想盲聽就關掉「🙈 盲聽模式」。錄音只存在你的瀏覽器記憶體，不會上傳。</p></details>
     </div>
+    <div id="sp-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
       <div class="thead"><h3>句子列表</h3></div>
@@ -1336,6 +1338,7 @@
       <span style="color:var(--bad);text-decoration:underline">紅色底線</span>＝漏掉或拼錯的字；
       答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或調慢語速，練完一句自己按「句 ⏭」。</p></details>
     </div>
+    <div id="dt-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
       <div class="thead"><h3>句子列表（已遮住，答對後解除）</h3></div>
@@ -2798,6 +2801,7 @@ function spSwitchSrc(k) {
   $('sp-segfill').style.width = '0';
   $('sp-prog').textContent = '';
   $('sp-mine').disabled = true;
+  $('sp-img').innerHTML = '';
   $('sp-list').innerHTML = '<div class="empty">選擇音檔後顯示句子列表</div>';
   renderClipList();
 }
@@ -2820,6 +2824,7 @@ function openClip(i, play) {
     b.classList.toggle('cur', +b.dataset.i === i));
   updCFav('sp', spClip);
   $('sp-mine').disabled = true;
+  $('sp-img').innerHTML = examImgBoxFromSrc(spClip.src);
   renderSpList();
   if (play) spPlaySeg(0);   // 開檔即從第一句開始練
 }
@@ -3011,6 +3016,7 @@ function dtSwitchSrc(k) {
   $('dt-stat').textContent = '';
   $('dt-input').value = ''; dtInputIdx = -1;
   $('dt-result').classList.add('hidden');
+  $('dt-img').innerHTML = '';
   $('dt-list').innerHTML = '<div class="empty">選擇音檔後顯示句子列表</div>';
   renderDtSide();
 }
@@ -3030,6 +3036,7 @@ function dtOpen(i) {
   $('dt-side-list').querySelectorAll('button').forEach(b =>
     b.classList.toggle('cur', +b.dataset.i === i));
   updCFav('dt', dtClip);
+  $('dt-img').innerHTML = examImgBoxFromSrc(dtClip.src);
   renderDtList();
   dtShowRes();
 }
@@ -3371,6 +3378,13 @@ const ezqImg = (test, n) => {
 // 掃描圖是白底，深色模式也固定白底避免透明 PNG 反白
 const ezqImgHTML = (src, alt) => `<div style="text-align:center;margin:4px 0 10px">
   <img src="${src}" alt="${alt}" style="max-width:100%;max-height:min(46vh,420px);background:#fff;border:1px solid var(--line);border-radius:8px"></div>`;
+/* 聽力解析/口說跟讀/聽寫共用：由音檔路徑（audio/Test1/Part1_Q3.mp3）反查題本圖片，
+   組題（Q62-64）看起始題號；VOA 等非考題路徑比對不到就回空字串 */
+function examImgBoxFromSrc(src) {
+  const m = String(src).match(/audio\/([^/]+)\/Part\d_Q(\d+)/);
+  const im = m ? ezqImg(m[1], +m[2]) : '';
+  return im ? ezqImgHTML(im, '題本圖片') : '';
+}
 const ezqDoneN = () => ezq.correct + ezq.wrong.length;
 function startEzq() {
   const sel = $('ezq-test').value, part = $('ezq-part').value, want = +$('ezq-count').value;
@@ -4494,6 +4508,7 @@ function load(i, play) {
   updSide();
   updShFav();
   $('nowline').classList.add('hidden');
+  $('sh-img').innerHTML = examImgBoxFromSrc(audio.src);
   renderTranscript();
   if (play) audio.play();
 }
