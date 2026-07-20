@@ -90,8 +90,7 @@
   @media (min-width: 701px) {
     header { display: none; }
     body { padding-left: 212px; }
-    .exambar { top: 12px; }
-    .player { top: 12px; }
+    /* .exambar/.player 的桌面 top:12 覆寫移到基底規則之後（同權重「後寫的贏」，寫在這裡會被蓋掉） */
     body.sb-collapsed { padding-left: 62px; }
     body.sb-collapsed #sidebar { width: 62px; padding-left: 7px; padding-right: 7px; }
     body.sb-collapsed .sb-brand { flex-direction: column; gap: 8px; padding: 4px 0 10px; }
@@ -435,6 +434,11 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
     padding: 16px 20px; margin-bottom: 14px; box-shadow: 0 4px 18px rgba(0,0,0,.06);
     position: sticky; top: 64px; z-index: 5;
+  }
+  /* 桌面藏 header，吸頂歸 12px；必須寫在上面兩條基底規則之後才蓋得過 top:64 */
+  @media (min-width: 701px) {
+    .exambar { top: 12px; }
+    .player { top: 12px; }
   }
   .now { font-size: 1.02rem; font-weight: 650; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .now small { color: var(--muted); font-weight: 400; }
@@ -1183,8 +1187,8 @@
         <button id="set-b">B</button>
         <button id="clear-ab">清 A-B</button>
       </div>
+      <div id="sh-img"></div>
     </div>
-    <div id="sh-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel" id="tpanel">
       <div class="thead">
@@ -1264,8 +1268,8 @@
       （或開「🔂 循環」）→ 按「👁 顯示句子」看原文，看著唸一次，「⏺ 錄音」＋「▶ 我的錄音」和原音比對 →
       「下一句 ⏭」繼續（新句子會重新遮住）。「🎙 自動跟讀模式」會播一句、留時間複誦、再自動播下一句；
       不想盲聽就關掉「🙈 盲聽模式」。錄音只存在你的瀏覽器記憶體，不會上傳。</p></details>
+      <div id="sp-img"></div>
     </div>
-    <div id="sp-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
       <div class="thead"><h3>句子列表</h3></div>
@@ -1337,8 +1341,8 @@
       把聽到的英文打出來 → Enter 對答案，<span style="color:var(--good)">綠色</span>＝答對的字、
       <span style="color:var(--bad);text-decoration:underline">紅色底線</span>＝漏掉或拼錯的字；
       答過的句子會解除遮罩並標記正確率。聽不清楚可按「↻ 再聽」或調慢語速，練完一句自己按「句 ⏭」。</p></details>
+      <div id="dt-img"></div>
     </div>
-    <div id="dt-img"></div>
     </div><!-- /shadow-main -->
     <div class="tpanel">
       <div class="thead"><h3>句子列表（已遮住，答對後解除）</h3></div>
