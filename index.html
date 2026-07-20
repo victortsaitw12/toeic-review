@@ -1353,9 +1353,10 @@
         <p class="examnote">
           <b>EZ 模擬考 5 回＋國學聽力藍本 10 回</b>（Part 1–4，對官方答案卷）＋
           <b>國學 A/B 本 12 回</b>（僅 Part 2，答案由 Claude 判定並經官方卷抽驗）的真題音檔，一題一題練、答完立刻對答案：
-          Part 1 看題本圖片聽四個描述、Part 2 純聽力選 (A)(B)(C)、
+          Part 1 看圖片聽四個描述、Part 2 純聽力選 (A)(B)(C)、
           Part 3/4 播完整段對話（一段連答三題），<b>題目與四個選項印在畫面上</b>（由 Claude 依逐字稿撰寫，
-          正解位置與官方答案卷一致；圖表題請對照題本）。答錯可收進聽力練習本。
+          正解位置與官方答案卷一致）。已收錄題本圖片的回數（EZ 第 1 回），照片與圖表直接顯示在題目裡；
+          其餘回數請對照題本。答錯可收進聽力練習本。
         </p>
         <div class="toolbar">
           <select id="ezq-test"></select>
@@ -1664,7 +1665,7 @@
   } catch (e) {
     v = String(Date.now());
   }
-  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'mistakes', 'practice_r', 'speak', 'books', 'listen2', 'listen2_carol'];
+  var files = ['words', 'wordaudio', 'audio', 'transcripts', 'exam_l', 'exam_r', 'exam_ez', 'exam_ez34', 'exam_blue', 'examimg', 'mistakes', 'practice_r', 'speak', 'books', 'listen2', 'listen2_carol'];
   for (var i = 0; i < files.length; i++) {
     document.write('<script src="data/' + files[i] + '.js?v=' + encodeURIComponent(v) + '"><\/script>');
   }
@@ -3362,6 +3363,14 @@ function ezqUnits(test, part) {
   return units;
 }
 const ezqSeg = u => ({test: u.test, f: u.f, s: 0, e: (u.dur || 0) + 1});
+/* 題本圖片（data/examimg.js）：P1 照片、P3/4 圖表題；沒收錄的回數退回「請對照題本」文字 */
+const ezqImg = (test, n) => {
+  const M = (typeof EXAM_IMG !== 'undefined' && EXAM_IMG[test]) || null;
+  return M && M[n] ? `img/${test}/${M[n]}` : '';
+};
+// 掃描圖是白底，深色模式也固定白底避免透明 PNG 反白
+const ezqImgHTML = (src, alt) => `<div style="text-align:center;margin:4px 0 10px">
+  <img src="${src}" alt="${alt}" style="max-width:100%;max-height:min(46vh,420px);background:#fff;border:1px solid var(--line);border-radius:8px"></div>`;
 const ezqDoneN = () => ezq.correct + ezq.wrong.length;
 function startEzq() {
   const sel = $('ezq-test').value, part = $('ezq-part').value, want = +$('ezq-count').value;
@@ -3397,8 +3406,11 @@ function ezqShow() {
   const area = $('ezq-area');
   if (u.p === 1) {
     $('ezq-big').textContent = '🖼️';
-    area.innerHTML = `<p class="desc" style="text-align:center">看題本第 ${u.qs[0]} 題的圖片，聽四個描述選出最符合的（可重聽）</p>
-      <div class="abc">${ABCD.map((L, i) => `<button data-i="${i}">${L}</button>`).join('')}</div>`;
+    const im = ezqImg(u.test, u.qs[0]);
+    area.innerHTML = (im
+      ? ezqImgHTML(im, `第 ${u.qs[0]} 題圖片`) + `<p class="desc" style="text-align:center">聽四個描述，選出最符合圖片的（可重聽）</p>`
+      : `<p class="desc" style="text-align:center">看題本第 ${u.qs[0]} 題的圖片，聽四個描述選出最符合的（可重聽）</p>`)
+      + `<div class="abc">${ABCD.map((L, i) => `<button data-i="${i}">${L}</button>`).join('')}</div>`;
     area.querySelectorAll('.abc button').forEach(b => b.onclick = () => { if (!ezq.ready) ezqPickSingle(+b.dataset.i); });
   } else if (u.p === 2) {
     $('ezq-big').textContent = '🎧';
@@ -3409,7 +3421,9 @@ function ezqShow() {
     // Part 3/4 是題組：一段音檔配三題同一畫面，比照真考邊聽邊答；每題點了立刻亮對錯與解析
     const D = EZ_L34[u.test];
     $('ezq-big').textContent = u.p === 3 ? '💬' : '📢';
+    const gim = ezqImg(u.test, u.qs[0]);   // 圖表題（Look at the graphic）整組共用一張圖
     area.innerHTML = `<p class="desc" style="text-align:center">聽完整段${u.p === 3 ? '對話' : '獨白'}，作答以下 ${u.qs.length} 題，全部答完才對答案（可重聽、可改答）</p>`
+      + (gim ? ezqImgHTML(gim, `第 ${u.qs[0]}–${u.qs[u.qs.length - 1]} 題圖表`) : '')
       + u.qs.map(n => `<div class="rq" data-q="${n}"><span class="qno">${n}.</span>${esc(D[n].q)}
           <div class="opts">${D[n].opts.map((o, i) => `<label data-n="${n}" data-i="${i}"><b>(${ABCD[i]})</b> ${esc(o)}</label>`).join('')}</div>
           <div class="ezq-qfb"></div>
