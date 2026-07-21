@@ -24,11 +24,11 @@ for (const [test, mp] of Object.entries(IMG)) {
   // 沒有孤兒檔
   const used = new Set(Object.values(mp));
   for (const f of fs.existsSync(dir) ? fs.readdirSync(dir) : []) {
-    if (f.endsWith('.png') && !used.has(f)) { console.log(`✗ img/${test}/${f} 沒有登錄進 EXAM_IMG`); errors++; }
+    if ((f.endsWith('.png') || f.endsWith('.svg')) && !used.has(f)) { console.log(`✗ img/${test}/${f} 沒有登錄進 EXAM_IMG`); errors++; }
   }
   // 題組檔名 q起-迄：範圍內每個題號都要登錄且指向同一檔
   for (const f of used) {
-    const m = f.match(/^q(\d+)-(\d+)\.png$/);
+    const m = f.match(/^q(\d+)-(\d+)\.(png|svg)$/);
     if (!m) continue;
     for (let q = +m[1]; q <= +m[2]; q++) {
       if (mp[q] !== f) { console.log(`✗ ${test} 第 ${q} 題應指向 ${f}（題組共用），實際是 ${mp[q] || '未登錄'}`); errors++; }
