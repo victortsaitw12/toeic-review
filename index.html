@@ -4429,11 +4429,12 @@ const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2,
 /* 來源下拉共用：optgroup 分系列（每回一項）＋聽力練習本群組。extra 放最前（如 VOA） */
 function srcSelectHTML(cur, extra) {
   const opt = (v, n) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(n)}</option>`;
+  // 練習本（含 ★ 最愛）擺最上面，手機下拉一打開就看得到，不用捲過幾十個回數
   return (extra || []).map(x => opt(x[0], x[1])).join('')
-    + SERIES.filter(sr => seriesTests(sr.k).length).map(sr =>
-        `<optgroup label="${esc(sr.n)}">${seriesTests(sr.k).map(t => opt(t, testName(t))).join('')}</optgroup>`).join('')
     + `<optgroup label="聽力練習本">${lbooks.map(b =>
-        opt('lb:' + b.name, (b.name === LFAV ? '★ ' : '📓 ') + b.name)).join('')}</optgroup>`;
+        opt('lb:' + b.name, (b.name === LFAV ? '★ ' : '📓 ') + b.name)).join('')}</optgroup>`
+    + SERIES.filter(sr => seriesTests(sr.k).length).map(sr =>
+        `<optgroup label="${esc(sr.n)}">${seriesTests(sr.k).map(t => opt(t, testName(t))).join('')}</optgroup>`).join('');
 }
 function buildTestSel() {
   const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
