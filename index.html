@@ -4437,16 +4437,16 @@ function srcSelectHTML(cur, extra) {
         `<optgroup label="${esc(sr.n)}">${seriesTests(sr.k).map(t => opt(t, testName(t))).join('')}</optgroup>`).join('');
 }
 function buildTestSel() {
-  const opts = Object.keys(TESTS).map(t => `<option value="${t}">${esc(testName(t))}</option>`).join('');
-  $('tsel-m').innerHTML = opts;
-  $('tsel-m').value = curTest;
   const cur = shBook ? 'lb:' + shBook : curTest;
-  $('sh-src').innerHTML = srcSelectHTML(cur);
-  $('sh-src').onchange = () => {
-    const v = $('sh-src').value;
+  const onSrc = v => {
     if (v.startsWith('lb:')) { shBook = v.slice(3); buildTestSel(); buildQSel(); }
     else switchTest(v);
   };
+  $('sh-src').innerHTML = srcSelectHTML(cur);
+  $('sh-src').onchange = () => onSrc($('sh-src').value);
+  // 手機版來源下拉（桌機隱藏）：跟側邊 sh-src 一樣含「練習本／★最愛」，手機才切得到最愛
+  $('tsel-m').innerHTML = srcSelectHTML(cur);
+  $('tsel-m').onchange = () => onSrc($('tsel-m').value);
   $('sh-favbtn').classList.toggle('on', shBook === LFAV);
   $('sh-favbtn').onclick = () => {
     ensureLfav();
@@ -4463,28 +4463,28 @@ function switchTest(t) {
   $('nowline').classList.add('hidden');
   buildTestSel(); buildQSel(); renderTranscript(); updPlay();
 }
-$('tsel-m').onchange = () => switchTest($('tsel-m').value);
 const PART_DESC = {'Part 1': 'Part 1・照片描述', 'Part 2': 'Part 2・應答問題',
                    'Part 3': 'Part 3・簡短對話', 'Part 4': 'Part 4・簡短獨白', '說明': '考試說明'};
 function buildQSel() {
-  const items = TESTS[curTest];
-  const parts = {};
-  items.forEach((it, i) => (parts[it.part] ||= []).push([i, it]));
-  $('qsel').innerHTML = '<option value="-1" disabled>— 選擇題目 —</option>' +
-    Object.entries(parts).map(([p, arr]) =>
-      `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
-        `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
-  $('qsel').value = String(curIdx);
   if (shBook) {
     const byTest = {};
     Object.keys(TESTS).forEach(t => TESTS[t].forEach((it, i) => {
       if (lbookHas(shBook, `audio/${t}/${it.f}`)) (byTest[t] ||= []).push([i, it]);
     }));
-    $('qside-list').innerHTML = !Object.keys(byTest).length
+    const hasAny = Object.keys(byTest).length;
+    const qlabel = it => it.part === '說明' ? it.label : it.part + '・' + it.label;
+    // 手機版：把收藏題目灌進「題目」下拉（依回數分組），value = "回數|索引"，手機才選得到最愛題目
+    $('qsel').innerHTML = !hasAny
+      ? '<option value="-1" disabled>（這個練習本還沒有題目）</option>'
+      : '<option value="-1" disabled>— 選擇收藏的題目 —</option>' +
+        Object.entries(byTest).map(([t, arr]) =>
+          `<optgroup label="${esc(testName(t))}">${arr.map(([i, it]) =>
+            `<option value="${t}|${i}"${t === curTest && i === curIdx ? ' selected' : ''}>${esc(qlabel(it))}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
+    $('qside-list').innerHTML = !hasAny
       ? '<div class="empty">這個練習本還沒有題目，點題目旁的 ★ 加入</div>'
       : Object.entries(byTest).map(([t, arr]) =>
       `<h4>${esc(testName(t))}</h4>` + arr.map(([i, it]) =>
-        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}${bookAddBtn(`audio/${t}/${it.f}`, it.part === '說明' ? it.label : it.part + '・' + it.label)}<span class="lbl">${it.part === '說明' ? it.label : it.part + '・' + it.label}</span><span class="d"><span class="tm">${fmt(it.dur)}</span></span></button>`).join('')).join('');
+        `<button data-t="${t}" data-i="${i}" class="${t === curTest && i === curIdx ? 'cur' : ''}">${favStar(`audio/${t}/${it.f}`, shBook)}${bookAddBtn(`audio/${t}/${it.f}`, qlabel(it))}<span class="lbl">${esc(qlabel(it))}</span><span class="d"><span class="tm">${fmt(it.dur)}</span></span></button>`).join('')).join('');
     $('qside-list').querySelectorAll('button').forEach(b => b.onclick = () => {
       if (b.dataset.t !== curTest) { curTest = b.dataset.t; localStorage.setItem('toeic-test', curTest); }
       load(+b.dataset.i, true);
@@ -4494,6 +4494,14 @@ function buildQSel() {
     updShFav();
     return;
   }
+  const items = TESTS[curTest];
+  const parts = {};
+  items.forEach((it, i) => (parts[it.part] ||= []).push([i, it]));
+  $('qsel').innerHTML = '<option value="-1" disabled>— 選擇題目 —</option>' +
+    Object.entries(parts).map(([p, arr]) =>
+      `<optgroup label="${PART_DESC[p] || p}">${arr.map(([i, it]) =>
+        `<option value="${i}">${p === '說明' ? it.label : it.label}（${fmt(it.dur)}）</option>`).join('')}</optgroup>`).join('');
+  $('qsel').value = String(curIdx);
   $('qside-list').innerHTML = Object.entries(parts).map(([p, arr]) =>
     `<h4>${PART_DESC[p] || p}</h4>` + arr.map(([i, it]) =>
       `<button data-i="${i}" class="${i === curIdx ? 'cur' : ''}">${favStar(`audio/${curTest}/${it.f}`)}${bookAddBtn(`audio/${curTest}/${it.f}`, it.label)}<span class="lbl">${it.label}</span><span class="d"><span class="tm">${fmt(it.dur)}</span></span></button>`).join('')).join('');
@@ -4518,7 +4526,14 @@ function updSide() {
     if (Math.abs(box.scrollTop - y) > box.clientHeight / 2) box.scrollTo({top: y, behavior: 'smooth'});
   }
 }
-$('qsel').onchange = () => load(+$('qsel').value, true);
+$('qsel').onchange = () => {
+  const v = $('qsel').value;
+  if (v.includes('|')) {   // 最愛/練習本模式：value = "回數|索引"，先切到該回再載入
+    const [t, i] = v.split('|');
+    if (t !== curTest) { curTest = t; localStorage.setItem('toeic-test', curTest); }
+    load(+i, true);
+  } else load(+v, true);
+};
 $('qprev').onclick = () => load(curIdx - 1, !audio.paused);
 $('qnext').onclick = () => load(curIdx + 1, !audio.paused);
 function load(i, play) {
@@ -4530,7 +4545,7 @@ function load(i, play) {
   audio.src = `audio/${curTest}/${it.f}`;
   audio.playbackRate = +$('rate').value;
   $('now').innerHTML = `${it.part === '說明' ? '' : it.part + '・'}${it.label}<small>${esc(testName(curTest))}</small>`;
-  $('qsel').value = String(i);
+  $('qsel').value = shBook ? `${curTest}|${i}` : String(i);   // 最愛模式的選項值含回數
   updSide();
   updShFav();
   $('nowline').classList.add('hidden');
