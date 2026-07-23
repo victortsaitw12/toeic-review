@@ -1402,8 +1402,8 @@
           <button id="ezq-play" title="播放／暫停">⏸</button>
           <div class="ezq-track" id="ezq-track"><i id="ezq-trackfill"></i></div>
           <span class="ezq-time" id="ezq-time">0:00 / 0:00</span>
-          <button id="ezq-fast" title="加速播放（再按一次回正常速度）">⏩ 加速</button>
-          <button id="ezq-replay" title="從頭重聽">↻ 重聽</button>
+          <button id="ezq-fast" title="加速播放 1.25×（再按一次回正常速度）">⏩</button>
+          <button id="ezq-replay" title="從頭重聽">↻</button>
         </div>
         <div id="ezq-ts"></div>
         <div id="ezq-area"></div>
@@ -3639,8 +3639,8 @@ const EZQ_FAST = 1.25;
 let ezqFast = localStorage.getItem('toeic-ezq-fast') === '1';
 const ezqRate = () => ezqFast ? EZQ_FAST : 1;
 function ezqFastPaint() {
-  $('ezq-fast').classList.toggle('on', ezqFast);
-  $('ezq-fast').textContent = ezqFast ? `⏩ ${EZQ_FAST}×` : '⏩ 加速';
+  $('ezq-fast').classList.toggle('on', ezqFast);   // 只留 ⏩ icon，亮起代表加速中
+  $('ezq-fast').title = ezqFast ? `加速中 ${EZQ_FAST}×（再按一次回正常速度）` : '加速播放 1.25×';
 }
 ezqFastPaint();
 $('ezq-fast').onclick = () => {
