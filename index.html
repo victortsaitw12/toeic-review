@@ -395,10 +395,11 @@
   .ezq-track { flex: 1; height: 10px; border-radius: 5px; background: var(--chip); position: relative; cursor: pointer; }
   .ezq-track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 5px; background: var(--accent); width: 0; }
   .ezq-time { font-size: .78rem; color: var(--muted); min-width: 84px; text-align: right; font-variant-numeric: tabular-nums; flex: none; }
-  #ezq-replay {
+  #ezq-replay, #ezq-fast {
     flex: none; cursor: pointer; border: 1px solid var(--line); background: var(--card);
     color: var(--ink); border-radius: 9px; padding: 9px 12px; font-size: .86rem;
   }
+  #ezq-fast.on { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 600; }
   /* 真題聽力：揭曉後的逐字稿（播放器正下方）；捲動定位要讓出上方 sticky 列 */
   #ezq-ts { scroll-margin-top: 70px; }
   /* 閱讀練習：Part 6 填空標記與題卡（沿用 .rq/.opts 基底，補上卡片外框） */
@@ -847,8 +848,7 @@
     #ezq-ts { scroll-margin-top: 128px; }   /* header 58 ＋ sticky 音檔列高度 */
     #exam-ezq .ezq-time { min-width: 0; font-size: .72rem; }
     #exam-ezq .ezq-audio { gap: 6px; }
-    #ezq-rate { padding: 9px 4px; font-size: .78rem; }
-    #ezq-replay { padding: 9px 9px; }
+    #ezq-fast, #ezq-replay { padding: 9px 9px; font-size: .8rem; }
     #exam-ezq .qnext {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin-top: 0;
       background: var(--card); border-top: 1px solid var(--line);
@@ -1402,13 +1402,7 @@
           <button id="ezq-play" title="播放／暫停">⏸</button>
           <div class="ezq-track" id="ezq-track"><i id="ezq-trackfill"></i></div>
           <span class="ezq-time" id="ezq-time">0:00 / 0:00</span>
-          <span class="speed"><select id="ezq-rate" title="語速">
-            <option value="0.6">0.6×</option>
-            <option value="0.75">0.75×</option>
-            <option value="0.85">0.85×</option>
-            <option value="1" selected>1.0×</option>
-            <option value="1.15">1.15×</option>
-          </select></span>
+          <button id="ezq-fast" title="加速播放（再按一次回正常速度）">⏩ 加速</button>
           <button id="ezq-replay" title="從頭重聽">↻ 重聽</button>
         </div>
         <div id="ezq-ts"></div>
@@ -3640,11 +3634,19 @@ function ezqGradeGroup(u) {
   if ($('ezq-ts').innerHTML) $('ezq-ts').scrollIntoView({behavior: 'smooth', block: 'start'});
 }
 $('ezq-replay').onclick = () => { if (ezq) playSnippet(ezqSeg(ezq.units[ezq.ui]), ezqRate()); };
-/* 真題聽力語速：記住上次選擇；播放中改速度即時生效 */
-$('ezq-rate').value = localStorage.getItem('toeic-ezq-rate') || '1';
-const ezqRate = () => +$('ezq-rate').value;
-$('ezq-rate').onchange = () => {
-  localStorage.setItem('toeic-ezq-rate', $('ezq-rate').value);
+/* 真題聽力加速鈕：按一下 1.25×、再按回 1×；記住狀態、播放中即時生效 */
+const EZQ_FAST = 1.25;
+let ezqFast = localStorage.getItem('toeic-ezq-fast') === '1';
+const ezqRate = () => ezqFast ? EZQ_FAST : 1;
+function ezqFastPaint() {
+  $('ezq-fast').classList.toggle('on', ezqFast);
+  $('ezq-fast').textContent = ezqFast ? `⏩ ${EZQ_FAST}×` : '⏩ 加速';
+}
+ezqFastPaint();
+$('ezq-fast').onclick = () => {
+  ezqFast = !ezqFast;
+  localStorage.setItem('toeic-ezq-fast', ezqFast ? '1' : '');
+  ezqFastPaint();
   qaudio.defaultPlaybackRate = ezqRate();
   if (ezqSrcMatch()) qaudio.playbackRate = ezqRate();   // 正在播這題就即時套用
 };
