@@ -1365,7 +1365,7 @@
           Part 1 看圖片聽四個描述、Part 2 純聽力選 (A)(B)(C)、
           Part 3/4 播完整段對話（一段連答三題），<b>題目與四個選項印在畫面上</b>（由 Claude 依逐字稿撰寫，
           正解位置與官方答案卷一致）。已收錄題本圖片的回數（EZ 第 1 回），照片與圖表直接顯示在題目裡；
-          其餘回數請對照題本。答錯可收進聽力練習本。
+          其餘回數請對照題本。答錯可收進聽力練習本，<b>也會自動排進下方的「錯題重答」，重答到全部答對才消失</b>。
         </p>
         <div class="toolbar">
           <select id="ezq-test"></select>
@@ -1383,6 +1383,15 @@
             <option value="100">整回 100 題</option>
           </select>
           <button id="ezq-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 開始練</button>
+        </div>
+      </div>
+      <div class="panel hidden" id="lq-wrong-panel">
+        <h3>🔁 錯題重答</h3>
+        <p class="desc" id="lq-wrong-sub"></p>
+        <div class="toolbar">
+          <select id="lq-wrong-part"></select>
+          <button id="lq-wrong-start" class="primary" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">▶ 重答錯題</button>
+          <button id="lq-wrong-clear" title="把待重答的題目全部清掉">🗑 清空</button>
         </div>
       </div>
       <div class="panel">
@@ -1420,6 +1429,7 @@
         <div class="resultbig" id="lq-score"></div>
         <div class="resultsub" id="lq-sub"></div>
         <div class="btnrow" style="justify-content:center">
+          <button id="lq-retry-btn" class="primary hidden" style="background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600">🔁 重答答錯的題目</button>
           <button id="lq-review-btn">📖 檢討答錯題目</button>
           <button id="lq-back">回真題聽力</button>
         </div>
@@ -1899,7 +1909,7 @@ function showView(v) {
   localStorage.setItem('toeic-view', v);
   if (v === 'home') renderHome();
   if (v === 'quiz') refreshQDueBtn();
-  if (v === 'lq') renderLqHistory();
+  if (v === 'lq') renderLqPage();
   if (v === 'rp6' || v === 'rp7') rpEnter(v === 'rp6' ? 'p6' : 'p7');
 }
 $('sbnav').querySelectorAll('button[data-v]').forEach(b => b.onclick = () => showView(b.dataset.v));
@@ -3361,20 +3371,69 @@ const EZ_TESTS = Object.keys(EZ_KEY).filter(t => TESTS[t]);
 const ezAnsIdx = (test, n) => ABCD.indexOf((EZ_KEY[test] || {})[n]);
 let ezq = null;   // {units, ui, qi, correct, wrong:[], answered, ps:{part:[對,總]}}
 // 一個 unit＝一段音檔：P1/P2 一題、P3/P4 一段對話含三題（聽一次連答三題，比照真考）
+// qall＝這段音檔的完整題號（Part 3/4 是三題），qs＝這次實際要作答的題號；
+// 錯題重答時 qs 只留答錯那幾題，qall 仍用來裁切逐字稿與顯示題組範圍
+function ezqUnitOf(test, it) {
+  const m = it.f.match(/Part(\d)_Q(\d+)(?:-(\d+))?/);
+  if (!m) return null;
+  const p = +m[1], a = +m[2], b = +(m[3] || m[2]);
+  const qall = Array.from({length: b - a + 1}, (_, i) => a + i);
+  if (p === 2) {
+    const item = P2.find(x => x.id === `${test}/${it.f}`);
+    return item ? {p, test, f: it.f, dur: it.dur, qs: [a], qall, p2: item} : null;
+  }
+  return {p, test, f: it.f, dur: it.dur, qs: qall.slice(), qall};
+}
 function ezqUnits(test, part) {
   const units = [];
   for (const it of TESTS[test]) {
-    const m = it.f.match(/Part(\d)_Q(\d+)(?:-(\d+))?/);
-    if (!m) continue;
-    const p = +m[1], a = +m[2], b = +(m[3] || m[2]);
-    if (!(test in EZ_KEY) && p !== 2) continue;   // 無官方答案卷的回數（國學 A/B）只練 Part 2
-    if (part !== 'all' && p !== +part) continue;
-    if (p === 2) {
-      const item = P2.find(x => x.id === `${test}/${it.f}`);
-      if (item) units.push({p, test, f: it.f, dur: it.dur, qs: [a], p2: item});
-    } else {
-      units.push({p, test, f: it.f, dur: it.dur, qs: Array.from({length: b - a + 1}, (_, i) => a + i)});
-    }
+    const u = ezqUnitOf(test, it);
+    if (!u) continue;
+    if (!(test in EZ_KEY) && u.p !== 2) continue;   // 無官方答案卷的回數（國學 A/B）只練 Part 2
+    if (part !== 'all' && u.p !== +part) continue;
+    units.push(u);
+  }
+  return units;
+}
+/* ----- 錯題重答池（答錯就排進來，答對才移除，重答到全部答對）-----
+   只存「哪一題」（回數／音檔／題號），題目與選項一律從題庫即時重組，
+   所以題庫之後修正過，重答看到的是最新版本。 */
+let lqWrong = [];
+try { lqWrong = JSON.parse(localStorage.getItem('toeic-lq-wrong') || '[]') || []; } catch (e) { lqWrong = []; }
+const lqwKey = r => `${r.test}|${r.f}|${r.n}`;
+const lqwSave = () => localStorage.setItem('toeic-lq-wrong', JSON.stringify(lqWrong));
+const lqwFile = r => (TESTS[r.test] || []).find(x => x.f === r.f);
+lqWrong = lqWrong.filter(r => r && r.test && r.f && r.n && lqwFile(r));   // 音檔已不在（改版/移除）就丟掉
+const lqwHas = r => lqWrong.some(x => lqwKey(x) === lqwKey(r));
+function lqwAdd(u, n) {
+  const rec = {test: u.test, f: u.f, n, p: u.p};
+  const hit = lqWrong.find(x => lqwKey(x) === lqwKey(rec));
+  if (hit) hit.miss = (hit.miss || 1) + 1;
+  else lqWrong.push({...rec, miss: 1});
+  lqwSave();
+}
+function lqwDone(u, n) {
+  const i = lqWrong.findIndex(x => lqwKey(x) === lqwKey({test: u.test, f: u.f, n}));
+  if (i >= 0) { lqWrong.splice(i, 1); lqwSave(); }
+}
+/* 待重答清單組回 unit：同一段音檔的多題併成一組（Part 3/4 聽一次答那幾題） */
+function lqwUnits(list) {
+  const byFile = new Map();
+  for (const r of list) {
+    const k = `${r.test}|${r.f}`;
+    if (!byFile.has(k)) byFile.set(k, []);
+    byFile.get(k).push(r.n);
+  }
+  const units = [];
+  for (const [k, ns] of byFile) {
+    const i = k.indexOf('|'), test = k.slice(0, i), f = k.slice(i + 1);
+    const it = lqwFile({test, f});
+    const u = it && ezqUnitOf(test, it);
+    if (!u) continue;
+    const qs = u.qall.filter(n => ns.includes(n));
+    if (!qs.length) continue;
+    if (u.p >= 3 && qs.some(n => !((EZ_L34[test] || {})[n]))) continue;   // 題庫沒這題就跳過
+    units.push({...u, qs, retry: true});
   }
   return units;
 }
@@ -3408,11 +3467,46 @@ function startEzq() {
   let count = 0;
   for (const u of pool) { if (count >= want) break; units.push(u); count += u.qs.length; }
   if (!units.length) { alert('這個範圍沒有題目'); return; }
-  ezq = {units, ui: 0, correct: 0, wrong: [], ps: {}, total: count, picks: {}, ready: false, gOK: 0};
+  ezq = {units, ui: 0, correct: 0, wrong: [], wq: [], ps: {}, total: count, picks: {}, ready: false, gOK: 0};
   lqShow('exam-ezq');
   ezqShow();
 }
 $('ezq-start').onclick = startEzq;
+/* 錯題重答：把待重答清單（或某一回練習答錯的那幾題）排成一場練習 */
+function startEzqRetry(list) {
+  const units = sample(lqwUnits(list), 9999);
+  const total = units.reduce((s, u) => s + u.qs.length, 0);
+  if (!total) { alert('沒有可重答的題目'); renderLqWrong(); return; }
+  ezq = {units, ui: 0, correct: 0, wrong: [], wq: [], ps: {}, total, picks: {}, ready: false, gOK: 0, retry: true};
+  lqShow('exam-ezq');
+  ezqShow();
+}
+/* 待重答面板：沒題目就整塊收起來 */
+function renderLqWrong() {
+  const has = lqWrong.length > 0;
+  $('lq-wrong-panel').classList.toggle('hidden', !has);
+  if (!has) return;
+  const byPart = {};
+  lqWrong.forEach(r => { byPart[r.p] = (byPart[r.p] || 0) + 1; });
+  const parts = Object.keys(byPart).sort();
+  const again = lqWrong.filter(r => (r.miss || 1) > 1).length;
+  $('lq-wrong-sub').innerHTML = `還有 <b>${lqWrong.length}</b> 題沒答對`
+    + `（${parts.map(p => `Part ${p} ${byPart[p]} 題`).join('・')}）`
+    + (again ? `，其中 <b>${again}</b> 題錯過兩次以上` : '')
+    + '。答對就從這裡消失，答錯會留著下次再排。';
+  const sel = $('lq-wrong-part'), keep = sel.value;
+  sel.innerHTML = `<option value="all">全部 ${lqWrong.length} 題</option>`
+    + parts.map(p => `<option value="${p}">Part ${p}（${byPart[p]} 題）</option>`).join('');
+  sel.value = byPart[keep] ? keep : 'all';
+}
+$('lq-wrong-start').onclick = () => {
+  const p = $('lq-wrong-part').value;
+  startEzqRetry(p === 'all' ? lqWrong : lqWrong.filter(r => String(r.p) === p));
+};
+$('lq-wrong-clear').onclick = () => {
+  if (!confirm(`要清掉全部 ${lqWrong.length} 題待重答的題目嗎？`)) return;
+  lqWrong = []; lqwSave(); renderLqWrong();
+};
 function ezqShow() {
   const u = ezq.units[ezq.ui];
   ezq.picks = {};      // 本畫面各題的作答（題號 → 選項索引）
@@ -3425,7 +3519,10 @@ function ezqShow() {
   $('ezq-next').classList.add('hidden');
   $('ezq-next').textContent = u.qs.length > 1 ? '下一組 →' : '下一題 →';
   const label = u.qs.length > 1 ? `第 ${u.qs[0]}–${u.qs[u.qs.length - 1]} 題` : `第 ${u.qs[0]} 題`;
-  $('ezq-sub').textContent = `${testName(u.test)}・Part ${u.p}・${label}`;
+  // 錯題重答時整組只重答其中一兩題：標題把整組範圍也帶出來，才知道音檔為何比較長
+  const part = u.qall && u.qs.length < u.qall.length
+    ? `第 ${u.qall[0]}–${u.qall[u.qall.length - 1]} 題組・只重答 ${u.qs.join('、')}` : label;
+  $('ezq-sub').textContent = `${testName(u.test)}・Part ${u.p}・${part}`;
   const area = $('ezq-area');
   if (u.p === 1) {
     $('ezq-big').textContent = '🖼️';
@@ -3517,8 +3614,10 @@ function ezqGrade(u, n, pick) {
   const ok = pick === ai;
   const ps = ezq.ps[u.p] || (ezq.ps[u.p] = [0, 0]);
   ps[1]++;
-  if (ok) { ps[0]++; ezq.correct++; }
+  if (ok) { ps[0]++; ezq.correct++; lqwDone(u, n); }   // 答對就從錯題重答池移除
   else {
+    lqwAdd(u, n);
+    ezq.wq.push({test: u.test, f: u.f, n, p: u.p});
     const qtext = u.p === 1 ? `第 ${n} 題（題本圖片描述題）`
       : u.p === 2 ? `${u.p2.q}　(A) ${u.p2.opts[0]} (B) ${u.p2.opts[1]} (C) ${u.p2.opts[2]}`
       : `${n}. ${EZ_L34[u.test][n].q}　` + EZ_L34[u.test][n].opts.map((o, i) => `(${ABCD[i]}) ${o}`).join(' ');
@@ -3572,7 +3671,9 @@ function ezqTranscript(u) {
   for (let i = start; i < segs.length; i++) {
     const t = segs[i].t.trim();
     const m = t.match(/^(?:Number|No\.?|Questions?)\s*(\d+)|^(\d+)\s*[-.．。、,，]/i);
-    if (m && u.qs.includes(+(m[1] || m[2]))) break;
+    // 用 qall（整組題號）判斷念題起點：錯題重答只挑其中一兩題時，
+    // 也要從整組的第一個 Number 就切掉，不然沒重答的那幾題會被印出來
+    if (m && (u.qall || u.qs).includes(+(m[1] || m[2]))) break;
     lines.push(segs[i]);
   }
   if (!lines.length) return '';
@@ -3662,12 +3763,12 @@ $('ezq-quit').onclick = () => {
   qaudio.pause();
   if (done) { ezqFinish(); return; }
   ezq = null;
-  lqShow('lq-setup'); renderLqHistory();
+  lqShow('lq-setup'); renderLqPage();
 };
 function ezqFinish() {
   qaudio.pause();
   const rec = {t: Date.now(), type: 'ezq', lC: ezq.correct, lT: ezqDoneN(), rC: 0, rT: 0,
-               wrong: ezq.wrong, ps: ezq.ps};
+               wrong: ezq.wrong, wq: ezq.wq, ps: ezq.ps, retry: !!ezq.retry};
   ezq = null;
   exHistory.unshift(rec);
   exHistory = exHistory.slice(0, 20);
@@ -3687,7 +3788,16 @@ function lqResult(rec, withReview) {
   $('lq-score').textContent = `${rec.lC} / ${rec.lT}`;
   const bits = rec.ps ? Object.keys(rec.ps).sort()
     .map(p => `Part ${p} ${rec.ps[p][0]}/${rec.ps[p][1]}`).join('・') : '';
-  $('lq-sub').innerHTML = `${rec.type === 'p2' ? 'Part 2 快答' : '真題聽力快答'}・答對率 ${pct}%` + (bits ? `<br>${bits}` : '');
+  // 這回還沒攻克的題目（答對的已從重答池移除），可以直接再排一場
+  const pend = (rec.wq || []).filter(r => lqwHas(r));
+  const rbtn = $('lq-retry-btn');
+  rbtn.classList.toggle('hidden', !pend.length);
+  rbtn.textContent = `🔁 重答答錯的 ${pend.length} 題`;
+  rbtn.onclick = () => startEzqRetry(pend);
+  const tail = pend.length ? `<br>這 ${pend.length} 題已排進「錯題重答」，答對才會消失`
+    : (rec.wq || []).length ? '<br>✅ 這回答錯的題目都已重答答對' : '';
+  $('lq-sub').innerHTML = `${rec.type === 'p2' ? 'Part 2 快答' : rec.retry ? '真題聽力・錯題重答' : '真題聽力快答'}・答對率 ${pct}%`
+    + (bits ? `<br>${bits}` : '') + tail;
   const fill = () => {
     $('lq-review').innerHTML = `<div class="panel" style="padding:0;border:none;background:none"><h3>答錯題目</h3>${
       (rec.wrong || []).length ? wrongListHTML(rec.wrong) : '<p class="desc">全對，太強了！</p>'}</div>`;
@@ -3697,7 +3807,9 @@ function lqResult(rec, withReview) {
   $('lq-review-btn').onclick = fill;
   if (withReview) fill();
 }
-$('lq-back').onclick = () => { lqShow('lq-setup'); renderLqHistory(); };
+$('lq-back').onclick = () => { lqShow('lq-setup'); renderLqPage(); };
+/* 回到真題聽力設定頁：待重答面板與練習紀錄一起重畫 */
+function renderLqPage() { renderLqWrong(); renderLqHistory(); }
 function renderLqHistory() {
   const list = exHistory.map((h, i) => [h, i]).filter(([h]) => h.type === 'ezq' || h.type === 'p2');
   if (!list.length) {
@@ -3708,7 +3820,7 @@ function renderLqHistory() {
     const d = new Date(h.t);
     const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     return `<div class="hist-row"><span class="score">${h.lC}/${h.lT}</span>
-      <span>${h.type === 'p2' ? 'Part 2 快答' : '真題聽力'}</span><span class="when">${when}</span>
+      <span>${h.type === 'p2' ? 'Part 2 快答' : h.retry ? '真題聽力・重答' : '真題聽力'}</span><span class="when">${when}</span>
       <span class="act"><button data-lqrev="${i}">檢討</button><button data-lqdel="${i}">刪除</button></span></div>`;
   }).join('');
   $('lq-history').querySelectorAll('[data-lqrev]').forEach(b => b.onclick = () => lqResult(exHistory[+b.dataset.lqrev], true));
@@ -4930,6 +5042,12 @@ function renderTasks() {
      btn: MI.length ? '開始練' : '去考一回', dis: !MI.length,
      act: goMist('all', 'due')},
   ];
+  // 聽力錯題重答：有待重答的題目才出現這張卡（答對就會清空）
+  if (lqWrong.length) {
+    cards.push({lbl: '🎧 聽力錯題', num: lqWrong.length, unit: '題待重答',
+      sub: '真題聽力答錯的題目，重答到全部答對',
+      btn: '開始重答', act: () => { showView('lq'); startEzqRetry(lqWrong); }});
+  }
   // Part 5 靠錯題本能練，而且考點診斷比「Part 5 很弱」更有指向性，優先顯示考點
   if (wcat && (!weak || +weak[0] === 5)) {
     const [c, s] = wcat;
@@ -4984,7 +5102,7 @@ addEventListener('resize', () => {           // viewBox 綁著容器寬度，轉
 
 /* ================= init ================= */
 buildTestSel(); buildQSel(); buildRange(); buildDeck(); renderList(); updPending(); miRenderSetup();
-buildQRange(); renderHistory(); renderExamHistory(); renderLqHistory(); renderClipList(); renderDtSide();
+buildQRange(); renderHistory(); renderExamHistory(); renderLqPage(); renderClipList(); renderDtSide();
 buildBookSels(); renderBooksAdmin();
 showView(localStorage.getItem('toeic-view') || 'home');
 </script>
