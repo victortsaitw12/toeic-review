@@ -571,6 +571,212 @@ def t5_98_100():  # Alamo Steakhouse 折價券
     return g
 
 
+# ============================ 藍本 TestC3 ============================
+
+def tc3_62_64():  # 庫存表 Inventory List
+    rows = [
+        [{"t": "Inventory List", "span": 2, "bold": True, "fill": HDR}],
+        [{"t": "Item #3851", "span": 2, "bold": True}],
+        [{"t": "Red Pullover Sweater", "span": 2}],
+        [h("Size"), h("Units in Stock")],
+        ["Extra Small", "6"],
+        ["Small", "11"],
+        ["Medium", "9"],
+        ["Large", "15"],
+    ]
+    return draw_table([200, 200], rows, rowh=38)
+
+
+def tc3_65_67():  # 路線圖：Hotel -> Airport，四條街環狀繞行
+    g = SVG(430, 250)
+    hx, hy = 55, 120
+    ax = 375
+    streets = [
+        ("Dale Street – 33 minutes", -72),
+        ("Lily Street – 27 minutes", -26),
+        ("Pine Street – 31 minutes", 30),
+        ("Red Street – 29 minutes", 74),
+    ]
+    for label, dy in streets:
+        cy = hy + 2 * dy
+        g.path(f"M{hx} {hy} Q{(hx + ax) // 2} {cy} {ax} {hy}", fill="none", sw=2)
+        g.text((hx + ax) // 2, hy + dy + (15 if dy > 0 else -8), label, size=13, italic=True)
+    g.circle(hx, hy, 15, fill="#cfcfcf", sw=2)
+    g.text(hx, hy + 40, "Hotel", size=14, weight="bold")
+    g.text(ax + 4, hy + 40, "Airport", size=14, weight="bold")
+    # 簡易飛機圖示
+    g.path(f"M{ax - 8} {hy - 10} l34 -6 l-11 10 l11 7 l-34 -5 z", fill="#8a8a8a", sw=1.2)
+    return g
+
+
+def _linechart(title, yvals, ymin, ymax, months, data, ylabel_fmt):
+    g = SVG(480, 240)
+    ox, oy = 100, 190
+    top, right = 42, 420
+    g.text(240, 28, title, size=16, weight="bold")
+    g.line(ox, oy, right, oy, sw=2)
+    g.line(ox, oy, ox, top, sw=2)
+
+    def py(v):
+        return oy - (v - ymin) / (ymax - ymin) * (oy - top)
+    for v in yvals:
+        yy = py(v)
+        g.line(ox - 5, yy, ox, yy, sw=1.5)
+        g.text(ox - 10, yy + 5, ylabel_fmt(v), size=11, anchor="end")
+    n = len(months)
+    xs = [ox + 40 + i * ((right - ox - 40) / (n - 1)) for i in range(n)]
+    pts = [(xs[i], py(data[i])) for i in range(n)]
+    for i, m in enumerate(months):
+        g.text(xs[i], oy + 22, m, size=11)
+    g.poly(pts, closed=False, sw=2.4)
+    for x, y in pts:
+        g.circle(x, y, 3, fill="white", sw=1.6)
+    return g
+
+
+def tc3_68_70():  # 折線圖 Delver Group Profits
+    return _linechart("Delver Group Profits",
+                      [60000, 80000, 100000, 120000], 55000, 125000,
+                      ["February", "March", "April", "May"],
+                      [88000, 101000, 95000, 78000],
+                      lambda v: f"${v:,}")
+
+
+def tc3_95_97():  # 訂閱折扣表
+    rows = [
+        [h("Length of Subscription"), h("Discount")],
+        ["One month", "$50"],
+        ["Three months", "$100"],
+        ["Six months", "$200"],
+        ["One Year", "$400"],
+    ]
+    return draw_table([240, 150], rows, rowh=40)
+
+
+def tc3_98_100():  # 折價券 Quick Refresh（虛線框＋剪刀）
+    g = SVG(400, 250)
+    g.rect(16, 16, 368, 218, sw=2, dash="6,5")
+    g.text(356, 36, "✂", size=22)   # 剪刀
+    g.text(34, 58, "SAVE BIG on Quick Refresh!", size=19, weight="bold", anchor="start")
+    lines = [
+        "10% off travel-sized bottles",
+        "15% off regular-sized bottles",
+        "20% off deluxe-sized bottles",
+        "25% off economy-sized bottles",
+    ]
+    for i, ln in enumerate(lines):
+        g.text(40, 96 + i * 27, ln, size=15, anchor="start")
+    g.text(200, 208, "Valid at all CityMart stores", size=14)
+    g.text(200, 228, "Expires January 10", size=14)
+    return g
+
+
+# ============================ 藍本 TestC4 ============================
+
+def tc4_62_64():  # 流程圖 Project Management Process（水平四階段）
+    g = SVG(430, 170)
+    g.text(215, 30, "Project Management Process", size=17, weight="bold")
+    boxes = [
+        ("Stage 1", "Review", "budget"),
+        ("Stage 2", "Submit", "proposal"),
+        ("Stage 3", "Choose", "candidates"),
+        ("Stage 4", "Assign", "tasks"),
+    ]
+    bw, bh, gap, x0, y0 = 88, 74, 18, 16, 58
+    for i, (a, b, c) in enumerate(boxes):
+        bx = x0 + i * (bw + gap)
+        g.rect(bx, y0, bw, bh, sw=2)
+        g.text(bx + bw / 2, y0 + 26, a, size=15, weight="bold")
+        g.text(bx + bw / 2, y0 + 47, b, size=13)
+        g.text(bx + bw / 2, y0 + 63, c, size=13)
+        if i < 3:
+            axx = bx + bw
+            g.line(axx, y0 + bh / 2, axx + gap, y0 + bh / 2, sw=2)
+            g.poly([(axx + gap, y0 + bh / 2), (axx + gap - 7, y0 + bh / 2 - 5),
+                    (axx + gap - 7, y0 + bh / 2 + 5)], fill=STROKE, sw=0)
+    return g
+
+
+def tc4_65_67():  # 樓層目錄 TechnoForce Directory
+    rows = [
+        [{"t": "TechnoForce Directory", "span": 2, "bold": True, "fill": HDR}],
+        ["Floor 4", "Research and Development"],
+        ["Floor 3", "Accounting"],
+        ["Floor 2", "Human Resources"],
+        ["Floor 1", "Marketing"],
+    ]
+    return draw_table([120, 250], rows, rowh=42)
+
+
+def tc4_68_70():  # 公園步道地圖
+    g = SVG(400, 240)
+    g.rect(12, 12, 376, 216, sw=2)
+
+    def box(x, y, w, ht, txt, size=13, bold=False, fill="white"):
+        g.rect(x, y, w, ht, fill=fill, sw=2 if bold else 1.8)
+        ls = txt.split("\n")
+        for j, ln in enumerate(ls):
+            g.text(x + w / 2, y + ht / 2 + 5 - (len(ls) - 1) * 8 + j * 16, ln,
+                   size=size, weight="bold" if bold else "normal")
+    box(34, 30, 92, 40, "Waterfall")
+    box(150, 30, 74, 40, "Lake")
+    box(292, 24, 84, 48, "Picnic\nArea")
+    box(292, 108, 84, 40, "Campground")
+    box(150, 168, 120, 42, "Park Entrance", size=14, bold=True, fill="#f0f0f0")
+
+    def dtrail(x1, y1, x2, y2):
+        g.line(x1, y1, x2, y2, sw=2.2, stroke="#999", dash="2,5")
+    dtrail(165, 168, 82, 72)     # Trail A -> Waterfall
+    dtrail(200, 168, 188, 72)    # Trail B -> Lake
+    dtrail(250, 168, 296, 74)    # Trail C -> Picnic Area
+    dtrail(270, 182, 300, 128)   # Trail D -> Campground
+    g.text(52, 150, "Trail A", size=12, italic=True)
+    g.text(152, 120, "Trail B", size=12, italic=True)
+    g.text(250, 122, "Trail C", size=12, italic=True)
+    g.text(336, 172, "Trail D", size=12, italic=True)
+    return g
+
+
+def tc4_95_97():  # 平面圖：上排 Area A/B/Manager，走廊，下排 Storage/Area C/D
+    g = SVG(400, 210)
+    ox, oy, W, H = 20, 20, 360, 170
+    colw = W / 3
+    top_h, corr_h = 62, 40
+    bot_y = oy + top_h + corr_h
+    g.rect(ox, oy, W, H, sw=2.4)
+    g.rect(ox, oy + top_h, W, corr_h, fill="#dcdcdc", sw=1.4)   # 走廊
+    for k in (1, 2):
+        g.line(ox + k * colw, oy, ox + k * colw, oy + top_h)
+        g.line(ox + k * colw, bot_y, ox + k * colw, oy + H)
+
+    def door(cx, wy, dirn):   # dirn=+1 門開向下(走廊), -1 向上
+        g.line(cx - 13, wy, cx + 13, wy, stroke="white", sw=3)
+        g.line(cx - 13, wy, cx - 13, wy + dirn * 15, sw=1.2)
+        g.path(f"M{cx - 13} {wy + dirn * 15} A15 15 0 0 {1 if dirn > 0 else 0} {cx + 13} {wy}",
+               fill="none", sw=1.1)
+    for k in range(3):
+        cx = ox + (k + 0.5) * colw
+        door(cx, oy + top_h, 1)          # 上排房間開向走廊
+        door(cx, bot_y, -1)              # 下排房間開向走廊
+    labels_top = ["Area A", "Area B", "Manager's\nOffice"]
+    labels_bot = ["Storage\nCloset", "Area C", "Area D"]
+    for k in range(3):
+        cx = ox + (k + 0.5) * colw
+        for grp, cy0 in ((labels_top, oy + 24), (labels_bot, bot_y + 24)):
+            ls = grp[k].split("\n")
+            for j, ln in enumerate(ls):
+                g.text(cx, cy0 + j * 16, ln, size=13)
+    return g
+
+
+def tc4_98_100():  # 折線圖 Monthly Number of Readers
+    return _linechart("Monthly Number of Readers",
+                      [26000, 28000, 30000, 32000, 34000, 36000], 25500, 36500,
+                      ["September", "October", "November", "December"],
+                      [28000, 35000, 32000, 30000],
+                      lambda v: f"{v:,}")
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -582,6 +788,10 @@ IMAGES = {
               "q95-97": t4_95_97, "q98-100": t4_98_100},
     "Test5": {"q62-64": t5_62_64, "q65-67": t5_65_67, "q68-70": t5_68_70,
               "q95-97": t5_95_97, "q98-100": t5_98_100},
+    "TestC3": {"q62-64": tc3_62_64, "q65-67": tc3_65_67, "q68-70": tc3_68_70,
+               "q95-97": tc3_95_97, "q98-100": tc3_98_100},
+    "TestC4": {"q62-64": tc4_62_64, "q65-67": tc4_65_67, "q68-70": tc4_68_70,
+               "q95-97": tc4_95_97, "q98-100": tc4_98_100},
 }
 
 
