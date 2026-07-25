@@ -43,7 +43,7 @@ def cut_clips(qs):
         q['_test'], q['_f'], q['_dur'] = t, f, dur
     for t in tests:
         tests[t].sort(key=lambda it: int(re.search(r'Q(\d+)', it['f']).group(1)))
-    json.dump(tests, open('/workspaces/toeic/carol_tests.json', 'w'), ensure_ascii=False)
+    json.dump(tests, open('/workspaces/toeic/build/carol_tests.json', 'w'), ensure_ascii=False)
     return tests
 
 def update_audio_js(tests):

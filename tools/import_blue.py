@@ -3,7 +3,7 @@
 
 Part 由題號推導：1-6→Part1、7-31→Part2、32-70→Part3、71-100→Part4。
 轉 64kbps 單聲道、檔名統一 PartN_Qxx[-yy].mp3，輸出到 audio/TestC1..C10，
-時長寫入 /workspaces/toeic/blue_tests.json（格式同 gx_tests.json）。
+時長寫入 /workspaces/toeic/build/blue_tests.json（格式同 gx_tests.json）。
 """
 import json, pathlib, re, subprocess
 from concurrent.futures import ThreadPoolExecutor
@@ -61,5 +61,5 @@ for key, entries in manifest.items():
     tests[key] = items
     print(key, len(items), 'files', flush=True)
 
-json.dump(tests, open(ROOT / 'blue_tests.json', 'w'), ensure_ascii=False)
-print('WROTE', ROOT / 'blue_tests.json')
+json.dump(tests, open(ROOT / 'build' / 'blue_tests.json', 'w'), ensure_ascii=False)
+print('WROTE', ROOT / 'build' / 'blue_tests.json')

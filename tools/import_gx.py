@@ -67,5 +67,5 @@ for key, entries in manifest.items():
     tests[key] = items
     print(key, len(items), 'files', flush=True)
 
-json.dump(tests, open(ROOT / 'gx_tests.json', 'w'), ensure_ascii=False)
-print('WROTE', ROOT / 'gx_tests.json')
+json.dump(tests, open(ROOT / 'build' / 'gx_tests.json', 'w'), ensure_ascii=False)
+print('WROTE', ROOT / 'build' / 'gx_tests.json')

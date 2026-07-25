@@ -18,7 +18,7 @@ def key_order(k):  # TestA1..A6, TestB1..B6, TestC1..C10（數字自然排序）
     m2 = re.match(r'Test([A-Z])(\d+)', k)
     return (m2.group(1), int(m2.group(2)))
 
-for path in ('/workspaces/toeic/gx_tests.json', '/workspaces/toeic/blue_tests.json'):
+for path in ('/workspaces/toeic/build/gx_tests.json', '/workspaces/toeic/build/blue_tests.json'):
     gx = json.load(open(path))
     for key in sorted(gx, key=key_order):
         for it in gx[key]:  # 去掉題號前導零：第 01 題 → 第 1 題
