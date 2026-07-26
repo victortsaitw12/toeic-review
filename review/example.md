@@ -224,3 +224,42 @@ The municipal government has promised that it will take \_\_\_ to reduce downtow
 答案：B
 解析：句意是「市政府已承諾將採取行動來減少市中心的交通流量。」這題測驗的是名詞的慣用搭配（collocation）。「採取行動」在英文中的固定用法是 take action，此處的 action 作為不可數名詞使用，前面不加冠詞。其他選項：(A) acting 是動名詞或指「演戲、表演」，無法與 take 搭配成「採取行動」；(C) activation 意為「啟動、活化」，多用於機器或系統的啟用，語意不符；(D) activists 指「（社會運動）行動主義者、激進份子」，是指人的可數名詞，填入後語意變成「政府會帶走激進份子」，不合邏輯。
 標籤: 名詞, 固定搭配
+
+## Q110
+
+Soft drink manufacturer Fizz Life \_\_\_ a backlash from customers after changing its recipe for Ricochet Cola last year.
+
+(A) was faced
+(B) has been faced
+(C) faced
+(D) to face
+
+答案：C
+解析：句意是「軟性飲料製造商 Fizz Life 去年更改 Ricochet 可樂的配方後，遭到了顧客的強烈反彈。」這題同時測驗語態與時態。空格後方有受詞「a backlash」（反彈、抵制），表示動詞 face（面對、遭遇）在此是及物動詞的主動用法，主詞 Fizz Life 是動作的執行者，因此不能用被動語態；再加上句尾的時間副詞「last year」（去年）標示動作已完成於過去的特定時間點，必須用過去簡單式，所以 (C) faced 是正確答案。選項 (A) was faced 與 (B) has been faced 都是被動語態，後面若要接「反彈」必須寫成 be faced **with** a backlash（此處沒有 with，且句子已有受詞，故不合）；(B) 的現在完成式也與明確的過去時間 last year 衝突。選項 (D) to face 是不定詞，本句缺的是主要動詞，不定詞無法單獨擔任主要動詞。
+標籤: 語態, 時態
+
+## Q111
+
+As a branch manager, Mr. Finley finds resolving staff conflicts \_\_ of his duties.
+
+(A) difficult
+(B) more difficult
+(C) the most difficult
+(D) difficultly
+
+答案：C
+解析：句意是「身為分店經理，Finley 先生認為排解員工之間的衝突是他所有職責中最困難的一項。」這題測驗形容詞的級數。句型是 find + 受詞 + 受詞補語（find A B，覺得 A 是 B），空格要填形容詞當補語；關鍵線索是空格後方的「of his duties」（在他的職責當中），表示是在一個群體（三者以上）之中做比較，這正是最高級的使用時機，且最高級前面必須加定冠詞 the，因此 (C) the most difficult 完全符合。選項 (A) difficult 是原級，無法表達「當中最⋯⋯」的比較語意；(B) more difficult 是比較級，只能用於兩者相比且通常搭配 than；(D) difficultly 是副詞，不能當受詞補語修飾前面的動名詞片語。
+標籤: 比較級, 最高級
+
+## Q112
+
+The dinner plates and utensils manufactured by Tessio are suitable for any \_\_\_.
+
+(A) leisure
+(B) occasion
+(C) performance
+(D) effect
+
+答案：B
+解析：句意是「Tessio 所生產的餐盤與餐具適用於任何場合。」這題測驗名詞的字彙語意與慣用搭配。空格前是 any，後面要接一個能與「餐盤、餐具」的使用情境合理搭配的名詞；(B) occasion 意為「場合、時機」，「suitable for any occasion」（適合任何場合）是描述商品用途時極常見的固定說法，無論是日常用餐或正式宴會都適用，語意最通順。選項 (A) leisure 指「閒暇、休閒時間」，是抽象的時間概念，不能用來指稱使用餐具的場合；(C) performance 指「表演、績效表現」；(D) effect 指「效果、影響」，這兩者與餐具的適用情境完全搭不上，因此 (B) 是唯一正確的答案。
+標籤: 字彙, 名詞
