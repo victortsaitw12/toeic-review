@@ -34,7 +34,9 @@ def bump_version():
     import datetime
     VERSION_TXT.write_text(datetime.datetime.now().strftime('%Y%m%d%H%M%S'), encoding='utf-8')
 
-OPT_RE = re.compile(r'^[-*]?\s*\(?([A-E])[.)、）]?\s+(.+?)\s*$')
+# 選項標記必須有括號或標點（(A) / A. / A) / A、），不接受裸的「A xxx」，
+# 否則以冠詞 A 開頭的題幹（A photography exhibition …）會被誤判成選項 A
+OPT_RE = re.compile(r'^[-*]?\s*(?:\(\s*([A-E])\s*\)|([A-E])\s*[.)、）])\s+(.+?)\s*$')
 ANS_RE = re.compile(r'^答案\s*[:：]\s*\(?([A-E])\)?\s*$')
 EXP_RE = re.compile(r'^解析\s*[:：]\s*(.*)$')
 TAG_RE = re.compile(r'^標籤\s*[:：]\s*(.*)$')
@@ -110,11 +112,13 @@ def parse_file(path, out, warns):
             cur['in_exp'] = False
             continue
         m = OPT_RE.match(line)
-        if m and (cur['opts'] or not cur['qlines'] or m.group(1) == 'A'):
+        if m:
+            letter = m.group(1) or m.group(2)
+        if m and (cur['opts'] or not cur['qlines'] or letter == 'A'):
             # 選項需從 A 開始連續出現，避免把題目裡的 "(a) ..." 誤判成選項
             expect = chr(ord('A') + len(cur['opts']))
-            if m.group(1) == expect:
-                cur['opts'].append(m.group(2))
+            if letter == expect:
+                cur['opts'].append(m.group(3))
                 cur['in_exp'] = False
                 continue
         if not line:

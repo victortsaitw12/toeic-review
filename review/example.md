@@ -183,3 +183,44 @@ The e-mail sent by Mr. Duchene at Laudner Holdings is **\_\_** Ms. Coleman was w
 答案：B
 解析：句意是「Laudner 控股公司的 Duchene 先生所寄來的那封電子郵件，正是 Coleman 女士一直在等的東西。」在這個句子中，be 動詞 "is" 的後面需要一個名詞性的結構來作為主詞補語，同時後方 "waiting for" 的介系詞 "for" 也缺少了受詞。選項 (B) what 作為複合關係代名詞，本身就隱含了先行詞，其功能等同於 "the thing that"（那個事物），填入後所形成的 "what Ms. Coleman was waiting for" 完美解決了前後兩端的文法需求。選項 (A) who 用來指稱人，(C) how 指的是方式，(D) when 則是指時間，這三者在語意上都無法用來代指前面提到的「電子郵件（the e-mail）」。
 標籤: 關係代名詞
+
+# 國學閱讀綠本 第三回合
+
+## Q103
+
+Ms. Conner did not win the Employee of the Year Award because a colleague's sales record was better than \_\_\_.
+
+(A) hers
+(B) herself
+(C) her
+(D) she
+
+答案：A
+解析：句意是「Conner 沒有贏得年度最佳員工獎，因為一位同事的銷售紀錄比她的還要好。」這題測驗的是比較級結構中的「平行對稱」原則。在 "better than" 的前後，比較的對象必須一致：前面是 "a colleague's sales record"（同事的銷售紀錄），後面也必須是「她的銷售紀錄」。為了避免重複寫出 "sales record"，這裡必須使用所有格代名詞 (A) hers，它就等於 "her sales record"。其他選項的詞性皆不符：(B) herself 為反身代名詞；(C) her 若作所有格必須緊接名詞；(D) she 為主格。
+標籤: 代名詞
+
+## Q108
+
+A photography exhibition entitled The Awakening is currently \_\_\_ in the Pulsen Gallery's main hall.
+
+(A) expressed
+(B) transformed
+(C) displayed
+(D) reflected
+
+答案：C
+解析：句意是「一場名為《覺醒》的攝影展目前正在 Pulsen 藝廊的大廳展出。」這題測驗的是動詞單字在被動語態中的語意搭配。主詞是「攝影展 (photography exhibition)」，配合藝廊 (gallery) 的情境，最符合邏輯的動作是「被展出」。因此，填入 (C) displayed 形成 "is currently displayed"（目前正被展出）是唯一正確的選擇。其他選項：(A) expressed（被表達）、(B) transformed（被轉換）、(D) reflected（被反映／反射），在語意上都無法與攝影展合理搭配。
+標籤: 字彙, 語態
+
+## Q109
+
+The municipal government has promised that it will take \_\_\_ to reduce downtown traffic.
+
+(A) acting
+(B) action
+(C) activation
+(D) activists
+
+答案：B
+解析：句意是「市政府已承諾將採取行動來減少市中心的交通流量。」這題測驗的是名詞的慣用搭配（collocation）。「採取行動」在英文中的固定用法是 take action，此處的 action 作為不可數名詞使用，前面不加冠詞。其他選項：(A) acting 是動名詞或指「演戲、表演」，無法與 take 搭配成「採取行動」；(C) activation 意為「啟動、活化」，多用於機器或系統的啟用，語意不符；(D) activists 指「（社會運動）行動主義者、激進份子」，是指人的可數名詞，填入後語意變成「政府會帶走激進份子」，不合邏輯。
+標籤: 名詞, 固定搭配
