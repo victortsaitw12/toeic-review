@@ -263,3 +263,55 @@ The dinner plates and utensils manufactured by Tessio are suitable for any \_\_\
 答案：B
 解析：句意是「Tessio 所生產的餐盤與餐具適用於任何場合。」這題測驗名詞的字彙語意與慣用搭配。空格前是 any，後面要接一個能與「餐盤、餐具」的使用情境合理搭配的名詞；(B) occasion 意為「場合、時機」，「suitable for any occasion」（適合任何場合）是描述商品用途時極常見的固定說法，無論是日常用餐或正式宴會都適用，語意最通順。選項 (A) leisure 指「閒暇、休閒時間」，是抽象的時間概念，不能用來指稱使用餐具的場合；(C) performance 指「表演、績效表現」；(D) effect 指「效果、影響」，這兩者與餐具的適用情境完全搭不上，因此 (B) 是唯一正確的答案。
 標籤: 字彙, 名詞
+
+## Q115
+
+The manager decided to provide the employees with additional training, \_\_\_ their weaknesses.
+
+(A) addressing
+(B) addressed
+(C) address
+(D) addresses
+
+答案：A
+解析：句意是「經理決定為員工提供額外的訓練，以改善（處理）他們的弱點。」這題測驗分詞構句。逗號前面「The manager decided to provide...」已經是一個結構完整的句子（有主詞 The manager、有主要動詞 decided），逗號後方沒有連接詞，所以空格處不能再放一個有時態的動詞，必須改用分詞來引導附屬的分詞構句。判斷用現在分詞還是過去分詞的關鍵在於主動被動：句子隱含的主詞是前面的 the manager／the training，而空格後方還有受詞 "their weaknesses"，是「主動去處理弱點」，因此要用現在分詞 (A) addressing。選項 (B) addressed 是過去分詞，表被動且後面不該再帶受詞；(C) address 與 (D) addresses 都是限定動詞，在沒有連接詞的情況下會造成兩個主要動詞並列的錯誤句構。
+標籤: 分詞構句, 現在分詞
+
+## Q119
+
+Although Mr. Miller had been given clear directions to the conference venue, he drove right \_\_\_ it.
+
+(A) toward
+(B) over
+(C) past
+(D) out
+
+答案：C
+解析：句意是「儘管 Miller 先生已經拿到前往會議場地的清楚路線指示，他還是開車直接開過（錯過）了會場。」這題測驗介系詞的語意，並注意 Although 帶出的「語意逆轉」：既然前半句說他有清楚的指示，後半句就應該是出乎意料的負面結果，也就是「錯過了地點」。介系詞 (C) past 表示「經過、越過（某個定點）」，drive past it 正是「開車經過它而沒停下」，完全符合這個轉折語意。選項 (A) toward 表示「朝⋯⋯方向」，會變成順利往會場前進，與 Although 的轉折衝突；(B) over 表示「從上方越過」，不符合開車經過地面定點的情境；(D) out 是副詞，後面不能直接接受詞 it（要寫成 drove out of it 才成立）。另外 right 在此是加強語氣的副詞，表示「就這樣直接⋯⋯」，也是 right past 的常見搭配。
+標籤: 介系詞
+
+## Q121
+
+New recruits are required to join a training course \_\_\_ they have relevant work experience.
+
+(A) in spite of
+(B) even if
+(C) as though
+(D) in case
+
+答案：B
+解析：句意是「即使新進人員已具備相關工作經驗，還是必須參加訓練課程。」這題測驗副詞子句連接詞的語意與詞性。空格後方是完整的句子（主詞 they ＋動詞 have ＋受詞），所以空格必須填「連接詞」而非介系詞，這一點就先刪掉 (A) in spite of（片語介系詞，後面只能接名詞或動名詞，若要接子句得改成 in spite of the fact that）。剩下三個連接詞中，前後兩句是「有經驗」對「仍須受訓」的讓步轉折關係，因此 (B) even if（即使、就算）最貼切。選項 (C) as though 意為「好像、彷彿」，用於與事實不符的比喻；(D) in case 意為「以防萬一」，表預防目的，兩者填入後語意都不合邏輯。
+標籤: 連接詞, 讓步
+
+## Q122
+
+All the team members will be traveling together aside from Ms. Bateman, who will be flying out \_\_\_ tomorrow.
+
+(A) physically
+(B) partially
+(C) separately
+(D) commonly
+
+答案：C
+解析：句意是「除了 Bateman 女士以外，所有團隊成員都會一起出發；她明天將會單獨（分開）搭機前往。」這題測驗副詞的字彙語意。判斷關鍵在前半句的對比線索：「will be traveling together aside from Ms. Bateman」（除了 Bateman 女士外都一起走），因此她的情況必然是「與大家分開、單獨行動」，(C) separately（分開地、各自地）正好與 together 形成對比。選項 (A) physically 指「身體上、實際上」，(B) partially 指「部分地」，(D) commonly 指「普遍地、常見地」，這三個副詞都無法用來描述與團隊分開行動的方式，因此 (C) 是唯一正確的答案。
+標籤: 字彙, 副詞
