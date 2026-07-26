@@ -315,3 +315,68 @@ All the team members will be traveling together aside from Ms. Bateman, who will
 答案：C
 解析：句意是「除了 Bateman 女士以外，所有團隊成員都會一起出發；她明天將會單獨（分開）搭機前往。」這題測驗副詞的字彙語意。判斷關鍵在前半句的對比線索：「will be traveling together aside from Ms. Bateman」（除了 Bateman 女士外都一起走），因此她的情況必然是「與大家分開、單獨行動」，(C) separately（分開地、各自地）正好與 together 形成對比。選項 (A) physically 指「身體上、實際上」，(B) partially 指「部分地」，(D) commonly 指「普遍地、常見地」，這三個副詞都無法用來描述與團隊分開行動的方式，因此 (C) 是唯一正確的答案。
 標籤: 字彙, 副詞
+
+## Q124
+
+A company that adopts telecommuting practices allows its staff members to work \_\_\_ their location.
+
+(A) regardless of
+(B) rather than
+(C) on behalf of
+(D) in exchange for
+
+答案：A
+解析：句意是「採行遠距工作制度的公司，允許員工不論身在何處都能工作。」這題測驗片語介系詞的語意。空格後方是名詞片語 "their location"（他們的所在地），四個選項都是可接名詞的片語介系詞，所以要靠語意判斷：遠距工作（telecommuting）的核心精神就是「不受地點限制」，因此 (A) regardless of（不論、無論⋯⋯如何）最符合邏輯。選項 (B) rather than（而不是）用於兩者取捨對比；(C) on behalf of（代表某人）用於代理身分；(D) in exchange for（以⋯⋯作為交換）表示交換條件，這三者填入後語意都不通。
+標籤: 介系詞, 片語介系詞
+
+## Q126
+
+Ms. Turner downloaded a free trial version of the program \_\_\_ she could test its features.
+
+(A) as if
+(B) so that
+(C) in order to
+(D) because of
+
+答案：B
+解析：句意是「Turner 女士下載了這個程式的免費試用版，以便測試它的各項功能。」判斷關鍵先看空格後方的結構：「she could test its features」是一個完整的句子（主詞 she ＋動詞 could test），所以空格必須是能引導子句的副詞子句連接詞。(C) in order to 後面只能接原形動詞（in order to test），(D) because of 是片語介系詞只能接名詞或動名詞，兩者詞性上就先出局。剩下的 (A) as if 意為「彷彿、好像」，用於與事實不符的假設，語意不合；(B) so that（以便、為了）正好表達下載試用版的目的，且常與 can／could／may 等助動詞連用，因此是正確答案。
+標籤: 連接詞, 目的
+
+## Q128
+
+For the next group project, students are free to team up with \_\_\_ they want.
+
+(A) whomever
+(B) which
+(C) however
+(D) whatever
+
+答案：A
+解析：句意是「下一個小組專題，學生可以自由地與任何他們想要的人組隊。」這題測驗複合關係代名詞。空格前是介系詞 with，需要一個名詞性的結構當受詞；同時空格後方「they want」的動詞 want 也缺少受詞，這種前後都缺受詞的情況要用複合關係代名詞（本身含先行詞，等於 anyone whom）。因為組隊的對象是「人」，且在子句中擔任 want 的受詞，所以要用受格的 (A) whomever（＝anyone whom，任何⋯⋯的人）。選項 (B) which 是一般關係代名詞，不含先行詞、也不能直接放在介系詞後獨立使用；(C) however 是副詞（無論如何），不能當受詞；(D) whatever 雖然也是複合關係代名詞，但指「事物」而非人，與 team up with（與某人組隊）的語意不符。
+標籤: 關係代名詞, 複合關係代名詞
+
+## Q129
+
+If politicians fail to follow through on their promises, they lose credibility and their reputations \_\_\_.
+
+(A) injure
+(B) reject
+(C) endure
+(D) suffer
+
+答案：D
+解析：句意是「如果政治人物未能履行承諾，他們會失去公信力，名聲也會受損。」這題測驗動詞的字彙語意與及物性。空格是 and 後面「their reputations \_\_\_」這個子句的動詞，而空格後沒有受詞，所以必須選一個能作不及物動詞、且主詞是「名聲」時語意通順的字。(D) suffer 作不及物動詞時意為「受損、變差、受苦」，"their reputations suffer"（名聲受損）是道地且常見的說法。選項 (A) injure（使受傷）與 (B) reject（拒絕）都是及物動詞，後面必須接受詞，且語意上名聲不會主動去傷害或拒絕什麼；(C) endure 意為「忍受」（及物）或「持續存在」（不及物），若解作「名聲持續下去」會與前半句「失去公信力」的負面語意矛盾。
+標籤: 字彙, 動詞
+
+## Q130
+
+\_\_\_ at work frequently is unprofessional, and it also makes coworkers feel uncomfortable.
+
+(A) Complained
+(B) Complaint
+(C) Complain
+(D) Complaining
+
+答案：D
+解析：句意是「在工作場合經常抱怨是不專業的，而且也會讓同事感到不舒服。」這題測驗動名詞當主詞的用法。句子的主要動詞是 is，前面缺少主詞，所以空格要填一個具名詞功能的字；再加上空格後方有副詞 frequently（經常）修飾，而副詞只能修飾動詞性質的結構，因此答案必須是兼具名詞與動詞性質的動名詞 (D) Complaining（抱怨這件事），動名詞作主詞視為單數，與 is 一致。選項 (C) Complain 是原形動詞，會使句子變成無主詞的命令句而與後面的 is 衝突；(A) Complained 是過去式／過去分詞，同樣不能當主詞；(B) Complaint 雖是名詞，但它是可數名詞，單獨使用必須加冠詞或改成複數（a complaint／complaints），而且名詞不能被副詞 frequently 修飾。
+標籤: 動名詞, 主詞
