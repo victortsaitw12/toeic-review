@@ -2,7 +2,7 @@
 
 ## Q106
 
-**\_\_** workers find in the concert hall will remain in the lost and found center for only one week.
+______ workers find in the concert hall will remain in the lost and found center for only one week.
 
 - (A) Few
 - (B) Several
@@ -15,7 +15,7 @@
 
 ## Q118
 
-The company shifted **\_\_** from its old business model to a fully digital one.
+The company shifted ______ from its old business model to a fully digital one.
 
 - (A) radicalizing
 - (B) radically
@@ -28,7 +28,7 @@ The company shifted **\_\_** from its old business model to a fully digital one.
 
 ## Q125
 
-Member of the loyalty program may take advantage of discount offers **\_\_** earn points for their purchases.
+Member of the loyalty program may take advantage of discount offers ______ earn points for their purchases.
 
 - (A) in case
 - (B) so that
@@ -41,7 +41,7 @@ Member of the loyalty program may take advantage of discount offers **\_\_** ear
 
 ## Q127
 
-**\_\_** all the cities that the pop singer visited during her recent world tour, Seoul was her favorite.
+______ all the cities that the pop singer visited during her recent world tour, Seoul was her favorite.
 
 - (A) Of
 - (B) About
@@ -56,7 +56,7 @@ Member of the loyalty program may take advantage of discount offers **\_\_** ear
 
 ## Q101
 
-The interns will work **\_\_** the direction of the research department manager.
+The interns will work ______ the direction of the research department manager.
 
 - (A) beyond
 - (B) among
@@ -69,7 +69,7 @@ The interns will work **\_\_** the direction of the research department manager.
 
 ## Q103
 
-The directors of PenTex are meeting with executives from DRW Corporation, which **\_\_** have talked about merging with.
+The directors of PenTex are meeting with executives from DRW Corporation, which ______ have talked about merging with.
 
 - (A) them
 - (B) themselves
@@ -77,12 +77,12 @@ The directors of PenTex are meeting with executives from DRW Corporation, which 
 - (D) they
 
 答案：D
-解析：句意是「PenTex 的董事們正與 DRW 公司的各高層主管開會，他們曾經討論過要與該公司合併。」在這個句子中，逗號後面的 "which \_\_ have talked about merging with" 是一個非限定關係子句，當中的 which 作為關係代名詞，代替前面提到的 DRW Corporation。而在這個關係子句裡，"have talked" 是動詞片語，因此空格處需要填入一個主格代名詞來作為子句的主詞。根據上下文邏輯，討論合併的主體是前面提過的「PenTex 的董事們（The directors）」，因為是複數名詞，所以必須使用複數的主格代名詞(D) they 來代替。選項 (A) them 是受格，(B) themselves 是反身代名詞，(C) their 是所有格，這三者在文法上都不能直接放在動詞前當作主詞。
+解析：句意是「PenTex 的董事們正與 DRW 公司的各高層主管開會，他們曾經討論過要與該公司合併。」在這個句子中，逗號後面的 "which ______ have talked about merging with" 是一個非限定關係子句，當中的 which 作為關係代名詞，代替前面提到的 DRW Corporation。而在這個關係子句裡，"have talked" 是動詞片語，因此空格處需要填入一個主格代名詞來作為子句的主詞。根據上下文邏輯，討論合併的主體是前面提過的「PenTex 的董事們（The directors）」，因為是複數名詞，所以必須使用複數的主格代名詞(D) they 來代替。選項 (A) them 是受格，(B) themselves 是反身代名詞，(C) their 是所有格，這三者在文法上都不能直接放在動詞前當作主詞。
 標籤: 代名詞
 
 ## Q109
 
-Arrow Publicity produced a campaign that is designed to **\_\_** audiences between the ages of 18 and 25.
+Arrow Publicity produced a campaign that is designed to ______ audiences between the ages of 18 and 25.
 
 - (A) appeal to
 - (B) approve of
@@ -95,7 +95,7 @@ Arrow Publicity produced a campaign that is designed to **\_\_** audiences betwe
 
 ## Q110
 
-The company will provide training to new recruits, so neither experience **\_\_** a degree is required.
+The company will provide training to new recruits, so neither experience ______ a degree is required.
 
 - (A) and
 - (B) but
@@ -108,7 +108,7 @@ The company will provide training to new recruits, so neither experience **\_\_*
 
 ## Q112
 
-Employees will now be offered the **\_\_** of working from home for up to half of their weekly hours.
+Employees will now be offered the ______ of working from home for up to half of their weekly hours.
 
 - (A) benefit
 - (B) benefited
@@ -121,7 +121,7 @@ Employees will now be offered the **\_\_** of working from home for up to half o
 
 ## Q113
 
-Knoll Consulting tries to hire staff **\_\_** personal values match the company's.
+Knoll Consulting tries to hire staff ______ personal values match the company's.
 
 - (A) whom
 - (B) which
@@ -134,7 +134,7 @@ Knoll Consulting tries to hire staff **\_\_** personal values match the company'
 
 ## Q117
 
-Housing costs in New York are far higher than **\_\_** in its neighboring state, New Jersey.
+Housing costs in New York are far higher than ______ in its neighboring state, New Jersey.
 
 - (A) anyone
 - (B) other
@@ -147,7 +147,7 @@ Housing costs in New York are far higher than **\_\_** in its neighboring state,
 
 ## Q120
 
-Having made a reservation, Mr. Quinn and his colleagues were seated immediately **\_\_** arriving at the restaurant.
+Having made a reservation, Mr. Quinn and his colleagues were seated immediately ______ arriving at the restaurant.
 
 - (A) up
 - (B) in
@@ -160,7 +160,7 @@ Having made a reservation, Mr. Quinn and his colleagues were seated immediately 
 
 ## Q122
 
-During her first year as editor-in-chief, Ms. Reed expanded The National Gazette's **\_\_** to over 250,000.
+During her first year as editor-in-chief, Ms. Reed expanded The National Gazette's ______ to over 250,000.
 
 - (A) Read
 - (B) Readers
@@ -173,7 +173,7 @@ During her first year as editor-in-chief, Ms. Reed expanded The National Gazette
 
 ## Q125
 
-The e-mail sent by Mr. Duchene at Laudner Holdings is **\_\_** Ms. Coleman was waiting for.
+The e-mail sent by Mr. Duchene at Laudner Holdings is ______ Ms. Coleman was waiting for.
 
 - (A) who
 - (B) what
@@ -188,7 +188,7 @@ The e-mail sent by Mr. Duchene at Laudner Holdings is **\_\_** Ms. Coleman was w
 
 ## Q103
 
-Ms. Conner did not win the Employee of the Year Award because a colleague's sales record was better than \_\_\_.
+Ms. Conner did not win the Employee of the Year Award because a colleague's sales record was better than ______.
 
 (A) hers
 (B) herself
@@ -201,7 +201,7 @@ Ms. Conner did not win the Employee of the Year Award because a colleague's sale
 
 ## Q108
 
-A photography exhibition entitled The Awakening is currently \_\_\_ in the Pulsen Gallery's main hall.
+A photography exhibition entitled The Awakening is currently ______ in the Pulsen Gallery's main hall.
 
 (A) expressed
 (B) transformed
@@ -214,7 +214,7 @@ A photography exhibition entitled The Awakening is currently \_\_\_ in the Pulse
 
 ## Q109
 
-The municipal government has promised that it will take \_\_\_ to reduce downtown traffic.
+The municipal government has promised that it will take ______ to reduce downtown traffic.
 
 (A) acting
 (B) action
@@ -227,7 +227,7 @@ The municipal government has promised that it will take \_\_\_ to reduce downtow
 
 ## Q110
 
-Soft drink manufacturer Fizz Life \_\_\_ a backlash from customers after changing its recipe for Ricochet Cola last year.
+Soft drink manufacturer Fizz Life ______ a backlash from customers after changing its recipe for Ricochet Cola last year.
 
 (A) was faced
 (B) has been faced
@@ -240,7 +240,7 @@ Soft drink manufacturer Fizz Life \_\_\_ a backlash from customers after changin
 
 ## Q111
 
-As a branch manager, Mr. Finley finds resolving staff conflicts \_\_ of his duties.
+As a branch manager, Mr. Finley finds resolving staff conflicts ______ of his duties.
 
 (A) difficult
 (B) more difficult
@@ -253,7 +253,7 @@ As a branch manager, Mr. Finley finds resolving staff conflicts \_\_ of his duti
 
 ## Q112
 
-The dinner plates and utensils manufactured by Tessio are suitable for any \_\_\_.
+The dinner plates and utensils manufactured by Tessio are suitable for any ______.
 
 (A) leisure
 (B) occasion
@@ -266,7 +266,7 @@ The dinner plates and utensils manufactured by Tessio are suitable for any \_\_\
 
 ## Q115
 
-The manager decided to provide the employees with additional training, \_\_\_ their weaknesses.
+The manager decided to provide the employees with additional training, ______ their weaknesses.
 
 (A) addressing
 (B) addressed
@@ -279,7 +279,7 @@ The manager decided to provide the employees with additional training, \_\_\_ th
 
 ## Q119
 
-Although Mr. Miller had been given clear directions to the conference venue, he drove right \_\_\_ it.
+Although Mr. Miller had been given clear directions to the conference venue, he drove right ______ it.
 
 (A) toward
 (B) over
@@ -292,7 +292,7 @@ Although Mr. Miller had been given clear directions to the conference venue, he 
 
 ## Q121
 
-New recruits are required to join a training course \_\_\_ they have relevant work experience.
+New recruits are required to join a training course ______ they have relevant work experience.
 
 (A) in spite of
 (B) even if
@@ -305,7 +305,7 @@ New recruits are required to join a training course \_\_\_ they have relevant wo
 
 ## Q122
 
-All the team members will be traveling together aside from Ms. Bateman, who will be flying out \_\_\_ tomorrow.
+All the team members will be traveling together aside from Ms. Bateman, who will be flying out ______ tomorrow.
 
 (A) physically
 (B) partially
@@ -318,7 +318,7 @@ All the team members will be traveling together aside from Ms. Bateman, who will
 
 ## Q124
 
-A company that adopts telecommuting practices allows its staff members to work \_\_\_ their location.
+A company that adopts telecommuting practices allows its staff members to work ______ their location.
 
 (A) regardless of
 (B) rather than
@@ -331,7 +331,7 @@ A company that adopts telecommuting practices allows its staff members to work \
 
 ## Q126
 
-Ms. Turner downloaded a free trial version of the program \_\_\_ she could test its features.
+Ms. Turner downloaded a free trial version of the program ______ she could test its features.
 
 (A) as if
 (B) so that
@@ -344,7 +344,7 @@ Ms. Turner downloaded a free trial version of the program \_\_\_ she could test 
 
 ## Q128
 
-For the next group project, students are free to team up with \_\_\_ they want.
+For the next group project, students are free to team up with ______ they want.
 
 (A) whomever
 (B) which
@@ -357,7 +357,7 @@ For the next group project, students are free to team up with \_\_\_ they want.
 
 ## Q129
 
-If politicians fail to follow through on their promises, they lose credibility and their reputations \_\_\_.
+If politicians fail to follow through on their promises, they lose credibility and their reputations ______.
 
 (A) injure
 (B) reject
@@ -365,12 +365,12 @@ If politicians fail to follow through on their promises, they lose credibility a
 (D) suffer
 
 答案：D
-解析：句意是「如果政治人物未能履行承諾，他們會失去公信力，名聲也會受損。」這題測驗動詞的字彙語意與及物性。空格是 and 後面「their reputations \_\_\_」這個子句的動詞，而空格後沒有受詞，所以必須選一個能作不及物動詞、且主詞是「名聲」時語意通順的字。(D) suffer 作不及物動詞時意為「受損、變差、受苦」，"their reputations suffer"（名聲受損）是道地且常見的說法。選項 (A) injure（使受傷）與 (B) reject（拒絕）都是及物動詞，後面必須接受詞，且語意上名聲不會主動去傷害或拒絕什麼；(C) endure 意為「忍受」（及物）或「持續存在」（不及物），若解作「名聲持續下去」會與前半句「失去公信力」的負面語意矛盾。
+解析：句意是「如果政治人物未能履行承諾，他們會失去公信力，名聲也會受損。」這題測驗動詞的字彙語意與及物性。空格是 and 後面「their reputations ______」這個子句的動詞，而空格後沒有受詞，所以必須選一個能作不及物動詞、且主詞是「名聲」時語意通順的字。(D) suffer 作不及物動詞時意為「受損、變差、受苦」，"their reputations suffer"（名聲受損）是道地且常見的說法。選項 (A) injure（使受傷）與 (B) reject（拒絕）都是及物動詞，後面必須接受詞，且語意上名聲不會主動去傷害或拒絕什麼；(C) endure 意為「忍受」（及物）或「持續存在」（不及物），若解作「名聲持續下去」會與前半句「失去公信力」的負面語意矛盾。
 標籤: 字彙, 動詞
 
 ## Q130
 
-\_\_\_ at work frequently is unprofessional, and it also makes coworkers feel uncomfortable.
+______ at work frequently is unprofessional, and it also makes coworkers feel uncomfortable.
 
 (A) Complained
 (B) Complaint

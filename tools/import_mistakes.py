@@ -42,11 +42,26 @@ EXP_RE = re.compile(r'^解析\s*[:：]\s*(.*)$')
 TAG_RE = re.compile(r'^標籤\s*[:：]\s*(.*)$')
 
 
+BLANK_BOLD_RE = re.compile(r'\*\*(_{2,})\*\*')
+BLANK_RUN_RE = re.compile(r'_{2,}')
+
+
+def norm_blank(s):
+    """統一題目/選項/解析裡的空格寫法成 ______。
+
+    貼進來的題目常帶 markdown 跳脫或粗體（`\\_\\_`、`**\\_\\_**`、`___`），
+    但網站是用 esc() 原樣印字、不跑 markdown，那些符號會照字面顯示出來。
+    """
+    s = s.replace('\\_', '_')
+    s = BLANK_BOLD_RE.sub(r'\1', s)
+    return BLANK_RUN_RE.sub('______', s)
+
+
 def flush(cur, out, warns, fname):
     if cur is None:
         return
     label = f"{fname} {cur['src']}#{cur['no'] or '?'}"
-    q = ' '.join(cur['qlines']).strip()
+    q = norm_blank(' '.join(cur['qlines']).strip())
     if not q and not cur['opts']:
         return  # 空題（例如只有標題）
     if not q:
@@ -66,9 +81,9 @@ def flush(cur, out, warns, fname):
         return
     no = cur['no'] or hashlib.sha1(q.encode()).hexdigest()[:8]
     item = {'id': f"{cur['src']}#{no}", 'src': cur['src'], 'no': cur['no'] or '',
-            'q': q, 'opts': cur['opts'], 'ans': ai}
+            'q': q, 'opts': [norm_blank(o) for o in cur['opts']], 'ans': ai}
     if cur['exp']:
-        item['exp'] = ' '.join(cur['exp']).strip()
+        item['exp'] = norm_blank(' '.join(cur['exp']).strip())
     if cur['tags']:
         item['tags'] = cur['tags']
     out.append(item)
