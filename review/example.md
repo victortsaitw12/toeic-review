@@ -486,3 +486,395 @@ To sustain its competitive edge in the market, the company's success hinges crit
 答案：A
 解析：句意是「為了維持在市場上的競爭優勢，公司的成功關鍵取決於產品開發與行銷策略上的創新。」四個選項都是名詞，都能當介系詞 on 的受詞，所以這題比的是字彙語意。判斷關鍵在句首的目的 To sustain its competitive edge in the market（維持市場競爭優勢）以及空格後的範圍 in its product development and marketing strategies（在產品開發與行銷策略方面）——能讓產品與行銷持續領先對手的，就是不斷推陳出新的能力，因此 (A) innovation（創新）最符合，也與 competitive edge 形成商業文章中常見的因果搭配。(B) collaboration（協作）是本題的陷阱，它雖然是正面詞，但一般會搭配對象或部門（collaboration with partners／between teams），用來說明「在產品開發上」如何維持競爭優勢並不是最直接的關鍵。(C) stagnation（停滯）語意負面，與維持競爭優勢完全矛盾；(D) ambition（企圖心、抱負）指的是個人或組織的心理企圖，無法用來修飾具體的產品開發與行銷做法。
 標籤: 字彙, 名詞
+
+# PREPEDU 第二回合
+
+## Q101
+
+The board meeting has been postponed and will now be held \_\_\_ the first week of March.
+
+(A) during
+(B) while
+(C) as
+(D) until
+
+答案：A
+解析：句意是「董事會會議已延期，現在將於三月的第一週舉行。」這題測驗介系詞與連接詞的區別。空格後方的 the first week of March 是名詞片語，沒有主詞與動詞，所以空格只能填介系詞，而 (A) during（在⋯⋯期間）表示事件發生在某段時間之內，正好符合「在三月第一週舉行」的語意。(B) while 與 (C) as 都是副詞子句連接詞，後面必須接完整子句（while we are waiting／as the schedule changed）；(D) until 雖然也能當介系詞，但它表示動作持續到某個時間點為止，用在「開會」這種一次性事件上語意不通。
+標籤: 介系詞
+
+## Q102
+
+All employees are required to complete their annual training modules \_\_\_ the end of the fiscal year.
+
+(A) by
+(B) in
+(C) until
+(D) through
+
+答案：A
+解析：句意是「所有員工都必須在會計年度結束前完成年度訓練課程。」這題測驗表期限的介系詞。complete（完成）是一次性完成的動作，搭配最後期限要用 (A) by（不遲於、在⋯⋯之前），by the end of the fiscal year 表示只要在年度結束前完成即可。(C) until 是本題陷阱，它用於持續性的狀態或動作延續到某時間為止（The office is open until six.），不能搭配一次完成的 complete；(B) in 後面接一段時間或月份年份（in March／in two weeks），不與 the end of 搭配表期限；(D) through 強調「從頭到尾持續整段時間」，語意也不是期限。
+標籤: 介系詞, 期限
+
+## Q103
+
+The marketing team is looking for innovative ideas that can be easily \_\_\_ into the existing campaign.
+
+(A) integrates
+(B) integrating
+(C) integrated
+(D) integration
+
+答案：C
+解析：句意是「行銷團隊正在尋找能輕易融入現有行銷活動的創新想法。」判斷關鍵在空格前的 can be——助動詞 can 加上 be 之後接過去分詞，形成被動語態，而關係子句的主詞是先行詞 ideas（想法），想法是「被整合進活動裡」的一方，因此要用過去分詞 (C) integrated。(A) integrates 是第三人稱單數動詞、(D) integration 是名詞，都不能接在 be 之後構成這個結構；(B) integrating 接在 be 後面會變成進行式，語意成了「想法主動去整合別人」，與 into the existing campaign 的被動語意不符。
+標籤: 語態, 被動
+
+## Q104
+
+Due to unforeseen circumstances, the project deadline has been \_\_\_ to give the team additional time for completion.
+
+(A) extending
+(B) extended
+(C) extension
+(D) extend
+
+答案：B
+解析：句意是「由於突發狀況，專案期限已經延長，以便給團隊更多時間完成。」判斷關鍵在空格前的 has been——「has been + 過去分詞」是現在完成式的被動語態，而主詞 the project deadline（期限）是被延長的對象，因此要填過去分詞 (B) extended。(A) extending 會變成現在完成進行式，語意成了「期限主動在延長某物」，不合邏輯；(C) extension 是名詞；(D) extend 是原形動詞，兩者都不能接在 has been 之後。
+標籤: 語態, 時態
+
+## Q105
+
+Before we start the meeting, please go over the document I shared \_\_\_ your convenience.
+
+(A) by
+(B) on
+(C) at
+(D) with
+
+答案：C
+解析：句意是「開會前，請在您方便的時候看過我分享的那份文件。」這題考固定片語。at your convenience（在您方便的時候）是商務書信與職場對話的慣用說法，常再加強成 at your earliest convenience（請盡早）。其餘介系詞都無法與 convenience 搭配出這個意思：(A) by 表期限或方法，(B) on 表接觸面或日期，(D) with 表工具或伴隨，填入後都不成立。
+標籤: 介系詞, 慣用語
+
+## Q106
+
+The project team \_\_\_ on the new initiative since last month and is making significant progress.
+
+(A) has been working
+(B) works
+(C) worked
+(D) is working
+
+答案：A
+解析：句意是「專案團隊自上個月起就一直在推動這項新計畫，並且進展顯著。」判斷關鍵是時間標記 since last month（自上個月以來）——since 表示動作從過去某個時間點一直持續到現在，必須搭配現在完成式或現在完成進行式，因此 (A) has been working 正確，還能強調動作持續不斷。(B) works 是現在簡單式，講的是習慣或事實；(D) is working 是現在進行式，只描述此刻，兩者都不能與 since 連用；(C) worked 是過去式，表示動作已在過去結束，與後半句 is making significant progress（現在仍在進展）互相矛盾。
+標籤: 時態, 現在完成式
+
+## Q107
+
+This year's performance is \_\_\_ than last year's, indicating substantial growth.
+
+(A) better
+(B) best
+(C) good
+(D) well
+
+答案：A
+解析：句意是「今年的表現比去年更好，顯示出大幅的成長。」判斷關鍵在空格後方的 than——than 是比較級的標記，前面必須是比較級形式，因此要用 good 的比較級 (A) better。(B) best 是最高級，須搭配 the 且不與 than 連用；(C) good 是原級，只能用在 as good as 的同級比較；(D) well 是副詞（意為「良好地」或指身體健康），這裡空格接在 be 動詞後面用來描述主詞 performance，需要形容詞性質的補語，且它本身也不是比較級。
+標籤: 比較級
+
+## Q108
+
+The quarterly earnings report \_\_\_ published by the finance department next week.
+
+(A) was
+(B) has been
+(C) will be
+(D) is
+
+答案：C
+解析：句意是「季度財報將由財務部門在下週發布。」空格後的 published 是過去分詞，可知句子是被動語態，空格要填的是 be 動詞，而時態由句尾的時間副詞 next week（下週）決定，因此選 (C) will be，形成 will be published（將被發布）。(A) was 是過去式、(B) has been 是現在完成式，都與「下週」這個未來時間衝突；(D) is 是現在式，雖然現在簡單式偶爾能表既定行程，但那限於時刻表類的事件（The train leaves at six.），此處搭配 next week 仍以 will be 為標準答案。
+標籤: 時態, 語態
+
+## Q109
+
+If the client approves the proposal, the project \_\_\_ by the end of the month.
+
+(A) starts
+(B) would start
+(C) will start
+(D) started
+
+答案：C
+解析：句意是「如果客戶批准這份提案，專案將在月底前啟動。」這題測驗第一類條件句（描述有可能發生的未來）。公式是「If + 現在簡單式，主要子句用 will + 原形動詞」；題目的 if 子句已經用了現在式 approves，所以主要子句要用 (C) will start。(A) starts 是現在式，不用在主要子句表未來結果；(B) would start 屬於與現在事實相反的第二類條件句，若要用它，if 子句得改成過去式 approved；(D) started 是過去式，與 by the end of the month 的未來時間不合。
+標籤: 條件句, 時態
+
+## Q110
+
+The team worked \_\_\_ to complete the project before the deadline.
+
+(A) hard
+(B) hardly
+(C) harder
+(D) hardest
+
+答案：A
+解析：句意是「團隊努力工作，以便在期限前完成專案。」空格要修飾前面的動詞 worked，需要副詞，而 (A) hard 本身既是形容詞也是副詞，work hard（努力工作）是固定搭配。本題最大的陷阱是 (B) hardly：它雖然有 -ly 字尾，意思卻不是「努力地」而是「幾乎不」（He hardly worked. 他幾乎沒在工作），語意完全相反。(C) harder 是比較級、(D) hardest 是最高級，句中既沒有比較對象也沒有 the，都不適用。
+標籤: 副詞, 字彙
+
+## Q111
+
+We need to order \_\_\_ chairs for the new conference room.
+
+(A) much
+(B) little
+(C) few
+(D) many
+
+答案：D
+解析：句意是「我們需要為新的會議室訂購許多椅子。」這題測驗數量詞與名詞可數性的搭配。chairs 是可數名詞的複數，而且語意上是「為新會議室添購一批」，因此要用修飾可數複數、表示「許多」的 (D) many。(A) much 只能修飾不可數名詞（much water）；(B) little 同樣修飾不可數名詞，且意為「很少」；(C) few 雖然可以修飾可數複數，但意思是「很少、幾乎沒有」，與訂購椅子布置新會議室的語意不合。
+標籤: 數量詞
+
+## Q112
+
+The manager expects \_\_\_ the report by tomorrow.
+
+(A) submitting
+(B) submitted
+(C) to submit
+(D) submits
+
+答案：C
+解析：句意是「經理預期在明天之前提交這份報告。」這題測驗動詞後面該接哪種形式。expect 屬於接不定詞的動詞（expect to do something／expect someone to do something），因此選 (C) to submit。(A) submitting 是動名詞，不能直接當 expect 的受詞；(B) submitted 是過去式或過去分詞；(D) submits 是動詞，而句子已有主要動詞 expects，不能再並列一個限定動詞。
+標籤: 不定詞, 動狀詞
+
+## Q113
+
+She is looking forward \_\_\_ the team in the upcoming project.
+
+(A) to lead
+(B) to leading
+(C) lead
+(D) leading
+
+答案：B
+解析：句意是「她很期待在接下來的專案中帶領團隊。」關鍵在 look forward to 這個片語——當中的 to 是介系詞，不是不定詞的 to，所以後面必須接名詞或動名詞，因此答案是 (B) to leading。(A) to lead 正是本題陷阱，它誤把 to 當成不定詞；(C) lead 與 (D) leading 都漏掉了片語不可省略的 to。同類考點還有 be used to、object to、be committed to、look forward to，後面一律接 V-ing。
+標籤: 動名詞, 片語
+
+## Q114
+
+We can start the meeting as soon as the director \_\_\_.
+
+(A) arrives
+(B) will arrive
+(C) would arrive
+(D) arriving
+
+答案：A
+解析：句意是「主管一到，我們就可以開始會議。」as soon as 引導的是表時間的副詞子句，而英文文法規定時間與條件副詞子句「不用 will，改用現在簡單式代替未來」，因此選 (A) arrives。(B) will arrive 是本題陷阱，中文「將會到」很容易誘導人選它；(C) would arrive 是過去未來式，與主要子句的 can start 時態不合；(D) arriving 是分詞，會讓子句缺少限定動詞。
+標籤: 時態, 副詞子句
+
+## Q115
+
+The files are stored \_\_\_ the cloud for easy access.
+
+(A) in
+(B) within
+(C) at
+(D) by
+
+答案：A
+解析：句意是「檔案儲存在雲端，方便隨時取用。」這題考介系詞的慣用搭配。談到雲端儲存，英文固定說 in the cloud——把雲端視為一個容納資料的空間，因此選 (A) in。(B) within 雖然也表示「在⋯⋯之內」，但通常強調範圍或期限（within the company／within two days），不用於這個固定說法；(C) at 用於具體的地點或位置點；(D) by 表示方法或「在旁邊」，語意都不符。
+標籤: 介系詞
+
+## Q116
+
+Can you explain how \_\_\_ the new software?
+
+(A) to use
+(B) used
+(C) using
+(D) uses
+
+答案：A
+解析：句意是「你可以說明一下這個新軟體要怎麼使用嗎？」關鍵在疑問詞 how 之後的結構：「疑問詞 + to + 原形動詞」構成一個名詞片語（how to use＝使用的方法），可以直接當 explain 的受詞，因此選 (A) to use。(B) used、(C) using、(D) uses 都無法接在 how 後面組成這個名詞片語；若要改用子句，就必須補上主詞與助動詞（explain how I can use the new software）。
+標籤: 不定詞
+
+## Q117
+
+By the end of this year, the company \_\_\_ its 10th anniversary.
+
+(A) will celebrate
+(B) will have celebrated
+(C) celebrates
+(D) would have celebrated
+
+答案：B
+解析：句意是「到今年年底時，公司將已慶祝過創立十週年。」判斷關鍵是句首的 By the end of this year——「by + 未來時間點」表示動作會在那個時間之前完成，正是未來完成式的標記，因此選 (B) will have celebrated。(A) will celebrate 只是單純未來式，無法表達「在該時間點之前就已完成」；(C) celebrates 是現在式；(D) would have celebrated 是與過去事實相反的假設語氣，與未來的年底完全矛盾。
+標籤: 時態, 未來完成式
+
+## Q118
+
+If he \_\_\_ the job, he wouldn't be looking for a new one now.
+
+(A) liked
+(B) would like
+(C) had liked
+(D) likes
+
+答案：A
+解析：句意是「如果他喜歡這份工作，現在就不會在找新工作了。」這題測驗與現在事實相反的假設語氣。判斷關鍵是主要子句的 wouldn't be looking 以及時間副詞 now——「would + 原形動詞」的結果句所搭配的 if 子句必須用過去式，因此選 (A) liked。(D) likes 是現在式，那是單純條件句的用法（If he likes the job, he will stay.）；(C) had liked 是過去完成式，用於與過去事實相反的假設，結果句要改成 wouldn't have been looking；(B) would like 則犯了 would 不放進 if 子句的規則。
+標籤: 假設語氣
+
+## Q119
+
+The team's performance, \_\_\_ was exceptional, exceeded all expectations.
+
+(A) whose
+(B) who's
+(C) which
+(D) that
+
+答案：C
+解析：句意是「團隊的表現十分出色，超出了所有人的預期。」空格前有逗號，可知這是非限定關係子句，用來補充說明先行詞 The team's performance（事物），而子句 ______ was exceptional 缺少主詞，所以要用主格的關係代名詞 (C) which。(D) that 是本題陷阱——that 不能用在逗號後的非限定子句裡；(A) whose 是所有格，後面必須緊接名詞；(B) who's 是 who is 的縮寫，而且 who 只能指人。
+標籤: 關係代名詞, 非限定
+
+## Q120
+
+The project manager \_\_\_ the project timeline is known for his leadership skills.
+
+(A) who establish
+(B) establishing
+(C) to establish
+(D) established
+
+答案：B
+解析：句意是「負責制定專案時程的那位專案經理以領導能力著稱。」整句的主要動詞是後面的 is known，所以空格不能再放一個並列的主要動詞，而是要填一段修飾 The project manager 的後位修飾語。(B) establishing 是現在分詞，相當於省略關係代名詞的 who establishes（主動制定時程），修飾人合乎邏輯，因此正確。(A) who establish 結構雖然對，但先行詞 The project manager 是單數，動詞應為 establishes，主動詞一致性錯誤；(C) to establish 的不定詞在此會被解讀成「為了制定」的目的，語意不合；(D) established 是過去分詞，表被動（被制定），而經理不是被制定的對象。
+標籤: 分詞, 修飾
+
+## Q121
+
+The board demands that he \_\_\_ the report by tomorrow without fail.
+
+(A) submits
+(B) submit
+(C) submitted
+(D) shall submit
+
+答案：B
+解析：句意是「董事會要求他務必在明天前提交報告。」這題測驗表「要求、建議、命令、堅持」的動詞後面 that 子句的假設語氣。demand、request、suggest、insist、recommend、require 等字後面的 that 子句要用「(should) + 原形動詞」，而 should 通常省略，所以即使主詞是第三人稱單數也用原形 (B) submit。(A) submits 加了 s 就違反這條規則，正是本題陷阱；(C) submitted 是過去式，與 by tomorrow 也矛盾；(D) shall submit 的 shall 不用於這個結構。
+標籤: 假設語氣, 動詞原形
+
+## Q122
+
+Mr. Sims needs a more \_\_\_ car for traveling from his suburban home to his office downtown.
+
+(A) decorative
+(B) reliable
+(C) occasional
+(D) adventurous
+
+答案：B
+解析：句意是「Sims 先生需要一輛更可靠的車，好從郊區的家通勤到市區的辦公室。」四個選項都是形容詞，所以這題比的是語意。判斷關鍵在 for traveling from his suburban home to his office downtown（每天長距離通勤）——通勤最在意的就是車子不會出狀況，因此 (B) reliable（可靠的、不易故障的）最貼切。(A) decorative（裝飾性的）與通勤需求無關；(C) occasional（偶爾的）用來修飾頻率，不能形容車；(D) adventurous（愛冒險的）是形容人的性格，都不合邏輯。
+標籤: 字彙, 形容詞
+
+## Q123
+
+The company has made significant advancements \_\_\_ the field of renewable energy.
+
+(A) in
+(B) into
+(C) onto
+(D) around
+
+答案：A
+解析：句意是「該公司在再生能源領域取得了重大進展。」這題考介系詞與名詞的固定搭配：表達「在某個領域」時用 in the field of...，而 make advancements／progress in + 領域 也是常見組合，因此選 (A) in。(B) into 表示進入內部的移動方向；(C) onto 表示移動到某個表面上；(D) around 表示環繞或「大約」，三者都無法與 the field 搭配表示「在某領域中」。
+標籤: 介系詞
+
+## Q124
+
+The employees are \_\_\_ with the new health benefits plan.
+
+(A) satisfying
+(B) satisfied
+(C) satisfy
+(D) satisfies
+
+答案：B
+解析：句意是「員工們對新的健康福利方案感到滿意。」這題測驗情緒動詞的分詞用法：修飾「感受到情緒的人」用過去分詞，修飾「引發情緒的事物」用現在分詞。這裡主詞是 The employees（人），是感到滿意的一方，因此用 (B) satisfied，而且 be satisfied with 是固定搭配（介系詞用 with，不用 by）。(A) satisfying 意為「令人滿意的」，是用來形容方案本身（The plan is satisfying.）；(C) satisfy 是原形動詞、(D) satisfies 是第三人稱單數動詞，都不能接在 be 動詞後面。
+標籤: 分詞, 情緒動詞
+
+## Q125
+
+We want to talk about this issue honestly and \_\_\_ at the upcoming team meeting.
+
+(A) rarely
+(B) openly
+(C) early
+(D) highly
+
+答案：B
+解析：句意是「我們希望在接下來的團隊會議上誠實且公開地討論這個議題。」關鍵在對等連接詞 and——它把空格與前面的副詞 honestly（誠實地）連接起來，因此空格不只詞性要一致（四個選項都是副詞），語意也必須相配。(B) openly（公開地、坦率地）與 honestly 同屬「坦白說出來」的正面態度，是最自然的搭配。(A) rarely（很少）表頻率，與 honestly 並列語意衝突；(C) early（提早）講的是時間；(D) highly（高度地）通常修飾形容詞或特定動詞（highly recommend），都無法與 honestly 對等並列。
+標籤: 副詞, 字彙
+
+## Q126
+
+The manager, \_\_\_ proposal was accepted, will speak at the conference.
+
+(A) who
+(B) whom
+(C) whose
+(D) which
+
+答案：C
+解析：句意是「那位提案獲得採納的經理將在會議上發言。」判斷關鍵在空格後方緊接著名詞 proposal（提案），而語意是「經理的提案」，這種所屬關係要用所有格關係代名詞 (C) whose。(A) who 是主格，後面要接動詞；(B) whom 是受格，後面要接主詞加動詞；(D) which 用來指事物，而且同樣不具所有格功能。
+標籤: 關係代名詞, 所有格
+
+## Q127
+
+The director agreed \_\_\_ the new policy by the end of the month.
+
+(A) implements
+(B) implementing
+(C) implementation
+(D) to implement
+
+答案：D
+解析：句意是「主管同意在月底前實施這項新政策。」這題測驗動詞後面接的形式。agree 屬於接不定詞的動詞（agree to do something），因此選 (D) to implement。(B) implementing 是動名詞，agree 不直接接動名詞；(C) implementation 是名詞，agree 也不能直接接名詞當受詞（要說 agreed to the implementation of...）；(A) implements 是動詞，而句子已有主要動詞 agreed。
+標籤: 不定詞, 動狀詞
+
+## Q128
+
+\_\_\_ is essential for all team members to cooperate to meet the project deadline.
+
+(A) it
+(B) They
+(C) This
+(D) Those
+
+答案：A
+解析：句意是「所有團隊成員通力合作以趕上專案期限，是不可或缺的。」這題測驗虛主詞句型「It is + 形容詞 + for 某人 + to do something」——真正的主詞是後面的不定詞片語 to cooperate...，因為太長而移到句尾，句首用虛主詞 It 佔位，因此選 (A)（放在句首時要大寫成 It）。(B) They 與 (D) Those 是複數代名詞，會與單數動詞 is 不一致，句中也找不到它們指涉的對象；(C) This 雖是單數，但必須指前文提過的特定事物，不能充當引導不定詞真主詞的虛主詞。
+標籤: 虛主詞, 句型
+
+## Q129
+
+The manager avoided \_\_\_ the issue during the meeting, which led to further confusion.
+
+(A) to address
+(B) addressing
+(C) addressed
+(D) address
+
+答案：B
+解析：句意是「經理在會議上避免處理這個問題，這導致了後續更多的混亂。」這題測驗動詞後面接的形式。avoid 屬於只接動名詞的動詞（avoid + V-ing），同類還有 enjoy、mind、finish、suggest、consider、practice，因此選 (B) addressing。(A) to address 是不定詞，avoid 不接不定詞，正是本題陷阱；(C) addressed 是過去式或過去分詞；(D) address 是原形動詞，都不能直接當 avoid 的受詞。
+標籤: 動名詞, 動狀詞
+
+## Q130
+
+The baseball player participated in the last game of the season \_\_\_ an ankle injury.
+
+(A) despite
+(B) although
+(C) because of
+(D) unless
+
+答案：A
+解析：句意是「儘管腳踝受傷，那位棒球選手還是參加了本季的最後一場比賽。」判斷關鍵有兩個：一是空格後方的 an ankle injury 是名詞片語、沒有主詞與動詞，所以只能用介系詞；二是前後語意相反（受傷卻仍上場），需要表讓步的字，因此選 (A) despite（＝in spite of，儘管）。(B) although 語意雖然對，但它是連接詞，後面必須接完整子句（although he had an ankle injury）；(C) because of 雖然也是片語介系詞，但表原因，會變成「因為受傷所以參賽」的錯誤邏輯；(D) unless（除非）是表條件的連接詞，同樣要接子句。
+標籤: 介系詞, 讓步
