@@ -2,7 +2,7 @@
 
 ## Q106
 
-______ workers find in the concert hall will remain in the lost and found center for only one week.
+**\_\_** workers find in the concert hall will remain in the lost and found center for only one week.
 
 - (A) Few
 - (B) Several
@@ -15,7 +15,7 @@ ______ workers find in the concert hall will remain in the lost and found center
 
 ## Q118
 
-The company shifted ______ from its old business model to a fully digital one.
+The company shifted **\_\_** from its old business model to a fully digital one.
 
 - (A) radicalizing
 - (B) radically
@@ -28,7 +28,7 @@ The company shifted ______ from its old business model to a fully digital one.
 
 ## Q125
 
-Member of the loyalty program may take advantage of discount offers ______ earn points for their purchases.
+Member of the loyalty program may take advantage of discount offers **\_\_** earn points for their purchases.
 
 - (A) in case
 - (B) so that
@@ -41,7 +41,7 @@ Member of the loyalty program may take advantage of discount offers ______ earn 
 
 ## Q127
 
-______ all the cities that the pop singer visited during her recent world tour, Seoul was her favorite.
+**\_\_** all the cities that the pop singer visited during her recent world tour, Seoul was her favorite.
 
 - (A) Of
 - (B) About
@@ -56,7 +56,7 @@ ______ all the cities that the pop singer visited during her recent world tour, 
 
 ## Q101
 
-The interns will work ______ the direction of the research department manager.
+The interns will work **\_\_** the direction of the research department manager.
 
 - (A) beyond
 - (B) among
@@ -69,7 +69,7 @@ The interns will work ______ the direction of the research department manager.
 
 ## Q103
 
-The directors of PenTex are meeting with executives from DRW Corporation, which ______ have talked about merging with.
+The directors of PenTex are meeting with executives from DRW Corporation, which **\_\_** have talked about merging with.
 
 - (A) them
 - (B) themselves
@@ -77,12 +77,12 @@ The directors of PenTex are meeting with executives from DRW Corporation, which 
 - (D) they
 
 答案：D
-解析：句意是「PenTex 的董事們正與 DRW 公司的各高層主管開會，他們曾經討論過要與該公司合併。」在這個句子中，逗號後面的 "which ______ have talked about merging with" 是一個非限定關係子句，當中的 which 作為關係代名詞，代替前面提到的 DRW Corporation。而在這個關係子句裡，"have talked" 是動詞片語，因此空格處需要填入一個主格代名詞來作為子句的主詞。根據上下文邏輯，討論合併的主體是前面提過的「PenTex 的董事們（The directors）」，因為是複數名詞，所以必須使用複數的主格代名詞(D) they 來代替。選項 (A) them 是受格，(B) themselves 是反身代名詞，(C) their 是所有格，這三者在文法上都不能直接放在動詞前當作主詞。
+解析：句意是「PenTex 的董事們正與 DRW 公司的各高層主管開會，他們曾經討論過要與該公司合併。」在這個句子中，逗號後面的 "which **\_\_** have talked about merging with" 是一個非限定關係子句，當中的 which 作為關係代名詞，代替前面提到的 DRW Corporation。而在這個關係子句裡，"have talked" 是動詞片語，因此空格處需要填入一個主格代名詞來作為子句的主詞。根據上下文邏輯，討論合併的主體是前面提過的「PenTex 的董事們（The directors）」，因為是複數名詞，所以必須使用複數的主格代名詞(D) they 來代替。選項 (A) them 是受格，(B) themselves 是反身代名詞，(C) their 是所有格，這三者在文法上都不能直接放在動詞前當作主詞。
 標籤: 代名詞
 
 ## Q109
 
-Arrow Publicity produced a campaign that is designed to ______ audiences between the ages of 18 and 25.
+Arrow Publicity produced a campaign that is designed to **\_\_** audiences between the ages of 18 and 25.
 
 - (A) appeal to
 - (B) approve of
@@ -95,7 +95,7 @@ Arrow Publicity produced a campaign that is designed to ______ audiences between
 
 ## Q110
 
-The company will provide training to new recruits, so neither experience ______ a degree is required.
+The company will provide training to new recruits, so neither experience **\_\_** a degree is required.
 
 - (A) and
 - (B) but
@@ -108,7 +108,7 @@ The company will provide training to new recruits, so neither experience ______ 
 
 ## Q112
 
-Employees will now be offered the ______ of working from home for up to half of their weekly hours.
+Employees will now be offered the **\_\_** of working from home for up to half of their weekly hours.
 
 - (A) benefit
 - (B) benefited
@@ -121,7 +121,7 @@ Employees will now be offered the ______ of working from home for up to half of 
 
 ## Q113
 
-Knoll Consulting tries to hire staff ______ personal values match the company's.
+Knoll Consulting tries to hire staff **\_\_** personal values match the company's.
 
 - (A) whom
 - (B) which
@@ -134,7 +134,7 @@ Knoll Consulting tries to hire staff ______ personal values match the company's.
 
 ## Q117
 
-Housing costs in New York are far higher than ______ in its neighboring state, New Jersey.
+Housing costs in New York are far higher than **\_\_** in its neighboring state, New Jersey.
 
 - (A) anyone
 - (B) other
@@ -147,7 +147,7 @@ Housing costs in New York are far higher than ______ in its neighboring state, N
 
 ## Q120
 
-Having made a reservation, Mr. Quinn and his colleagues were seated immediately ______ arriving at the restaurant.
+Having made a reservation, Mr. Quinn and his colleagues were seated immediately **\_\_** arriving at the restaurant.
 
 - (A) up
 - (B) in
@@ -160,7 +160,7 @@ Having made a reservation, Mr. Quinn and his colleagues were seated immediately 
 
 ## Q122
 
-During her first year as editor-in-chief, Ms. Reed expanded The National Gazette's ______ to over 250,000.
+During her first year as editor-in-chief, Ms. Reed expanded The National Gazette's **\_\_** to over 250,000.
 
 - (A) Read
 - (B) Readers
@@ -173,7 +173,7 @@ During her first year as editor-in-chief, Ms. Reed expanded The National Gazette
 
 ## Q125
 
-The e-mail sent by Mr. Duchene at Laudner Holdings is ______ Ms. Coleman was waiting for.
+The e-mail sent by Mr. Duchene at Laudner Holdings is **\_\_** Ms. Coleman was waiting for.
 
 - (A) who
 - (B) what
@@ -188,7 +188,7 @@ The e-mail sent by Mr. Duchene at Laudner Holdings is ______ Ms. Coleman was wai
 
 ## Q103
 
-Ms. Conner did not win the Employee of the Year Award because a colleague's sales record was better than ______.
+Ms. Conner did not win the Employee of the Year Award because a colleague's sales record was better than **\_\_**.
 
 (A) hers
 (B) herself
@@ -201,7 +201,7 @@ Ms. Conner did not win the Employee of the Year Award because a colleague's sale
 
 ## Q108
 
-A photography exhibition entitled The Awakening is currently ______ in the Pulsen Gallery's main hall.
+A photography exhibition entitled The Awakening is currently **\_\_** in the Pulsen Gallery's main hall.
 
 (A) expressed
 (B) transformed
@@ -214,7 +214,7 @@ A photography exhibition entitled The Awakening is currently ______ in the Pulse
 
 ## Q109
 
-The municipal government has promised that it will take ______ to reduce downtown traffic.
+The municipal government has promised that it will take **\_\_** to reduce downtown traffic.
 
 (A) acting
 (B) action
@@ -227,7 +227,7 @@ The municipal government has promised that it will take ______ to reduce downtow
 
 ## Q110
 
-Soft drink manufacturer Fizz Life ______ a backlash from customers after changing its recipe for Ricochet Cola last year.
+Soft drink manufacturer Fizz Life **\_\_** a backlash from customers after changing its recipe for Ricochet Cola last year.
 
 (A) was faced
 (B) has been faced
@@ -240,7 +240,7 @@ Soft drink manufacturer Fizz Life ______ a backlash from customers after changin
 
 ## Q111
 
-As a branch manager, Mr. Finley finds resolving staff conflicts ______ of his duties.
+As a branch manager, Mr. Finley finds resolving staff conflicts **\_\_** of his duties.
 
 (A) difficult
 (B) more difficult
@@ -253,7 +253,7 @@ As a branch manager, Mr. Finley finds resolving staff conflicts ______ of his du
 
 ## Q112
 
-The dinner plates and utensils manufactured by Tessio are suitable for any ______.
+The dinner plates and utensils manufactured by Tessio are suitable for any **\_\_**.
 
 (A) leisure
 (B) occasion
@@ -266,7 +266,7 @@ The dinner plates and utensils manufactured by Tessio are suitable for any _____
 
 ## Q115
 
-The manager decided to provide the employees with additional training, ______ their weaknesses.
+The manager decided to provide the employees with additional training, **\_\_** their weaknesses.
 
 (A) addressing
 (B) addressed
@@ -279,7 +279,7 @@ The manager decided to provide the employees with additional training, ______ th
 
 ## Q119
 
-Although Mr. Miller had been given clear directions to the conference venue, he drove right ______ it.
+Although Mr. Miller had been given clear directions to the conference venue, he drove right **\_\_** it.
 
 (A) toward
 (B) over
@@ -292,7 +292,7 @@ Although Mr. Miller had been given clear directions to the conference venue, he 
 
 ## Q121
 
-New recruits are required to join a training course ______ they have relevant work experience.
+New recruits are required to join a training course **\_\_** they have relevant work experience.
 
 (A) in spite of
 (B) even if
@@ -305,7 +305,7 @@ New recruits are required to join a training course ______ they have relevant wo
 
 ## Q122
 
-All the team members will be traveling together aside from Ms. Bateman, who will be flying out ______ tomorrow.
+All the team members will be traveling together aside from Ms. Bateman, who will be flying out **\_\_** tomorrow.
 
 (A) physically
 (B) partially
@@ -318,7 +318,7 @@ All the team members will be traveling together aside from Ms. Bateman, who will
 
 ## Q124
 
-A company that adopts telecommuting practices allows its staff members to work ______ their location.
+A company that adopts telecommuting practices allows its staff members to work **\_\_** their location.
 
 (A) regardless of
 (B) rather than
@@ -331,7 +331,7 @@ A company that adopts telecommuting practices allows its staff members to work _
 
 ## Q126
 
-Ms. Turner downloaded a free trial version of the program ______ she could test its features.
+Ms. Turner downloaded a free trial version of the program **\_\_** she could test its features.
 
 (A) as if
 (B) so that
@@ -344,7 +344,7 @@ Ms. Turner downloaded a free trial version of the program ______ she could test 
 
 ## Q128
 
-For the next group project, students are free to team up with ______ they want.
+For the next group project, students are free to team up with **\_\_** they want.
 
 (A) whomever
 (B) which
@@ -357,7 +357,7 @@ For the next group project, students are free to team up with ______ they want.
 
 ## Q129
 
-If politicians fail to follow through on their promises, they lose credibility and their reputations ______.
+If politicians fail to follow through on their promises, they lose credibility and their reputations **\_\_**.
 
 (A) injure
 (B) reject
@@ -365,12 +365,12 @@ If politicians fail to follow through on their promises, they lose credibility a
 (D) suffer
 
 答案：D
-解析：句意是「如果政治人物未能履行承諾，他們會失去公信力，名聲也會受損。」這題測驗動詞的字彙語意與及物性。空格是 and 後面「their reputations ______」這個子句的動詞，而空格後沒有受詞，所以必須選一個能作不及物動詞、且主詞是「名聲」時語意通順的字。(D) suffer 作不及物動詞時意為「受損、變差、受苦」，"their reputations suffer"（名聲受損）是道地且常見的說法。選項 (A) injure（使受傷）與 (B) reject（拒絕）都是及物動詞，後面必須接受詞，且語意上名聲不會主動去傷害或拒絕什麼；(C) endure 意為「忍受」（及物）或「持續存在」（不及物），若解作「名聲持續下去」會與前半句「失去公信力」的負面語意矛盾。
+解析：句意是「如果政治人物未能履行承諾，他們會失去公信力，名聲也會受損。」這題測驗動詞的字彙語意與及物性。空格是 and 後面「their reputations **\_\_**」這個子句的動詞，而空格後沒有受詞，所以必須選一個能作不及物動詞、且主詞是「名聲」時語意通順的字。(D) suffer 作不及物動詞時意為「受損、變差、受苦」，"their reputations suffer"（名聲受損）是道地且常見的說法。選項 (A) injure（使受傷）與 (B) reject（拒絕）都是及物動詞，後面必須接受詞，且語意上名聲不會主動去傷害或拒絕什麼；(C) endure 意為「忍受」（及物）或「持續存在」（不及物），若解作「名聲持續下去」會與前半句「失去公信力」的負面語意矛盾。
 標籤: 字彙, 動詞
 
 ## Q130
 
-______ at work frequently is unprofessional, and it also makes coworkers feel uncomfortable.
+**\_\_** at work frequently is unprofessional, and it also makes coworkers feel uncomfortable.
 
 (A) Complained
 (B) Complaint
@@ -380,3 +380,109 @@ ______ at work frequently is unprofessional, and it also makes coworkers feel un
 答案：D
 解析：句意是「在工作場合經常抱怨是不專業的，而且也會讓同事感到不舒服。」這題測驗動名詞當主詞的用法。句子的主要動詞是 is，前面缺少主詞，所以空格要填一個具名詞功能的字；再加上空格後方有副詞 frequently（經常）修飾，而副詞只能修飾動詞性質的結構，因此答案必須是兼具名詞與動詞性質的動名詞 (D) Complaining（抱怨這件事），動名詞作主詞視為單數，與 is 一致。選項 (C) Complain 是原形動詞，會使句子變成無主詞的命令句而與後面的 is 衝突；(A) Complained 是過去式／過去分詞，同樣不能當主詞；(B) Complaint 雖是名詞，但它是可數名詞，單獨使用必須加冠詞或改成複數（a complaint／complaints），而且名詞不能被副詞 frequently 修飾。
 標籤: 動名詞, 主詞
+
+# PREPEDU 第一回合
+
+## Q109
+
+If he \_\_\_ earlier, he would not have missed the meeting.
+
+(A) leaves
+(B) left
+(C) had left
+(D) would leave
+
+答案：C
+解析：句意是「如果他早一點出發，就不會錯過那場會議了。」這題測驗與過去事實相反的假設語氣。判斷關鍵在主要子句的動詞 would not have missed——「would + have + 過去分詞」是與過去事實相反的固定結果句型，表示「（過去）本來就不會⋯⋯」，而與它配對的 if 子句必須用過去完成式，也就是 if + 主詞 + had + 過去分詞，所以答案是 (C) had left。這組公式（If + S + had p.p., S + would have p.p.）在多益屬於必考句型，看到其中一邊就能反推另一邊。(A) leaves 是現在簡單式，用於單純條件句（If he leaves earlier, he will not miss...），與 would have missed 的時態不搭；(B) left 是過去式，用於與「現在」事實相反的假設（If he left now, he would...），本句講的是已經發生的過去，時態退得不夠；(D) would leave 則犯了假設語氣的大忌——傳統文法規定 would 只出現在主要子句，不會放進 if 子句裡。
+標籤: 假設語氣, 時態
+
+## Q113
+
+The company saw a significant \_\_\_ in productivity after implementing the new workflow system.
+
+(A) promotion
+(B) increase
+(C) formula
+(D) incentive
+
+答案：B
+解析：句意是「導入新的工作流程系統後，公司的生產力大幅提升。」四個選項都是名詞，都能接在 a significant 後面，所以這題考的是字彙語意與介系詞搭配。判斷關鍵有兩個：一是空格後的 in productivity（在生產力方面），二是句尾的 after implementing the new workflow system（導入新系統之後）——導入新系統帶來的是生產力的「增加」，而 an increase in + 名詞 正是英文表達「⋯⋯的增長」的固定搭配（反義為 a decrease in），因此 (B) increase 是正確答案。(A) promotion 指「升遷」或「促銷活動」，用在人事或行銷情境，不會用來描述生產力的變化；(C) formula 是「公式、配方」，與句子的因果邏輯無關；(D) incentive 意為「誘因、獎勵措施」，是促使人做某事的動機，慣用搭配是 an incentive for／to do something，語意上是「原因」而非新系統帶來的「結果」。
+標籤: 字彙, 名詞
+
+## Q116
+
+\_\_\_ interested in joining the research team should attend the informational meeting next week.
+
+(A) Whatever
+(B) Whoever
+(C) Anyone
+(D) Whenever
+
+答案：C
+解析：句意是「任何有興趣加入研究團隊的人，都應該參加下週的說明會。」這題測驗不定代名詞當主詞的用法。整句的主要動詞是 should attend，前面缺少主詞；而空格與 should 之間的 interested in joining the research team 並沒有動詞，它只是一段由 who are interested in joining... 省略關係代名詞與 be 動詞而來的形容詞片語，用來從後面修飾空格的字。因此空格必須填一個本身就能當主詞、又能被形容詞片語後位修飾的代名詞，(C) Anyone（任何人）正好符合，Anyone interested in joining... 就等於 Anyone who is interested in joining...。本題的陷阱是 (B) Whoever：它的中文意思同樣是「任何⋯⋯的人」，但它是複合關係代名詞，必須引導一個完整的名詞子句，子句裡要自備動詞，得寫成 Whoever is interested in joining... 才合法，本句沒有 is，所以不能選。(A) Whatever 指事物而非人；(D) Whenever 是表時間的副詞連接詞，不具名詞功能，這兩者都不能當主詞。
+標籤: 代名詞, 不定代名詞
+
+## Q118
+
+The company's latest product will be unveiled \_\_\_ to capitalize on the upcoming trade show.
+
+(A) actually
+(B) consequently
+(C) promptly
+(D) precisely
+
+答案：C
+解析：句意是「公司最新的產品將迅速發表，以把握即將到來的貿易展。」四個選項都是副詞、詞性相同，所以這題純粹比較字彙語意。判斷關鍵在後半的目的片語 to capitalize on the upcoming trade show（善用即將到來的貿易展）：既然要趕上展會的商機，發表的時機就必須及時、不能拖延，因此表示「迅速地、立即地」的 (C) promptly 最貼切。(A) actually（實際上、事實上）用於修正或強調事實，與時間無關；(B) consequently（因此、結果）表達的是前因後果，但發表產品是為了搶展會商機，屬於目的而非結果；(D) precisely（精確地）強調數據或描述準確無誤，用來修飾 unveil（發表）語意不合。
+標籤: 字彙, 副詞
+
+## Q127
+
+The team members were \_\_\_ for their outstanding performance on the project.
+
+(A) commended
+(B) criticized
+(C) reprimanded
+(D) compromised
+
+答案：A
+解析：句意是「團隊成員因為在這項專案上的傑出表現而受到表揚。」四個選項都是及物動詞的過去分詞，文法上都能填進被動語態 were **\_\_** for，所以這題比的是字彙語意與褒貶。判斷關鍵在 for 後面的原因 their outstanding performance（他們傑出的表現）——既然是正面的表現，接續的結果也必須是正面的，因此 (A) commended（受到讚揚、表揚）是唯一合理的答案，be commended for... 也是職場上表達表揚的常見搭配。(B) criticized（受到批評）與 (C) reprimanded（受到申斥、訓誡）都是負面的處置，與「傑出表現」的原因互相矛盾；(D) compromised 意為「（原則、安全、資料）被損害、被危及」或「妥協」，主詞若是人指的是名譽或立場受損，同樣是負面語意，也無法與 for 引導的正面理由搭配。
+標籤: 字彙, 動詞
+
+## Q128
+
+The company's decision to expand its operations internationally was driven by the desire for \_\_\_ growth.
+
+(A) vehicular
+(B) exponential
+(C) stagnant
+(D) declined
+
+答案：B
+解析：句意是「公司決定將營運拓展到國際市場，是出於對急遽成長的渴望。」四個選項都可以放在名詞 growth 前面當修飾語，所以這題考的是字彙語意是否與上下文邏輯相符。判斷關鍵在前半句的 decision to expand its operations internationally（決定向海外擴張）與 the desire for（渴望⋯⋯）——公司主動擴張、心之所嚮的必然是正面且大幅的成長，因此 (B) exponential（指數型的、急遽的）最貼切，exponential growth 也是商業英文中描述爆發性成長的固定搭配。(C) stagnant（停滯的）與 (D) declined（下降的）都是負面語意，公司不可能「渴望」停滯或衰退的成長，邏輯上互相矛盾（何況表達「衰退中的成長」慣用的是現在分詞 declining）；(A) vehicular 意為「車輛的」，只會用在 vehicular traffic（車流）這類搭配上，與 growth 完全無法連用。
+標籤: 字彙, 形容詞
+
+## Q129
+
+The marketing strategies are \_\_\_ evaluated to ensure they meet the current market demands.
+
+(A) deliberately
+(B) generously
+(C) completely
+(D) visually
+
+答案：C
+解析：句意是「這些行銷策略都會被全面評估，以確保符合當前的市場需求。」四個選項都是副詞、詞性相同，所以這題比的是字彙語意與搭配。判斷關鍵在後面的目的 to ensure they meet the current market demands（確保符合當前市場需求）——要「確保」符合需求，評估就必須做得徹底、不能有遺漏，因此表示「完全地、徹底地」的 (C) completely 最貼切（同義的 thoroughly 也是常見說法）。(A) deliberately 現代用法主要是「刻意地、故意地」，強調行為出於本意，說「刻意評估」既不自然也無法呼應「確保符合需求」的完整性；(B) generously（慷慨地）用於給予金錢、時間或讚美，與評估無關；(D) visually（在視覺上）指從外觀來看，行銷策略是靠數據與成效檢視，不是用眼睛看的。
+標籤: 字彙, 副詞
+
+## Q130
+
+To sustain its competitive edge in the market, the company's success hinges critically on \_\_\_ in its product development and marketing strategies.
+
+(A) innovation
+(B) collaboration
+(C) stagnation
+(D) ambition
+
+答案：A
+解析：句意是「為了維持在市場上的競爭優勢，公司的成功關鍵取決於產品開發與行銷策略上的創新。」四個選項都是名詞，都能當介系詞 on 的受詞，所以這題比的是字彙語意。判斷關鍵在句首的目的 To sustain its competitive edge in the market（維持市場競爭優勢）以及空格後的範圍 in its product development and marketing strategies（在產品開發與行銷策略方面）——能讓產品與行銷持續領先對手的，就是不斷推陳出新的能力，因此 (A) innovation（創新）最符合，也與 competitive edge 形成商業文章中常見的因果搭配。(B) collaboration（協作）是本題的陷阱，它雖然是正面詞，但一般會搭配對象或部門（collaboration with partners／between teams），用來說明「在產品開發上」如何維持競爭優勢並不是最直接的關鍵。(C) stagnation（停滯）語意負面，與維持競爭優勢完全矛盾；(D) ambition（企圖心、抱負）指的是個人或組織的心理企圖，無法用來修飾具體的產品開發與行銷做法。
+標籤: 字彙, 名詞
