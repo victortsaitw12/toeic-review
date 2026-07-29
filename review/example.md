@@ -733,7 +733,7 @@ The team's performance, \_\_\_ was exceptional, exceeded all expectations.
 (D) that
 
 答案：C
-解析：句意是「團隊的表現十分出色，超出了所有人的預期。」空格前有逗號，可知這是非限定關係子句，用來補充說明先行詞 The team's performance（事物），而子句 ______ was exceptional 缺少主詞，所以要用主格的關係代名詞 (C) which。(D) that 是本題陷阱——that 不能用在逗號後的非限定子句裡；(A) whose 是所有格，後面必須緊接名詞；(B) who's 是 who is 的縮寫，而且 who 只能指人。
+解析：句意是「團隊的表現十分出色，超出了所有人的預期。」空格前有逗號，可知這是非限定關係子句，用來補充說明先行詞 The team's performance（事物），而子句 **\_\_** was exceptional 缺少主詞，所以要用主格的關係代名詞 (C) which。(D) that 是本題陷阱——that 不能用在逗號後的非限定子句裡；(A) whose 是所有格，後面必須緊接名詞；(B) who's 是 who is 的縮寫，而且 who 只能指人。
 標籤: 關係代名詞, 非限定
 
 ## Q120
@@ -878,3 +878,135 @@ The baseball player participated in the last game of the season \_\_\_ an ankle 
 答案：A
 解析：句意是「儘管腳踝受傷，那位棒球選手還是參加了本季的最後一場比賽。」判斷關鍵有兩個：一是空格後方的 an ankle injury 是名詞片語、沒有主詞與動詞，所以只能用介系詞；二是前後語意相反（受傷卻仍上場），需要表讓步的字，因此選 (A) despite（＝in spite of，儘管）。(B) although 語意雖然對，但它是連接詞，後面必須接完整子句（although he had an ankle injury）；(C) because of 雖然也是片語介系詞，但表原因，會變成「因為受傷所以參賽」的錯誤邏輯；(D) unless（除非）是表條件的連接詞，同樣要接子句。
 標籤: 介系詞, 讓步
+
+# 國學閱讀綠本 第四回合
+
+## Q107
+
+The Medland hiring manager \_\_\_ that writing samples be submitted along with resumes.
+
+(A) inquired
+(B) requested
+(C) persuaded
+(D) predicted
+
+答案：B
+解析：句意是「Medland 的招募主管要求寫作範本要與履歷一併提交。」判斷關鍵在 that 子句裡的動詞是原形 be submitted（而非 is/should be）——這是「要求、建議、命令」類動詞後方 that 子句用假設語氣（that + S + 原形動詞）的標記，request 正是這類動詞，因此選 (B)。(A) inquired（詢問）雖可接 that 子句，但語意是「問到某事」，不會帶出原形動詞的假設語氣；(C) persuaded 要用 persuade someone to do 的句型，不能直接接 that 子句提出要求；(D) predicted（預測）後面的 that 子句要用一般時態（predicted that samples would be submitted），不用原形。
+標籤: 假設語氣, 動詞用法
+
+## Q117
+
+Having no experience operating a retail store, Ms. Philips relied \_\_\_ her business partner's advice.
+
+(A) upon
+(B) beside
+(C) toward
+(D) with
+
+答案：A
+解析：句意是「由於沒有經營零售店的經驗，Philips 女士依賴她事業夥伴的建議。」這題考的是動詞與介系詞的固定搭配：rely on / rely upon（依賴），upon 是 on 的正式用法，因此選 (A)。(B) beside（在…旁邊）、(C) toward（朝向）、(D) with（和…一起）雖然都是介系詞，但都不能與 rely 搭配。
+標籤: 介系詞, 動詞搭配
+
+## Q118
+
+Regardless of seniority, \_\_\_ employee is entitled to 15 days of paid vacation per year.
+
+(A) each
+(B) which
+(C) some
+(D) those
+
+答案：A
+解析：句意是「無論年資長短，每一位員工每年都享有 15 天的有薪假。」判斷關鍵在空格後是單數可數名詞 employee，動詞也是單數 is，因此要選能修飾單數名詞的限定詞 (A) each（每一個）。(B) which 是關係代名詞或疑問詞，放在句首會變成疑問句或需要先行詞；(C) some 後面要接複數名詞（some employees）或不可數名詞；(D) those 是複數指示詞，會與單數的 employee is 不一致。
+標籤: 限定詞, 單複數
+
+## Q120
+
+\_\_\_ staff members dress is a reflection on the company, so please wear professional attire throughout the workweek.
+
+(A) When
+(B) What
+(C) How
+(D) Who
+
+答案：C
+解析：句意是「員工的穿著方式反映了公司的形象，所以整個工作週請穿著專業服裝。」這裡空格帶出一個當主詞用的名詞子句（後面接主要動詞 is）。子句 staff members dress 本身已完整——dress 在此是不及物動詞（穿著），主詞受詞都不缺，缺的是「方式」這個副詞概念，因此用 (C) How（＝穿著的方式）。(B) What 必須在子句中充當缺少的主詞或受詞，這裡沒有空缺；(A) When 表時間，與「反映公司形象」的語意不合；(D) Who 會取代主詞位置，但主詞 staff members 已經存在。
+標籤: 名詞子句, 疑問詞
+
+## Q121
+
+The annual Independence Day fireworks show will \_\_\_ at 8 P.M. behind Stapleton Park.
+
+(A) enter
+(B) commence
+(C) withstand
+(D) originate
+
+答案：B
+解析：句意是「一年一度的國慶煙火秀將於晚上 8 點在 Stapleton 公園後方開始。」空格後直接接時間與地點副詞、沒有受詞，需要一個表「開始」的不及物動詞，(B) commence（開始，＝begin 的正式用法）語意與句構都相符。(A) enter（進入）是及物動詞，要接受詞；(C) withstand（承受、抵擋）也是及物動詞，且語意不合；(D) originate（起源）雖可不及物，但通常搭配 from/in 說明來源，用在「活動於幾點開始」不正確。
+標籤: 字彙, 動詞
+
+## Q123
+
+Ms. Sutter left some portions of the registration form \_\_\_ because she did not know all of the information necessary to complete it.
+
+(A) hollow
+(B) flat
+(C) blank
+(D) pure
+
+答案：C
+解析：句意是「Sutter 女士把報名表的部分欄位留空，因為她不知道填完表格所需的全部資訊。」這裡是「leave + 受詞 + 形容詞」的句型，空格當受詞補語，形容 some portions of the form 的狀態；表格欄位沒填要用 (C) blank（空白的，leave it blank 是固定說法）。(A) hollow 指物體「中空的」；(B) flat 指「平坦的」；(D) pure 指「純淨的」，都不能用來形容未填寫的表格欄位。
+標籤: 字彙, 形容詞
+
+## Q124
+
+Dearden Inc. must comply with safety regulations by placing \_\_\_ visible emergency exit signs on every floor.
+
+(A) clears
+(B) clearance
+(C) clearly
+(D) cleared
+
+答案：C
+解析：句意是「Dearden 公司必須在每一層樓設置清楚可見的緊急出口標示，以符合安全法規。」判斷關鍵在空格後是形容詞 visible——修飾形容詞要用副詞，因此選 (C) clearly（clearly visible＝清楚可見）。(A) clears 是動詞第三人稱單數；(B) clearance 是名詞（清除、淨空）；(D) cleared 是過去分詞，三者都不能修飾形容詞。
+標籤: 副詞, 詞性
+
+## Q128
+
+Ray's Sandwiches opened 10 years ago and has \_\_\_ become a popular lunch spot for office workers in Weyburn.
+
+(A) yet
+(B) since
+(C) still
+(D) while
+
+答案：B
+解析：句意是「Ray's Sandwiches 十年前開幕，此後便成為 Weyburn 上班族熱門的午餐去處。」前半句用過去式點出 10 years ago 這個過去時間點，後半句用現在完成式 has become，需要一個表「從那時以來」的副詞把兩者連起來，因此選 (B) since（此後，此處作副詞用，have since done 是常見搭配）。(A) yet 用於否定句或疑問句（has not yet become）；(C) still（仍然）表狀態延續，與「後來變成」的語意不合；(D) while 是連接詞，後面要接子句，不能插在助動詞與過去分詞之間。
+標籤: 副詞, 現在完成式
+
+## Q129
+
+\_\_\_ a few typos that can be easily fixed, the report looks ready to be submitted.
+
+(A) Supposing
+(B) In case
+(C) As though
+(D) Apart from
+
+答案：D
+解析：句意是「除了幾個容易修正的錯字之外，這份報告看起來已經可以送出了。」判斷關鍵在空格後方是名詞片語 a few typos...（沒有主詞加動詞），所以只能用片語介系詞；語意上也是「把小瑕疵排除在外」，因此選 (D) Apart from（除了…之外，＝aside from）。(A) Supposing（假如）、(B) In case（以防）、(C) As though（好像）都是連接詞，後面必須接完整子句。
+標籤: 介系詞, 片語
+
+## Q130
+
+Astrophysicist Dr. Bryan Healy and aerospace engineer Dr. Marie Duns are experts in their \_\_\_ fields.
+
+(A) plausible
+(B) respective
+(C) negligible
+(D) intrusive
+
+答案：B
+解析：句意是「天文物理學家 Healy 博士與航太工程師 Duns 博士各自是其領域的專家。」句子提到兩位分屬不同專業的學者，搭配複數 fields，需要表「各自的、分別的」之意，因此選 (B) respective（their respective fields＝他們各自的領域）。(A) plausible（似乎合理的）、(C) negligible（微不足道的）、(D) intrusive（侵擾的）語意都與「兩人分屬不同領域」無關。
+標籤: 字彙, 形容詞
