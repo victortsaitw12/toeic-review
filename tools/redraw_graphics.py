@@ -777,6 +777,156 @@ def tc4_98_100():  # 折線圖 Monthly Number of Readers
                       lambda v: f"{v:,}")
 
 
+# ============================ 藍本 TestC5 ============================
+
+def tc5_62_64():  # 公車站牌：Bus Number / Information 表格＋站牌圖示
+    g = SVG(430, 250)
+    # 站牌（圓形招牌內畫公車）＋立柱
+    cx, cy, r = 215, 40, 27
+    g.line(cx, cy + r, cx, 72, sw=3)
+    g.circle(cx, cy, r, fill="white", sw=2)
+    g.rect(cx - 17, cy - 9, 34, 17, fill="#555", sw=1.2, stroke="#555", rx=3)
+    for k in range(4):                                     # 車窗
+        g.rect(cx - 14 + k * 8, cy - 6, 5, 6, fill="white", sw=0, stroke="white")
+    g.circle(cx - 10, cy + 9, 2.6, fill="#555", sw=0.8, stroke="#555")
+    g.circle(cx + 10, cy + 9, 2.6, fill="#555", sw=0.8, stroke="#555")
+    # 表格
+    colw = [150, 248]
+    rows = [
+        [h("Bus Number"), h("Information")],
+        ["180", {"t": "Express to Grayfield Station", "align": "l"}],
+        ["195", {"t": "Express to Windsor Station", "align": "l"}],
+        ["199", {"t": "Local to Windsor Station", "align": "l"}],
+        ["210", {"t": "Local to Grayfield Station", "align": "l"}],
+    ]
+    x0, y0, rowh = 16, 74, 34
+    for ri, row in enumerate(rows):
+        cyr = y0 + ri * rowh
+        cxx = x0
+        for ci, cell in enumerate(row):
+            if isinstance(cell, str):
+                cell = {"t": cell}
+            cw = colw[ci]
+            g.rect(cxx, cyr, cw, rowh, fill=cell.get("fill", "white"), sw=1.6)
+            ty = cyr + rowh / 2 + 6
+            if cell.get("align") == "l":
+                g.text(cxx + 14, ty, cell["t"], size=16, anchor="start",
+                       weight="bold" if cell.get("bold") else "normal")
+            else:
+                g.text(cxx + cw / 2, ty, cell["t"], size=16,
+                       weight="bold" if cell.get("bold") else "normal")
+            cxx += cw
+    g.rect(x0, y0, sum(colw), rowh * len(rows), sw=2.4)
+    return g
+
+
+def tc5_65_67():  # 使用手冊目錄（Styx Photo Editing Software）
+    g = SVG(430, 240)
+    g.rect(14, 14, 402, 212, sw=2)
+    g.text(215, 52, "Styx Photo Editing Software", size=19, weight="bold")
+    g.text(215, 78, "User Manual", size=19, weight="bold")
+    g.text(215, 112, "Table of Contents", size=16)
+    g.line(140, 118, 290, 118, sw=1.4)
+    items = [("Installation", 1), ("Tools", 3), ("Techniques", 6), ("Exporting", 9)]
+    for i, (name, page) in enumerate(items):
+        yy = 146 + i * 24
+        g.text(46, yy, name, size=16, anchor="start")
+        g.line(150, yy - 4, 356, yy - 4, sw=1.4, stroke="#666", dash="2,4")
+        g.text(378, yy, str(page), size=16, anchor="end")
+    return g
+
+
+def tc5_68_70():  # 顧客滿意度調查表（○ 標記評分）
+    g = SVG(480, 284)
+    g.text(240, 32, "Customer Survey on Mobile Telephone Plan", size=16, weight="bold")
+    g.text(240, 54, "(Average ratings)", size=14)
+    cats = [("Quality of calls", 1), ("Monthly rates", 0),
+            ("Choice of calling\nplans", 3), ("Customer service", 2)]
+    heads = ["Excellent", "Good", "Poor", "Very\nPoor"]
+    x0, y0 = 18, 68
+    lw, cw, rowh, hh = 150, 73, 38, 46
+    g.rect(x0, y0, lw, hh, fill="white", sw=1.6)             # 左上空白
+    for j, hd in enumerate(heads):
+        hx = x0 + lw + j * cw
+        g.rect(hx, y0, cw, hh, fill=HDR, sw=1.6)
+        hl = hd.split("\n")
+        for k, ln in enumerate(hl):
+            g.text(hx + cw / 2, y0 + hh / 2 + 5 - (len(hl) - 1) * 8 + k * 15, ln,
+                   size=13, weight="bold")
+    for i, (name, mark) in enumerate(cats):
+        ry = y0 + hh + i * rowh
+        g.rect(x0, ry, lw, rowh, fill="white", sw=1.6)
+        ls = name.split("\n")
+        for j, ln in enumerate(ls):
+            g.text(x0 + 12, ry + rowh / 2 + 5 - (len(ls) - 1) * 8 + j * 15, ln,
+                   size=14, anchor="start")
+        for j in range(4):
+            bx = x0 + lw + j * cw
+            g.rect(bx, ry, cw, rowh, fill="white", sw=1.6)
+            if j == mark:
+                g.circle(bx + cw / 2, ry + rowh / 2, 9, fill="white", sw=2)
+    g.rect(x0, y0, lw + cw * 4, hh + rowh * 4, sw=2.4)
+    return g
+
+
+def tc5_95_97():  # Astor Conference Center 平面圖（Space 1–4／Seminar Room 1／Stage）
+    g = SVG(440, 300)
+    g.rect(10, 10, 420, 280, sw=1.4)
+    g.text(220, 42, "Astor Conference Center", size=18, weight="bold")
+    bx, by, bw, bh = 30, 58, 380, 190                        # 建築外牆（粗）
+    g.rect(bx, by, bw, bh, sw=5)
+    mid = bx + 130                                           # 左側區塊右界
+    top_h = 52
+    g.line(bx, by + top_h, mid, by + top_h)                  # Space 1 下牆
+    g.line(mid, by, mid, by + bh)                            # 左側直牆
+    g.text(bx + 65, by + 32, "Space 1", size=15)
+    # 觀眾席（同心半圓，圓心在左牆）＋舞台
+    scy = by + top_h + (bh - top_h) / 2
+    for rr in (24, 35, 46, 57, 68):
+        g.path(f"M{bx} {scy - rr} A{rr} {rr} 0 0 1 {bx} {scy + rr}", fill="none", sw=1.6)
+    g.poly([(bx + 50, by + bh - 12), (bx + 42, by + bh - 2), (bx + 58, by + bh - 2)],
+           fill=STROKE, sw=0)
+    g.text(bx + 50, by + bh + 26, "Stage", size=15)
+    # 上排 Space 2 / Space 3
+    g.rect(mid + 40, by, 120, top_h + 12, sw=2)
+    g.text(mid + 100, by + 36, "Space 2", size=15)
+    g.rect(mid + 160, by, bx + bw - (mid + 160), top_h, sw=2)
+    g.text((mid + 160 + bx + bw) / 2, by + 32, "Space 3", size=15)
+    # 右側 Space 4 / Seminar Room 1
+    rx = bx + bw - 110
+    g.rect(rx, by + 82, 110, 60, sw=2)
+    g.text(rx + 55, by + 118, "Space 4", size=15)
+    g.rect(rx, by + 142, 110, bh - 142, sw=2)
+    g.text(rx + 55, by + 163, "Seminar", size=14)
+    g.text(rx + 55, by + 181, "Room 1", size=14)
+    g.text((mid + rx) / 2, by + 128, "Exhibition Area", size=15)
+    return g
+
+
+def tc5_98_100():  # 長條圖 Live Chat Software Ratings（4.4–5.0）
+    g = SVG(460, 260)
+    ox, oy, top, right = 78, 200, 46, 434
+    g.text(240, 30, "Live Chat Software Ratings", size=16, weight="bold")
+    ymin, ymax = 4.4, 5.0
+
+    def py(v):
+        return oy - (v - ymin) / (ymax - ymin) * (oy - top)
+    for i in range(7):                                       # 4.4 … 5.0 格線
+        v = round(ymin + i * 0.1, 1)
+        yy = py(v)
+        g.line(ox, yy, right, yy, sw=1.2, stroke="#999")
+        g.text(ox - 10, yy + 5, "5" if v == 5.0 else f"{v}", size=13, anchor="end")
+    g.line(ox, oy, ox, top, sw=1.6)
+    bars = [("Symilla", 4.9), ("ProChat", 4.6), ("FastStream", 4.8), ("Powerbot", 4.7)]
+    bw = 46
+    span = (right - ox) / len(bars)
+    for i, (lb, v) in enumerate(bars):
+        cx = ox + span * (i + 0.5)
+        g.rect(cx - bw / 2, py(v), bw, oy - py(v), fill="#d9d9d9", sw=1.4)
+        g.text(cx, oy + 26, lb, size=14)
+    return g
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -792,6 +942,8 @@ IMAGES = {
                "q95-97": tc3_95_97, "q98-100": tc3_98_100},
     "TestC4": {"q62-64": tc4_62_64, "q65-67": tc4_65_67, "q68-70": tc4_68_70,
                "q95-97": tc4_95_97, "q98-100": tc4_98_100},
+    "TestC5": {"q62-64": tc5_62_64, "q65-67": tc5_65_67, "q68-70": tc5_68_70,
+               "q95-97": tc5_95_97, "q98-100": tc5_98_100},
 }
 
 
