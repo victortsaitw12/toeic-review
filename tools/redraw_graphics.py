@@ -927,6 +927,140 @@ def tc5_98_100():  # 長條圖 Live Chat Software Ratings（4.4–5.0）
     return g
 
 
+# ============================ 藍本 TestC6 ============================
+
+def tc6_62_64():  # 辦公用品訂購單 Order Form
+    rows = [
+        [{"t": "Order Form", "span": 2, "bold": True, "fill": HDR}],
+        [h("Item"), h("Quantity")],
+        [{"t": "Folders", "align": "l"}, "10 packs"],
+        [{"t": "Printer paper", "align": "l"}, "8 packs"],
+        [{"t": "Black ink cartridges", "align": "l"}, "5"],
+        [{"t": "Color ink cartridges", "align": "l"}, "4"],
+    ]
+    return draw_table([230, 160], rows, rowh=38)
+
+
+def tc6_65_67():  # 街廓地圖：Cannondale Street／Raymond Lane 與四個公車站 ①–④
+    g = SVG(470, 320)
+    ROAD = "#e4e4e4"
+    g.rect(14, 14, 442, 292, sw=2)                          # 地圖外框
+    # 兩條橫向道路、兩條縱向道路（灰底表示街道）
+    g.rect(16, 96, 438, 34, fill=ROAD, sw=0)
+    g.rect(16, 216, 438, 34, fill=ROAD, sw=0)
+    g.rect(176, 16, 34, 288, fill=ROAD, sw=0)               # Cannondale Street
+    g.rect(300, 16, 30, 288, fill=ROAD, sw=0)               # Raymond Lane
+    g.text(198, 205, "Cannondale Street", size=13,
+           anchor="middle")                                  # 直書用旋轉
+    g.parts[-1] = g.parts[-1].replace('<text ', '<text transform="rotate(-90 198 205)" ')
+    g.text(318, 200, "Raymond Lane", size=13, anchor="middle")
+    g.parts[-1] = g.parts[-1].replace('<text ', '<text transform="rotate(-90 318 200)" ')
+    # 上排：圖書館、②、Elmwood Park（三棵樹）
+    g.text(34, 52, "Eastwood", size=14, anchor="start")
+    g.text(34, 72, "Public Library", size=14, anchor="start")
+    g.circle(150, 66, 11, fill="white", sw=1.6)
+    g.text(150, 71, "1", size=13)
+    g.circle(232, 66, 11, fill="white", sw=1.6)
+    g.text(232, 71, "2", size=13)
+    g.text(280, 68, "Elmwood Park", size=14, anchor="start")
+    for i in range(3):                                       # 樹
+        tx = 398 + i * 22
+        g.line(tx, 62, tx, 78, sw=2.4)
+        g.circle(tx, 52, 9, fill="#4a4a4a", sw=1.2, stroke="#4a4a4a")
+    # 中排：郵局、會議中心、③
+    g.text(250, 152, "Post Office", size=14)
+    g.rect(236, 162, 28, 24, fill="#5a5a5a", sw=1.2, stroke="#333")
+    g.path("M236 162 q14 -10 28 0", fill="#5a5a5a", sw=1.2)
+    g.rect(340, 146, 20, 40, fill="#5a5a5a", sw=1.2, stroke="#333")
+    g.text(370, 152, "Conference", size=14, anchor="start")
+    g.text(370, 172, "Center", size=14, anchor="start")
+    g.circle(352, 200, 11, fill="white", sw=1.6)
+    g.text(352, 205, "3", size=13)
+    # 下排：加油站、Bayview Hotel、④
+    g.text(250, 272, "Gas Station", size=14)
+    g.rect(38, 258, 20, 38, fill="#5a5a5a", sw=1.2, stroke="#333")
+    g.text(66, 268, "Bayview", size=14, anchor="start")
+    g.text(66, 290, "Hotel", size=14, anchor="start")
+    g.circle(150, 288, 11, fill="white", sw=1.6)
+    g.text(150, 293, "4", size=13)
+    return g
+
+
+def tc6_68_70():  # 五月行事曆（週一～週五兩週）
+    g = SVG(500, 250)
+    x0, y0 = 16, 44
+    colw, rowh, hdrh = 96, 84, 30
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    weeks = [
+        [("15", []), ("16", ["Buyer", "Appreciation", "Day"]), ("17", []),
+         ("18", ["New Model", "Arriving"]), ("19", [])],
+        [("22", []), ("23", ["Customer", "Service", "Workshop"]), ("24", []),
+         ("25", []), ("26", ["End of", "Season Sale"])],
+    ]
+    g.text(x0 + colw * 2.5, 30, "MAY", size=18, weight="bold")
+    for i, d in enumerate(days):                             # 星期標頭
+        g.rect(x0 + i * colw, y0, colw, hdrh, fill=HDR, sw=1.6)
+        g.text(x0 + i * colw + colw / 2, y0 + 21, d, size=13, weight="bold")
+    for r, week in enumerate(weeks):
+        cy = y0 + hdrh + r * rowh
+        for i, (num, lines) in enumerate(week):
+            cx = x0 + i * colw
+            g.rect(cx, cy, colw, rowh, sw=1.6)
+            g.text(cx + 8, cy + 20, num, size=14, anchor="start")
+            for li, ln in enumerate(lines):
+                g.text(cx + colw / 2, cy + 42 + li * 17, ln, size=12)
+    g.rect(x0, y0, colw * 5, hdrh + rowh * 2, sw=2.4)
+    return g
+
+
+def tc6_95_97():  # 四格圖：鞋子／項鍊／外套／襪子
+    g = SVG(440, 340)
+    cw, ch = 206, 156
+    ox, oy, gap = 14, 14, 4
+    cells = ["Item 1", "Item 2", "Item 3", "Item 4"]
+    for i, lb in enumerate(cells):
+        cx = ox + (i % 2) * (cw + gap)
+        cy = oy + (i // 2) * (ch + gap)
+        g.rect(cx, cy, cw, ch, sw=2)
+        g.text(cx + cw / 2, cy + ch - 16, lb, size=16)
+    # Item 1：一雙運動鞋（側面，鞋頭朝右）
+    for sx, sy in [(50, 48), (84, 80)]:
+        g.path(f"M{sx} {sy+40} c0,-20 10,-30 26,-34 l14,-4 c8,-2 14,2 18,10 "
+               f"l12,20 c6,8 4,14 -4,14 l-58,0 c-6,0 -8,-2 -8,-6 z", fill="white", sw=2)
+        g.line(sx + 1, sy + 33, sx + 68, sy + 33, sw=1.6)    # 鞋底
+        for j in range(3):                                   # 鞋帶
+            g.line(sx + 20 + j * 8, sy + 14 - j * 4, sx + 32 + j * 8, sy + 22 - j * 4, sw=1.4)
+    # Item 2：項鍊（鍊圈＋墜子）
+    g.path("M300 52 q54 8 46 46 q-8 34 -46 34 q-38 0 -46 -34 q-8 -38 46 -46 z", sw=2)
+    g.circle(300, 48, 6, fill="white", sw=2)
+    g.path("M292 128 q8 12 16 0 q-8 -6 -16 0 z", fill="#5a5a5a", sw=1.6)
+    # Item 3：外套（衣身＋領子＋袖子）
+    jx, jy = 104, 200
+    g.path(f"M{jx-40} {jy} l24 -14 l16 8 l16 -8 l24 14 l-8 26 l-10 -6 l0 62 "
+           f"l-44 0 l0 -62 l-10 6 z", fill="#c9c9c9", sw=2)
+    g.line(jx, jy - 6, jx, jy + 76, sw=1.6)
+    g.path(f"M{jx-16} {jy-14} l16 20 l16 -20", fill="none", sw=1.6)
+    # Item 4：一雙條紋襪（襪筒＋朝右的腳掌）
+    for sx, sy in [(272, 184), (334, 206)]:
+        g.path(f"M{sx} {sy} h26 v40 h14 q12 0 12 12 q0 10 -12 10 h-40 z", fill="white", sw=2)
+        for j in range(3):                                   # 襪筒條紋
+            yy = sy + 8 + j * 10
+            g.line(sx, yy, sx + 26, yy, sw=1.6, stroke="#777")
+    return g
+
+
+def tc6_98_100():  # 市民大會議程 Town Hall Meeting Agenda
+    rows = [
+        [{"t": "Town Hall Meeting Agenda", "span": 2, "bold": True, "fill": HDR}],
+        [h("Date"), h("Topic")],
+        ["May 2", "Zoning and Land Use"],
+        ["May 7", "School District Calendar"],
+        ["May 9", "Water Conservation"],
+        ["May 13", "Applying for Building Permits"],
+    ]
+    return draw_table([120, 280], rows, rowh=38)
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -944,6 +1078,8 @@ IMAGES = {
                "q95-97": tc4_95_97, "q98-100": tc4_98_100},
     "TestC5": {"q62-64": tc5_62_64, "q65-67": tc5_65_67, "q68-70": tc5_68_70,
                "q95-97": tc5_95_97, "q98-100": tc5_98_100},
+    "TestC6": {"q62-64": tc6_62_64, "q65-67": tc6_65_67, "q68-70": tc6_68_70,
+               "q95-97": tc6_95_97, "q98-100": tc6_98_100},
 }
 
 
