@@ -1010,3 +1010,122 @@ Astrophysicist Dr. Bryan Healy and aerospace engineer Dr. Marie Duns are experts
 答案：B
 解析：句意是「天文物理學家 Healy 博士與航太工程師 Duns 博士各自是其領域的專家。」句子提到兩位分屬不同專業的學者，搭配複數 fields，需要表「各自的、分別的」之意，因此選 (B) respective（their respective fields＝他們各自的領域）。(A) plausible（似乎合理的）、(C) negligible（微不足道的）、(D) intrusive（侵擾的）語意都與「兩人分屬不同領域」無關。
 標籤: 字彙, 形容詞
+
+# 國學閱讀綠本 第五回合
+
+## Q110
+
+Emblem Motor's new car lineup will be unveiled at the annual Chicago Auto Show \_\_\_ next year.
+
+(A) previously
+(B) typically
+(C) early
+(D) highly
+
+答案：C
+解析：句意是「Emblem 汽車的新車系列將在明年年初的芝加哥車展上亮相。」判斷關鍵在空格後面接的是時間詞 next year，能直接修飾時間詞、組成「early next year（明年年初）」的只有 (C) early。(A) previously（先前）指過去，與 next year 的未來時間矛盾；(B) typically（通常）表頻率，不能修飾特定時間點；(D) highly（高度地）用來修飾形容詞或動詞（highly recommended），不能修飾時間。
+標籤: 字彙, 副詞
+
+## Q112
+
+When companies prioritize their customers' needs \_\_\_ all else, they tend to generate repeat business.
+
+(A) above
+(B) where
+(C) within
+(D) toward
+
+答案：A
+解析：句意是「當公司把顧客的需求擺在一切之上時，往往能帶來回頭生意。」這題考固定搭配 prioritize / put A above B（把 A 看得比 B 重要），above all else 是「凌駕於其他一切之上」的常用說法，因此選 (A)。(B) where 是關係副詞或連接詞，後面要接子句，這裡只有名詞 all else；(C) within（在…之內）、(D) toward（朝向）語意都與「優先於」不合。
+標籤: 介系詞, 片語
+
+## Q113
+
+The engineers claimed that making a slight \_\_\_ to the existing solar panels would make them more effective.
+
+(A) modify
+(B) modified
+(C) modifiable
+(D) modification
+
+答案：D
+解析：句意是「工程師表示，只要對現有的太陽能板做一點小幅修改，就能讓效能更好。」判斷關鍵在空格前有冠詞 a 與形容詞 slight，空格要當 making 的受詞，所以必須填名詞，選 (D) modification（修改）。(A) modify 是動詞原形；(B) modified 是過去式／過去分詞；(C) modifiable 是形容詞（可修改的），都不能被 a slight 修飾當受詞。
+標籤: 詞性, 名詞
+
+## Q118
+
+Manuel Corporation workers will now receive life insurance coverage as one of their employment \_\_\_.
+
+(A) skills
+(B) benefits
+(C) concerns
+(D) deductions
+
+答案：B
+解析：句意是「Manuel 公司的員工現在可以獲得壽險保障，作為其工作福利之一。」壽險保障屬於公司提供給員工的待遇，employment benefits（員工福利）是固定說法，因此選 (B)。(A) skills（技能）是員工具備的能力，不是公司給的；(C) concerns（疑慮、關切）語意不合；(D) deductions（扣除額）指從薪水扣掉的錢，與「receive（獲得）」矛盾。
+標籤: 字彙, 名詞
+
+## Q120
+
+This weekend's Phoenix Marathon is going to take place as planned \_\_\_ the forecast of rainy weather.
+
+(A) aside from
+(B) notwithstanding
+(C) regarding
+(D) according to
+
+答案：B
+解析：句意是「儘管氣象預報說會下雨，本週末的鳳凰城馬拉松仍將照原訂計畫舉行。」前後兩件事（會下雨 vs. 照常舉行）語意相反，需要表讓步的介系詞，(B) notwithstanding（儘管，＝despite / in spite of）最符合。(A) aside from（除了…之外）是排除語氣；(C) regarding（關於）只帶出主題；(D) according to（根據）會變成「依照雨天預報而照常舉行」，邏輯不通。
+標籤: 介系詞, 讓步
+
+## Q121
+
+Visitors to the Shiller Children's Museum are more than \_\_\_ to interact with the items on display.
+
+(A) pleasant
+(B) welcome
+(C) obvious
+(D) brilliant
+
+答案：B
+解析：句意是「Shiller 兒童博物館的參觀者非常歡迎去觸摸互動展示的物品。」這題考固定用法 be (more than) welcome to do something（儘管去做…、非常歡迎做…），more than 在此是「非常」的加強語氣，因此選 (B)。(A) pleasant（令人愉快的）用來形容人或事物給人的感受，不能接 to do 表許可；(C) obvious（明顯的）、(D) brilliant（傑出的）語意都不合。
+標籤: 字彙, 形容詞
+
+## Q124
+
+The musicians practiced in the back room \_\_\_ the stage was being set up.
+
+(A) in order to
+(B) as
+(C) during
+(D) unless
+
+答案：B
+解析：句意是「舞台正在架設的同時，樂手們在後方房間練習。」判斷關鍵在空格後是完整子句 the stage was being set up（主詞＋動詞），所以要用從屬連接詞；語意上兩件事同時發生，選 (B) as（當…的時候）。(A) in order to 後面接原形動詞；(C) during 是介系詞，只能接名詞（during the setup）；(D) unless（除非）語意不合。
+標籤: 連接詞, 從屬連接詞
+
+## Q125
+
+By recycling batteries rather than discarding them, it is possible to \_\_\_ the amount of toxic materials entering landfills.
+
+(A) seize
+(B) reduce
+(C) satisfy
+(D) reserve
+
+答案：B
+解析：句意是「回收電池而不是丟棄，就有可能減少進入掩埋場的有毒物質量。」空格後受詞是 the amount of...（數量），前半句提到回收而非丟棄，語意上應是「減少」，因此選 (B) reduce。(A) seize（抓住、查扣）、(C) satisfy（滿足）、(D) reserve（預留、保留）都無法與「有毒物質的量」形成合理搭配。
+標籤: 字彙, 動詞
+
+## Q130
+
+Failing to file your tax form \_\_\_ may lead to an amendment request from the National Tax Office.
+
+(A) nearly
+(B) moderately
+(C) narrowly
+(D) properly
+
+答案：D
+解析：句意是「沒有正確地申報稅表，可能會收到國稅局要求更正的通知。」空格是修飾動詞 file（申報）的副詞；既然結果是被要求更正，原因就是「沒有依規定正確申報」，因此選 (D) properly（適當地、正確地）。(A) nearly（幾乎）、(B) moderately（適度地）、(C) narrowly（勉強地、狹隘地）語意都與申報表格不合。
+標籤: 字彙, 副詞
