@@ -1129,3 +1129,96 @@ Failing to file your tax form \_\_\_ may lead to an amendment request from the N
 答案：D
 解析：句意是「沒有正確地申報稅表，可能會收到國稅局要求更正的通知。」空格是修飾動詞 file（申報）的副詞；既然結果是被要求更正，原因就是「沒有依規定正確申報」，因此選 (D) properly（適當地、正確地）。(A) nearly（幾乎）、(B) moderately（適度地）、(C) narrowly（勉強地、狹隘地）語意都與申報表格不合。
 標籤: 字彙, 副詞
+
+# 國學閱讀綠本 第六回合
+
+## Q104
+
+Organizing a new product launch requires \_\_\_ among departments.
+
+(A) cooperate
+(B) cooperation
+(C) to cooperate
+(D) cooperative
+
+答案：B
+解析：句意是「籌辦新產品發表會需要各部門之間的合作。」判斷關鍵在空格要當及物動詞 requires 的受詞，且後面接介系詞片語 among departments，所以必須填名詞，選 (B) cooperation（合作）。(A) cooperate 是動詞原形；(C) to cooperate 是不定詞，require 要用 require somebody to do 的結構才會出現不定詞，這裡沒有受詞；(D) cooperative 是形容詞（合作的），不能單獨當受詞。
+標籤: 詞性, 名詞
+
+## Q109
+
+A trade show representative called each participant a month before the event \_\_\_ their attendance.
+
+(A) confirm
+(B) to confirm
+(C) will confirm
+(D) is confirming
+
+答案：B
+解析：句意是「展覽會的接待人員在活動前一個月致電每位參加者，以確認他們是否出席。」句子已有主要動詞 called，空格處要表達「打電話的目的」，因此用不定詞 to confirm 當目的副詞，選 (B)。(A) confirm 是原形動詞，會造成一個句子出現兩個動詞卻沒有連接詞；(C) will confirm、(D) is confirming 同樣是完整的動詞形式，前面沒有 and 或連接詞可以連接兩個子句。
+標籤: 詞性, 不定詞
+
+## Q111
+
+The art historian did copious research while trying to \_\_\_ the painting as an original.
+
+(A) adapt
+(B) generate
+(C) authenticate
+(D) commission
+
+答案：C
+解析：句意是「這位藝術史學家做了大量研究，試圖鑑定這幅畫作為真跡。」判斷關鍵在受詞結構 \_\_\_ the painting as an original（把畫作認定為真品），需要「證明…為真、鑑定真偽」的動詞，選 (C) authenticate。(A) adapt（改編、使適應）、(B) generate（產生、生成）語意不合；(D) commission（委託創作）指出資請人製作，與「做研究驗證真偽」的情境相反。
+標籤: 字彙, 動詞
+
+## Q114
+
+Thanks to hours of practice, the sales team was able to \_\_\_ present its proposal to the client.
+
+(A) confide
+(B) confident
+(C) confiding
+(D) confidently
+
+答案：D
+解析：句意是「多虧了數小時的練習，業務團隊得以自信地向客戶提案。」判斷關鍵在空格夾在 able to 與原形動詞 present 之間，要修飾動詞就得用副詞，選 (D) confidently（有自信地）。(A) confide（吐露秘密）意思不對，且會變成兩個原形動詞連用；(B) confident 是形容詞，不能修飾動詞；(C) confiding 是分詞／形容詞（信賴的），同樣不能修飾 present。
+標籤: 詞性, 副詞
+
+## Q117
+
+The escalators at Davidson Station are subject to \_\_\_ inspection to ensure they are working properly.
+
+(A) routinely
+(B) routine
+(C) routines
+(D) routinize
+
+答案：B
+解析：句意是「Davidson 車站的電扶梯須接受例行檢查，以確保運作正常。」判斷關鍵在 be subject to 的 to 是介系詞，後面接名詞 inspection，空格要修飾這個名詞，因此填形容詞 (B) routine（例行的）。(A) routinely 是副詞，不能修飾名詞；(C) routines 是複數名詞，兩個名詞並排無法構成合理的複合名詞；(D) routinize 是動詞（使例行化）。
+標籤: 詞性, 形容詞
+
+## Q118
+
+\_\_\_ resident of West Bay who earns less than $25,000 a year is eligible to apply for housing assistance.
+
+(A) Most
+(B) Those
+(C) Any
+(D) All
+
+答案：C
+解析：句意是「任何年收入低於 25,000 美元的西灣居民，都符合申請住房補助的資格。」判斷關鍵在主詞是單數可數名詞 resident，主要動詞也是單數的 is eligible，能直接搭配單數可數名詞的限定詞只有 (C) Any（任何一位）。(A) Most、(D) All 後面要接複數名詞（most/all residents）或不可數名詞；(B) Those 是複數指示詞，也要接複數名詞。
+標籤: 文法, 限定詞
+
+## Q122
+
+Due to \_\_\_ economic conditions, the company may decide to stop hiring employees.
+
+(A) worst
+(B) worsen
+(C) worsens
+(D) worsening
+
+答案：D
+解析：句意是「由於經濟狀況持續惡化，公司可能決定停止招聘員工。」Due to 是介系詞片語，後面接名詞 economic conditions，空格要當形容詞修飾這個名詞，選 (D) worsening（日益惡化的，現在分詞當形容詞）。(A) worst 是最高級，前面必須有 the；(B) worsen 是動詞原形、(C) worsens 是第三人稱單數動詞，介系詞後面不能接動詞。
+標籤: 詞性, 分詞
