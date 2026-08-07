@@ -89,6 +89,8 @@ def draw_table(colw, rows, rowh=40, pad=16, title_size=18, cell_size=16):
                 ty = cy + rowh / 2 + size * 0.35
                 if align == "l":
                     g.text(cx + 12, ty, t, size=size, anchor="start", weight=weight, italic=ital)
+                elif align == "r":
+                    g.text(cx + cw - 12, ty, t, size=size, anchor="end", weight=weight, italic=ital)
                 else:
                     g.text(cx + cw / 2, ty, t, size=size, anchor="middle", weight=weight, italic=ital)
             cx += cw
@@ -1234,6 +1236,155 @@ def tc7_98_100():  # 四種家具擺設 Layout 1–4
     return g
 
 
+# ============================ 藍本 TestC8 ============================
+
+def tc8_62_64():  # 街廓地圖：Jackson Street／Riverside Street 與兩排店家、停車場
+    LAND = "#e6e6e6"
+    g = SVG(620, 282)
+    ox, oy, W, H = 14, 14, 592, 252
+    g.rect(ox, oy, W, H, fill=LAND, sw=2.4)                  # 街廓外框（灰底＝空地）
+    bx0, bx1 = 100, 595                                      # 店家／停車場那一列的左右界
+    colw = [171, 140, 184]
+
+    def street(y, name):                                     # 街道帶（灰底、街名置中）
+        g.rect(ox + 2, y, W - 4, 36, fill=LAND, sw=0)
+        g.text(ox + W / 2, y + 26, name, size=20, weight="bold")
+
+    def blocks(y, labels):
+        x = bx0
+        for i, lb in enumerate(labels):
+            g.rect(x, y, colw[i], 76, fill="white", sw=2)
+            lines = lb.split("\n")
+            for j, ln in enumerate(lines):
+                g.text(x + colw[i] / 2, y + 38 + 8 + (j - (len(lines) - 1) / 2) * 22 - 8,
+                       ln, size=17)
+            x += colw[i]
+    street(20, "Jackson Street")
+    blocks(56, ["Bartow\nManufacturing", "Parking Lot A", "Parking Lot B"])
+    street(132, "Riverside Street")
+    blocks(168, ["Pizza Palace", "Parking Lot C", "Parking Lot D"])
+    return g
+
+
+def tc8_65_67():  # 綜合維他命成分標示 PulseTrain Multivitamin
+    g = SVG(420, 232)
+    ox, oy, W, H = 16, 16, 388, 200
+    g.rect(ox, oy, W, H, sw=2.4)
+    g.text(ox + W / 2, 46, "PulseTrain Multivitamin", size=20, weight="bold")
+    g.line(ox, 60, ox + W, 60, sw=1.8)
+    g.text(ox + 16, 82, "Type", size=17, weight="bold", anchor="start")
+    g.text(ox + W - 16, 82, "Daily Value", size=17, weight="bold", anchor="end")
+    g.line(ox, 92, ox + W, 92, sw=1.8)
+    rows = [("Vitamin A", "40%"), ("Vitamin B", "55%"),
+            ("Vitamin C", "70%"), ("Vitamin D", "85%")]
+    for i, (name, val) in enumerate(rows):
+        ty = 92 + (i + 1) * 31
+        g.text(ox + 16, ty - 9, name, size=17, anchor="start")
+        g.text(ox + W - 16, ty - 9, val, size=17, anchor="end")
+        if i < len(rows) - 1:
+            g.line(ox, ty, ox + W, ty, sw=1.4)
+    return g
+
+
+def tc8_68_70():  # 講座課表 Weston Climate Change Lecture Series（時段 × 教室）
+    g = SVG(596, 338)
+    x0, y0 = 16, 16
+    tw, cw = 90, 118
+    titleh, hdrh, rowh = 36, 34, 78
+    W = tw + cw * 4
+    g.rect(x0, y0, W, titleh, fill=HDR, sw=1.6)
+    g.text(x0 + W / 2, y0 + 25, "Weston Climate Change Lecture Series",
+           size=18, weight="bold")
+    hy = y0 + titleh
+    g.rect(x0, hy, tw, hdrh, fill="white", sw=1.6)
+    for i in range(4):
+        g.rect(x0 + tw + i * cw, hy, cw, hdrh, fill="white", sw=1.6)
+        g.text(x0 + tw + i * cw + cw / 2, hy + 23, f"Room {101 + i}", size=15)
+    body = [
+        ("8 A.M.", ["", "", "Reducing\nFood\nWaste", ""]),
+        ("9 A.M.", ["Renewable\nEnergy", "", "", "Cars Are\nthe\nProblem"]),
+        ("10 A.M.", ["", "Sea Levels\nand Cities", "", "Weather\nand Its\nChanges"]),
+    ]
+    for r, (tm, cells) in enumerate(body):
+        ry = hy + hdrh + r * rowh
+        g.rect(x0, ry, tw, rowh, fill="white", sw=1.6)
+        g.text(x0 + tw / 2, ry + rowh / 2 + 6, tm, size=15)
+        for i, c in enumerate(cells):
+            cx = x0 + tw + i * cw
+            g.rect(cx, ry, cw, rowh, fill="white", sw=1.6)
+            if not c:
+                continue
+            lines = c.split("\n")
+            for j, ln in enumerate(lines):
+                g.text(cx + cw / 2, ry + rowh / 2 + 6 + (j - (len(lines) - 1) / 2) * 21,
+                       ln, size=14)
+    g.rect(x0, y0, W, titleh + hdrh + rowh * 3, sw=2.4)
+    return g
+
+
+def tc8_95_97():  # 訂單送達日清單（更新後）
+    g = SVG(520, 232)
+    x0, y0 = 16, 16
+    colw = [220, 248]
+    hdrh, rowh = 62, 34
+    W = sum(colw)
+    g.rect(x0, y0, colw[0], hdrh, fill=HDR, sw=1.6)
+    g.text(x0 + colw[0] / 2, y0 + 38, "Order Number", size=17, weight="bold")
+    g.rect(x0 + colw[0], y0, colw[1], hdrh, fill=HDR, sw=1.6)
+    g.text(x0 + colw[0] + colw[1] / 2, y0 + 26, "Expected Delivery", size=17, weight="bold")
+    g.text(x0 + colw[0] + colw[1] / 2, y0 + 48, "Date (Updated)", size=17, weight="bold")
+    rows = [("8832019", "September 5"), ("8823901", "September 10"),
+            ("8800929", "September 15"), ("8811118", "September 25")]
+    for i, (num, date) in enumerate(rows):
+        ry = y0 + hdrh + i * rowh
+        g.rect(x0, ry, colw[0], rowh, fill="white", sw=1.6)
+        g.text(x0 + colw[0] / 2, ry + rowh / 2 + 6, num, size=16)
+        g.rect(x0 + colw[0], ry, colw[1], rowh, fill="white", sw=1.6)
+        g.text(x0 + colw[0] + colw[1] / 2, ry + rowh / 2 + 6, date, size=16)
+    g.rect(x0, y0, W, hdrh + rowh * 4, sw=2.4)
+    return g
+
+
+def tc8_98_100():  # 庭園配置圖：Barn／Garden／Main Building 與 Area A–D、車道、大門
+    AREA = "#dcdcdc"
+    g = SVG(660, 470)
+    ox, oy, W, H = 22, 26, 596, 400
+    # 外牆：右牆在 Entrance 處留缺口
+    gap_t, gap_b = oy + 300, oy + 360
+    g.line(ox, oy, ox + W, oy, sw=2.4)
+    g.line(ox, oy + H, ox + W, oy + H, sw=2.4)
+    g.line(ox, oy, ox, oy + H, sw=2.4)
+    g.line(ox + W, oy, ox + W, gap_t, sw=2.4)
+    g.line(ox + W, gap_b, ox + W, oy + H, sw=2.4)
+
+    def area(cx, cy, label, w=104, ht=62):                   # 虛線灰底的候選區塊
+        g.rect(cx - w / 2, cy - ht / 2, w, ht, fill=AREA, sw=2, dash="7,5")
+        g.text(cx, cy + 6, label, size=17, weight="bold")
+
+    def ellipse(cx, cy, rx, ry, label, size=17):
+        g.parts.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{rx}" ry="{ry}" '
+                       f'fill="white" stroke="{STROKE}" stroke-width="2"/>')
+        for j, ln in enumerate(label.split("\n")):
+            g.text(cx, cy + 6 + (j - (len(label.split(chr(10))) - 1) / 2) * 22, ln, size=size)
+    area(210, 96, "Area A")
+    area(538, 96, "Area B")
+    area(452, 268, "Area C")
+    area(90, 322, "Area D")
+    ellipse(118, 178, 76, 50, "Barn")
+    ellipse(392, 152, 88, 50, "Garden")
+    ellipse(258, 296, 82, 62, "Main\nBuilding")
+    g.rect(452, 350, 152, 44, fill="white", sw=2)
+    g.text(528, 378, "Driveway", size=17)
+    # 右側大門（縱書）
+    g.line(ox + W + 16, gap_t, ox + W + 16, gap_b, sw=2.4)
+    g.line(ox + W + 10, gap_t, ox + W + 22, gap_t, sw=2)
+    g.line(ox + W + 10, gap_b, ox + W + 22, gap_b, sw=2)
+    g.text(ox + W + 36, (gap_t + gap_b) / 2, "Entrance", size=16)
+    g.parts[-1] = g.parts[-1].replace(
+        '<text ', f'<text transform="rotate(-90 {ox + W + 36} {(gap_t + gap_b) / 2})" ')
+    return g
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -1255,6 +1406,8 @@ IMAGES = {
                "q95-97": tc6_95_97, "q98-100": tc6_98_100},
     "TestC7": {"q62-64": tc7_62_64, "q65-67": tc7_65_67, "q68-70": tc7_68_70,
                "q95-97": tc7_95_97, "q98-100": tc7_98_100},
+    "TestC8": {"q62-64": tc8_62_64, "q65-67": tc8_65_67, "q68-70": tc8_68_70,
+               "q95-97": tc8_95_97, "q98-100": tc8_98_100},
 }
 
 
