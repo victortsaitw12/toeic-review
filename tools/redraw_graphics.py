@@ -1110,7 +1110,24 @@ def tc7_62_64():  # 14 樓平面圖（上排四室／走廊／下排 儲藏室�
     return g
 
 
-def tc7_65_67():  # 音樂廳座位圖：舞台＋Section 1–4（各 2 排 5 位）
+# 已售座位（灰底）：{區塊: {排: [第幾個位子…]}}，排與位子都從 1 起算。
+# 紙本題本的座位有淡灰網底＝已售，但影印掃描把淡灰壓成純白：原掃描 40 個座位內部
+# 只有 30 個非 255 像素（值 191/212/226，28 個連通塊中 26 個是孤立單點）＝雜訊，
+# 且照「非 255 即灰底」判會得到 Section 1 有相鄰空位、答案變 A，與答案卷的 B 矛盾。
+# 因此掃描無法還原，以下分布是**依錄音與官方答案卷反推重建**、非題本原樣：
+#   錄音要 two next to each other, as close to the stage as possible，答案為 Section 2
+#   → Section 1（同樣靠舞台）不能有相鄰空位，Section 2 必須有一組相鄰空位。
+# 若日後拿到看得見灰底的翻拍，直接改這張表重跑本檔即可。
+TC7_SOLD = {
+    1: {1: [1, 2, 3, 4, 5], 2: [1, 2, 4, 5]},        # 只剩第2排中間一個孤立空位
+    2: {1: [1, 2, 3], 2: [1, 2, 3, 4]},              # 第1排右側 c4+c5 相鄰空位＝正解
+    3: {1: [1, 2, 3], 2: [1, 2, 5]},                 # 後排，仍有相鄰空位但離舞台遠
+    4: {1: [1, 2, 5], 2: [1, 4, 5]},
+}
+
+
+def tc7_65_67():  # 音樂廳座位圖：舞台＋Section 1–4（各 2 排 5 位），已售位灰底
+    SOLD_FILL = "#c9c9c9"
     g = SVG(560, 440)
     g.rect(20, 20, 520, 44, sw=2)                            # 舞台
     g.text(280, 50, "Stage", size=20, weight="bold")
@@ -1125,9 +1142,12 @@ def tc7_65_67():  # 音樂廳座位圖：舞台＋Section 1–4（各 2 排 5 �
         g.line(bx + sw_, by, bx + sw_, by + sh)
         g.line(bx, by + sh, bx + sw_, by + sh)
         g.text(bx + sw_ / 2, by + 7, f"Section {i + 1}", size=18)
+        sold = TC7_SOLD.get(i + 1, {})
         for r in range(2):                                   # 座位 2×5
+            taken = sold.get(r + 1, [])
             for c in range(5):
-                g.rect(bx + 16 + c * 44, by + 28 + r * 54, 36, 40, sw=2)
+                fill = SOLD_FILL if (c + 1) in taken else "white"
+                g.rect(bx + 16 + c * 44, by + 28 + r * 54, 36, 40, fill=fill, sw=2)
     return g
 
 
