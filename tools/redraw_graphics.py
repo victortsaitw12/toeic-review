@@ -1061,6 +1061,159 @@ def tc6_98_100():  # 市民大會議程 Town Hall Meeting Agenda
     return draw_table([120, 280], rows, rowh=38)
 
 
+# ============================ 藍本 TestC7 ============================
+
+def tc7_62_64():  # 14 樓平面圖（上排四室／走廊／下排 儲藏室・電梯・1403・1404）
+    g = SVG(620, 330)
+    ox, oy, W, H = 20, 20, 580, 290
+    g.rect(ox, oy, W, H, sw=5)                               # 外牆
+    colw = W / 4
+    top_b = oy + 118                                         # 上排房間下牆
+    bot_t = oy + 168                                         # 下排房間上牆
+    elev_t = oy + 210                                        # 電梯間上牆（比其他室退後）
+
+    def door_h(x, y, w=34, flip=False):                      # 橫牆上的門（開口＋弧）
+        g.line(x, y, x + w, y, stroke="white", sw=4)
+        if flip:                                             # 往上開
+            g.path(f"M{x} {y} a{w} {w} 0 0 1 {w} {-w}", sw=1.8)
+            g.line(x + w, y, x + w, y - w, sw=1.8)
+        else:                                                # 往下開
+            g.path(f"M{x + w} {y} a{w} {w} 0 0 1 {-w} {w}", sw=1.8)
+            g.line(x, y, x, y + w, sw=1.8)
+
+    # 上排四間：Photocopier Room / Room 1401 / Room 1402 / Break Room
+    g.line(ox, top_b, ox + W, top_b)
+    for i in range(1, 4):
+        g.line(ox + i * colw, oy, ox + i * colw, top_b)
+    tops = [["Photocopier", "Room"], ["Room 1401"], ["Room 1402"], ["Break Room"]]
+    for i, lines in enumerate(tops):
+        cx = ox + i * colw + colw / 2
+        for li, ln in enumerate(lines):
+            g.text(cx, oy + 48 + li * 22 - (len(lines) - 1) * 11, ln, size=16)
+        door_h(ox + i * colw + colw - 52, top_b)             # 門靠各室右側
+    # 下排：儲藏室（左，門開在左牆）／電梯間／Room 1403／Room 1404
+    g.line(ox, bot_t, ox + colw, bot_t)
+    g.line(ox + 2 * colw, bot_t, ox + W, bot_t)
+    g.line(ox + colw, elev_t, ox + 2 * colw, elev_t)         # 電梯間上牆
+    for i in (1, 2, 3):
+        g.line(ox + i * colw, bot_t if i != 1 else elev_t, ox + i * colw, oy + H)
+    g.line(ox, bot_t + 4, ox, bot_t + 38, stroke="white", sw=5)   # 儲藏室門開口
+    g.path(f"M{ox} {bot_t + 38} a34 34 0 0 1 34 -34", sw=1.8)
+    g.line(ox, bot_t + 38, ox, bot_t + 4, sw=1.8)
+    g.text(ox + colw / 2, oy + 216, "Storage", size=16)
+    g.text(ox + colw / 2, oy + 238, "Closet", size=16)
+    g.text(ox + 1.5 * colw, oy + 252, "Elevators", size=16)
+    g.text(ox + 2.5 * colw, oy + 236, "Room 1403", size=16)
+    g.text(ox + 3.5 * colw, oy + 236, "Room 1404", size=16)
+    door_h(ox + 2 * colw + 12, bot_t, flip=True)
+    door_h(ox + 3 * colw + 12, bot_t, flip=True)
+    return g
+
+
+def tc7_65_67():  # 音樂廳座位圖：舞台＋Section 1–4（各 2 排 5 位）
+    g = SVG(560, 440)
+    g.rect(20, 20, 520, 44, sw=2)                            # 舞台
+    g.text(280, 50, "Stage", size=20, weight="bold")
+    sw_, sh = 244, 140                                       # 各區塊
+    for i in range(4):
+        bx = 20 + (i % 2) * (sw_ + 32)
+        by = 100 + (i // 2) * (sh + 32)
+        # 上邊留缺口放標題
+        g.line(bx, by, bx + 52, by)
+        g.line(bx + sw_ - 52, by, bx + sw_, by)
+        g.line(bx, by, bx, by + sh)
+        g.line(bx + sw_, by, bx + sw_, by + sh)
+        g.line(bx, by + sh, bx + sw_, by + sh)
+        g.text(bx + sw_ / 2, by + 7, f"Section {i + 1}", size=18)
+        for r in range(2):                                   # 座位 2×5
+            for c in range(5):
+                g.rect(bx + 16 + c * 44, by + 28 + r * 54, 36, 40, sw=2)
+    return g
+
+
+def tc7_68_70():  # 課程表 Class / Day
+    rows = [
+        [h("Class"), h("Day")],
+        ["Oil Painting", "Thursday"],
+        ["Figure Drawing", "Friday"],
+        ["Watercolors", "Saturday"],
+        ["Sculpting", "Sunday"],
+    ]
+    return draw_table([210, 180], rows, rowh=40)
+
+
+def tc7_95_97():  # 一週行程（週一～週四）
+    g = SVG(520, 150)
+    x0, y0, colw, hdrh, rowh = 16, 20, 122, 34, 74
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday"]
+    cells = [["Meeting with", "Professor", "Parker"], ["Convention", "Lecture"],
+             ["Awards", "Banquet"], ["Writing", "Workshop"]]
+    for i, d in enumerate(days):
+        g.rect(x0 + i * colw, y0, colw, hdrh, fill=HDR, sw=1.6)
+        g.text(x0 + i * colw + colw / 2, y0 + 23, d, size=15)
+        g.rect(x0 + i * colw, y0 + hdrh, colw, rowh, sw=1.6)
+        lines = cells[i]
+        for li, ln in enumerate(lines):
+            g.text(x0 + i * colw + colw / 2,
+                   y0 + hdrh + rowh / 2 + 6 + (li - (len(lines) - 1) / 2) * 20, ln, size=14)
+    g.rect(x0, y0, colw * 4, hdrh + rowh, sw=2.4)
+    return g
+
+
+def tc7_98_100():  # 四種家具擺設 Layout 1–4
+    FUR = "#c9c9c9"
+
+    def chair(g, cx, cy, w=42, h=38):                        # 單人扶手椅（俯視）
+        g.rect(cx - w / 2, cy - h / 2, w, h, fill=FUR, sw=2, rx=5)
+        g.line(cx - w / 2 + 6, cy - h / 2, cx + w / 2 - 6, cy - h / 2, sw=2.4)
+
+    def couch(g, cx, cy, w=132, h=40, seats=3, vert=False):  # 多人沙發
+        if vert:
+            w, h = h, w
+        g.rect(cx - w / 2, cy - h / 2, w, h, fill=FUR, sw=2, rx=5)
+        for s in range(1, seats):
+            if vert:
+                yy = cy - h / 2 + s * h / seats
+                g.line(cx - w / 2, yy, cx + w / 2, yy, sw=1.6)
+            else:
+                xx = cx - w / 2 + s * w / seats
+                g.line(xx, cy - h / 2, xx, cy + h / 2, sw=1.6)
+
+    def table(g, cx, cy, w, h):                              # 茶几
+        g.rect(cx - w / 2, cy - h / 2, w, h, fill="#efefef", sw=2)
+
+    g = SVG(520, 460)
+    cw, ch = 250, 220
+    for i in range(4):
+        ox = 10 + (i % 2) * cw
+        oy = 10 + (i // 2) * ch
+        g.rect(ox, oy, cw, ch, sw=2)
+        g.text(ox + cw / 2, oy + 30, f"Layout {i + 1}", size=18)
+        cx, cy = ox + cw / 2, oy + 124
+        if i == 0:                                           # 桌子橫放＋左右單椅＋下方沙發
+            table(g, cx, cy - 26, 110, 52)
+            chair(g, cx - 92, cy - 26)
+            chair(g, cx + 92, cy - 26)
+            couch(g, cx, cy + 52)
+        elif i == 1:                                         # 桌子直放＋兩側各兩張單椅
+            table(g, cx, cy, 62, 118)
+            for dy in (-32, 32):
+                chair(g, cx - 82, cy + dy)
+                chair(g, cx + 82, cy + dy)
+        elif i == 2:                                         # 桌子直放＋兩側直式沙發＋下方單椅
+            table(g, cx, cy - 12, 60, 116)
+            couch(g, cx - 84, cy - 12, seats=3, vert=True)
+            couch(g, cx + 84, cy - 12, seats=3, vert=True)
+            chair(g, cx, cy + 72)
+        else:                                                # 上方單椅＋桌子＋左右單椅＋下方沙發
+            chair(g, cx, cy - 62)
+            table(g, cx, cy + 2, 118, 50)
+            chair(g, cx - 92, cy + 2)
+            chair(g, cx + 92, cy + 2)
+            couch(g, cx, cy + 76)
+    return g
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -1080,6 +1233,8 @@ IMAGES = {
                "q95-97": tc5_95_97, "q98-100": tc5_98_100},
     "TestC6": {"q62-64": tc6_62_64, "q65-67": tc6_65_67, "q68-70": tc6_68_70,
                "q95-97": tc6_95_97, "q98-100": tc6_98_100},
+    "TestC7": {"q62-64": tc7_62_64, "q65-67": tc7_65_67, "q68-70": tc7_68_70,
+               "q95-97": tc7_95_97, "q98-100": tc7_98_100},
 }
 
 
