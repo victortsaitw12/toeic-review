@@ -1222,3 +1222,96 @@ Due to \_\_\_ economic conditions, the company may decide to stop hiring employe
 答案：D
 解析：句意是「由於經濟狀況持續惡化，公司可能決定停止招聘員工。」Due to 是介系詞片語，後面接名詞 economic conditions，空格要當形容詞修飾這個名詞，選 (D) worsening（日益惡化的，現在分詞當形容詞）。(A) worst 是最高級，前面必須有 the；(B) worsen 是動詞原形、(C) worsens 是第三人稱單數動詞，介系詞後面不能接動詞。
 標籤: 詞性, 分詞
+
+# 國學閱讀綠本 第七回合
+
+## Q107
+
+Investing in safe financial products can protect \_\_\_ from experiencing significant losses.
+
+(A) retire
+(B) retiree
+(C) retirees
+(D) retired
+
+答案：C
+解析：句意是「投資安全的金融商品，可以保護退休人士免於承受重大損失。」判斷關鍵在空格要當及物動詞 protect 的受詞，必須是名詞；protect somebody from V-ing 的對象是「人」，且這裡泛指一般退休族，用複數 (C) retirees（退休人士）最合適。(A) retire 是動詞原形；(B) retiree 是單數可數名詞，前面沒有 a／the 不能單獨使用；(D) retired 是形容詞（退休的），不能當受詞。
+標籤: 詞性, 名詞
+
+## Q109
+
+The flight attendant asked that all headphones \_\_\_ returned before landing.
+
+(A) are
+(B) be
+(C) were
+(D) to be
+
+答案：B
+解析：句意是「空服員要求所有耳機在降落前歸還。」判斷關鍵在 ask that... 這類表「要求、建議、命令」的動詞，後面 that 子句要用假設語氣，動詞一律用原形（should 省略），這裡是被動語態，所以填 (B) be returned。(A) are、(C) were 是有時態變化的 be 動詞，不符合假設語氣的原形規則；(D) to be 是不定詞，that 子句裡必須有完整的動詞。
+標籤: 假設語氣, 動詞原形
+
+## Q112
+
+Residents are deeply divided on \_\_\_ to support during the next mayoral election.
+
+(A) that
+(B) whom
+(C) which
+(D) whose
+
+答案：B
+解析：句意是「居民對於下屆市長選舉要支持誰，意見嚴重分歧。」判斷關鍵在介系詞 on 後面接的是「疑問詞＋不定詞」結構，而空格同時要當 support 的受詞；選舉支持的對象是人，用受格疑問詞 (B) whom。(A) that 不能引導疑問詞＋不定詞；(C) which 指「哪一個」，後面通常要接名詞或有明確的選項範圍，且不用於泛指人選；(D) whose 是所有格，後面必須接名詞（whose candidate）。
+標籤: 代名詞, 疑問詞
+
+## Q113
+
+Studies show that managers \_\_\_ in conflict resolution build stronger and more effective teams.
+
+(A) signed
+(B) submitted
+(C) trained
+(D) thanked
+
+答案：C
+解析：句意是「研究顯示，受過衝突處理訓練的主管能建立更穩固、更有效率的團隊。」判斷關鍵在空格是修飾 managers 的過去分詞，後面接介系詞 in，要能形成 be trained in something（在某方面受過訓練）的搭配，選 (C) trained。(A) signed（簽署的）、(B) submitted（被提交的）語意不合，主詞是人；(D) thanked（被感謝的）雖然可以用於人，但與 in conflict resolution 及「帶出更強團隊」的因果關係不合。
+標籤: 字彙, 分詞
+
+## Q114
+
+New employees of Hislop Industries must complete \_\_\_ training courses within their first month of employment.
+
+(A) attentive
+(B) intelligent
+(C) permanent
+(D) mandatory
+
+答案：D
+解析：句意是「Hislop 工業的新進員工必須在到職第一個月內完成必修的訓練課程。」判斷關鍵在句中的 must complete（必須完成）與 within their first month（期限），呼應「強制性的」課程，選 (D) mandatory（強制的、必修的）。(A) attentive（專注的）用來形容人；(B) intelligent（聰明的）也是形容人；(C) permanent（永久的）與有期限的訓練課程矛盾。
+標籤: 字彙, 形容詞
+
+## Q126
+
+The director of operations aims to \_\_\_ the aquarium with a state-of-the-art filtration system.
+
+(A) oblige
+(B) equip
+(C) certify
+(D) revolve
+
+答案：B
+解析：句意是「營運總監打算為水族館配備最先進的過濾系統。」判斷關鍵在 \_\_\_ A with B 的結構，要能表示「為 A 配備 B」，選 (B) equip（配備、裝設）。(A) oblige（迫使）常用 oblige somebody to do；(C) certify（認證）受詞是資格或文件，不搭配 with 設備；(D) revolve（旋轉）是不及物動詞，後面不能直接接受詞。
+標籤: 字彙, 動詞
+
+## Q130
+
+Restaurants have been opening near the new apartment complex with increasing \_\_\_ to serve the residents.
+
+(A) disagreement
+(B) frequency
+(C) knowledge
+(D) limitation
+
+答案：B
+解析：句意是「為了服務這些住戶，新公寓大樓附近的餐廳開幕得越來越頻繁。」判斷關鍵在 with increasing \_\_\_ 是修飾「開店」這個動作的副詞片語，與 have been opening（持續發生）呼應的是「次數」，選 (B) frequency（頻率），with increasing frequency 是固定用法，等於 more and more frequently。(A) disagreement（意見不合）、(C) knowledge（知識）、(D) limitation（限制）都無法說明開店的頻繁程度。
+標籤: 字彙, 名詞
