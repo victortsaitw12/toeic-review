@@ -1248,7 +1248,7 @@ The flight attendant asked that all headphones \_\_\_ returned before landing.
 (D) to be
 
 答案：B
-解析：句意是「空服員要求所有耳機在降落前歸還。」判斷關鍵在 ask that... 這類表「要求、建議、命令」的動詞，後面 that 子句要用假設語氣，動詞一律用原形（should 省略），這裡是被動語態，所以填 (B) be returned。(A) are、(C) were 是有時態變化的 be 動詞，不符合假設語氣的原形規則；(D) to be 是不定詞，that 子句裡必須有完整的動詞。
+解析：句意是「空服員要求所有耳機在降落前歸還。」判斷關鍵在 ask that... 這類表「要求、建議、命令」的動詞，後面 that 子句要用假設語氣，動詞一律用原形（should 省略），這裡是被動語態，所以填 (B) be returned。(A) are、(C) were 是有時態變化的 be 動詞，不符合假設語氣的原形規則；(D) to be 是不定詞，that 子句裡必須有完整的動詞。 ▍【同類字整理】除了 ask，這三類字後面的 that 子句都要用原形： ①動詞（口訣：一堅持、二建議、三要求、四命令）── 要求類 ask / request / require / demand / urge；建議類 suggest / recommend / propose / advise；堅持類 insist；命令規定類 order / command / direct / mandate / stipulate；其他 prefer / desire / move（動議）。例：The manager insisted that the report BE submitted by Friday.（不是 is／was） ②形容詞，句型 It is + adj + that + S + 原形 ── essential / important / imperative / necessary / vital / crucial / urgent / advisable / mandatory / desirable / best。例：It is imperative that every employee ATTEND the safety briefing.（不是 attends） ③名詞（上面動詞的名詞形，接同位語 that 子句）── suggestion / recommendation / request / demand / proposal / requirement / insistence / order。例：Her recommendation that the deadline BE extended was approved. ▍【兩個陷阱】㊀被動語態時只留 be：像本題 that all headphones BE returned，空格填 be，不是 are／were／to be。㊁suggest、insist 不一定用原形 ── 當它們表示「顯示、暗示」或「主張某個既成事實」時照正常時態走：The data suggests that sales HAVE declined.（顯示事實）、He insisted that he WAS innocent.（主張事實）；但 He insisted that she LEAVE.（要求她離開）就要用原形。判斷法：那件事還沒發生、是希望對方去做的 → 用原形；已經是事實、只是在陳述 → 正常時態。
 標籤: 假設語氣, 動詞原形
 
 ## Q112
