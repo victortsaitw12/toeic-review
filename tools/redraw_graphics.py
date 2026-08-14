@@ -1385,6 +1385,255 @@ def tc8_98_100():  # 庭園配置圖：Barn／Garden／Main Building 與 Area A�
     return g
 
 
+# ============================ 藍本 TestC9 ============================
+
+def _wavy(g, x0, x1, y, amp=5, step=17, down=True):
+    """收據撕邊：一連串半圓弧"""
+    d = f"M{x0} {y}"
+    x = x0
+    sweep = 1 if down else 0
+    while x + step <= x1:
+        d += f" a{step / 2} {amp} 0 0 {sweep} {step} 0"
+        x += step
+    if x < x1:
+        d += f" L{x1} {y}"
+    g.path(d, fill="none", sw=1.8)
+
+
+def tc9_62_64():  # 收據 SALES RECEIPT（撕邊、四項商品＋信用卡總額）
+    g = SVG(470, 330)
+    ox, oy, W = 24, 24, 420
+    rows = [("Decorative Vase", "$74.99"), ("Bed Sheet", "$19.95"),
+            ("Window Blind", "$149.99"), ("Table Cloth", "$21.85")]
+    top, bot = oy + 12, oy + 12 + 262
+    g.line(ox, top, ox, bot, sw=1.8)
+    g.line(ox + W, top, ox + W, bot, sw=1.8)
+    _wavy(g, ox, ox + W, top, down=False)
+    _wavy(g, ox, ox + W, bot, down=True)
+    g.text(ox + 22, top + 44, "SALES RECEIPT", size=20, anchor="start", weight="bold")
+    ry = top + 60
+    for name, price in rows:
+        g.line(ox + 18, ry, ox + W - 18, ry, sw=1.4)
+        g.text(ox + 22, ry + 26, name, size=17, anchor="start")
+        g.text(ox + W - 22, ry + 26, price, size=17, anchor="end")
+        ry += 36
+    g.line(ox + 18, ry, ox + W - 18, ry, sw=2.6)
+    g.text(ox + 22, ry + 28, "Total", size=17, anchor="start", weight="bold")
+    g.text(ox + 74, ry + 28, "(Paid by Credit Card)", size=17, anchor="start")
+    g.text(ox + W - 22, ry + 28, "$266.78", size=17, anchor="end")
+    return g
+
+
+def tc9_65_67():  # 四款筆記本封面圖案 Design 1–4（花／星／笑臉／愛心）
+    g = SVG(520, 320)
+    cw, ch, ox, oy = 246, 146, 12, 12
+    for i in range(4):
+        cx = ox + (i % 2) * cw
+        cy = oy + (i // 2) * ch
+        g.rect(cx, cy, cw, ch, sw=2)
+        g.text(cx + cw / 2, cy + 28, f"Design {i + 1}", size=17)
+    # Design 1：四瓣花（四個實心圓＋白色圓心）
+    fx, fy = ox + cw / 2, oy + 92
+    for dx, dy in [(-24, -24), (24, -24), (-24, 24), (24, 24)]:
+        g.circle(fx + dx, fy + dy, 27, fill="#111", sw=0)
+    g.circle(fx, fy, 22, fill="white", sw=0)
+    # Design 2：八角星（長短芒交錯）
+    sx, sy = ox + cw + cw / 2, oy + 92
+    pts = []
+    for k in range(16):
+        a = math.radians(-90 + k * 22.5)
+        r = 46 if k % 2 == 0 else 13
+        pts.append((sx + r * math.cos(a), sy + r * math.sin(a)))
+    g.poly([(f"{x:.1f}", f"{y:.1f}") for x, y in pts], fill="#111", sw=1.5)
+    for k in range(0, 16, 2):                                # 芒上的稜線
+        a = math.radians(-90 + k * 22.5)
+        g.line(f"{sx:.1f}", f"{sy:.1f}",
+               f"{sx + 46 * math.cos(a):.1f}", f"{sy + 46 * math.sin(a):.1f}",
+               sw=1.2, stroke="white")
+    # Design 3：笑臉
+    mx, my = ox + cw / 2, oy + ch + 92
+    g.circle(mx, my, 44, fill="white", sw=2.4)
+    g.circle(mx - 15, my - 13, 4, fill="#111", sw=0)
+    g.circle(mx + 15, my - 13, 4, fill="#111", sw=0)
+    g.path(f"M{mx - 24} {my + 8} q24 26 48 0", fill="none", sw=2.6)
+    # Design 4：實心愛心
+    hx, hy = ox + cw + cw / 2, oy + ch + 68
+    g.path(f"M{hx} {hy + 76} C{hx - 62} {hy + 34} {hx - 46} {hy - 12} {hx} {hy + 16} "
+           f"C{hx + 46} {hy - 12} {hx + 62} {hy + 34} {hx} {hy + 76} Z", fill="#111", sw=1.5)
+    return g
+
+
+def tc9_68_70():  # 樂器教室師資表 Lewis Instruments Instructors
+    rows = [
+        [{"t": "Lewis Instruments Instructors", "span": 2, "bold": True, "fill": HDR}],
+        [h("Instrument"), h("Teacher")],
+        ["Guitar", "Matt Hope"],
+        ["Piano", "Omar Yanis"],
+        ["Drums", "Mavis Liston"],
+        ["Violin", "Sue Johnson"],
+    ]
+    return draw_table([200, 220], rows, rowh=38)
+
+
+def tc9_95_97():  # 購物中心店家配置 Gibson Mall
+    rows = [
+        [{"t": "Gibson Mall", "span": 2, "bold": True, "fill": HDR}],
+        [h("Store"), h("Wing")],
+        ["Kids Palace", "North"],
+        ["Vincent Books", "East"],
+        ["The Nook", "South"],
+        ["Readtopia", "West"],
+    ]
+    return draw_table([210, 170], rows, rowh=38)
+
+
+def _star(g, cx, cy, r, filled):
+    pts = []
+    for k in range(10):
+        a = math.radians(-90 + k * 36)
+        rr = r if k % 2 == 0 else r * 0.42
+        pts.append((f"{cx + rr * math.cos(a):.1f}", f"{cy + rr * math.sin(a):.1f}"))
+    g.poly(pts, fill="#111" if filled else "white", sw=1.4)
+
+
+def tc9_98_100():  # 追蹤問卷結果（星等評分）
+    g = SVG(520, 260)
+    ox, oy = 16, 16
+    colw = [268, 200]
+    hdrh, rowh = 60, 34
+    W = sum(colw)
+    g.rect(ox, oy, W, hdrh, fill=HDR, sw=1.6)
+    g.text(ox + W / 2, oy + 26, "Follow-up Customer Survey Results", size=17, weight="bold")
+    g.text(ox + W / 2, oy + 48, "(Average Scores)", size=16)
+    rows = [("Store location", 3), ("Staff friendliness", 4),
+            ("Interior design", 2), ("Service timeliness", 2)]
+    for i, (label, score) in enumerate(rows):
+        ry = oy + hdrh + i * rowh
+        g.rect(ox, ry, colw[0], rowh, fill="white", sw=1.6)
+        g.text(ox + 14, ry + rowh / 2 + 6, label, size=16, anchor="start")
+        g.rect(ox + colw[0], ry, colw[1], rowh, fill="white", sw=1.6)
+        for s in range(5):
+            _star(g, ox + colw[0] + 34 + s * 33, ry + rowh / 2, 12, s < score)
+    g.rect(ox, oy, W, hdrh + rowh * 4, sw=2.4)
+    return g
+
+
+# ============================ 藍本 TestC10 ============================
+
+def tc10_62_64():  # 電子信箱收件匣（四封信的寄件者與主旨）
+    g = SVG(520, 300)
+    ox, oy, W = 16, 16, 488
+    hdrh, rowh = 46, 56
+    g.rect(ox, oy, W, hdrh, fill="white", sw=1.6)
+    g.text(ox + W / 2 - 26, oy + 30, "Inbox", size=19, weight="bold")
+    g.path(f"M{ox + W / 2 - 92} {oy + 24} h30", fill="none", sw=1.8)          # → 箭頭
+    g.poly([(ox + W / 2 - 62, oy + 24), (ox + W / 2 - 72, oy + 19),
+            (ox + W / 2 - 72, oy + 29)], fill="#111", sw=1)
+    mails = [("Chau Nguyen", "Catering Meal"), ("Kayla Baker", "Banquet Hall Invoice"),
+             ("Javier Valencia", "Beeman Guest List"), ("Andre Wood", "Lunch Meeting")]
+    for i, (frm, subj) in enumerate(mails):
+        ry = oy + hdrh + i * rowh
+        g.rect(ox, ry, W, rowh, fill="white", sw=1.6)
+        g.rect(ox + 16, ry + rowh / 2 - 11, 22, 22, fill="white", sw=1.8)     # 勾選方框
+        g.text(ox + 54, ry + 22, "From:", size=15, anchor="start", weight="bold")
+        g.text(ox + 110, ry + 22, frm, size=15, anchor="start")
+        g.text(ox + 70, ry + 45, "»", size=15, anchor="start", fill="#888")
+        g.text(ox + 86, ry + 45, "Subject:", size=15, anchor="start", weight="bold")
+        g.text(ox + 164, ry + 45, subj, size=15, anchor="start")
+    g.rect(ox, oy, W, hdrh + rowh * 4, sw=2.2)
+    return g
+
+
+def tc10_65_67():  # 影印紙折價券 Miller's Office Supplies
+    g = SVG(470, 310)
+    ox, oy, W, H = 24, 22, 422, 268
+    g.rect(ox + 6, oy + 6, W, H, fill="#111", sw=0)                           # 陰影邊
+    g.rect(ox, oy, W, H, fill="white", sw=2.2)
+    g.text(ox + W / 2, oy + 46, "Miller's Office Supplies", size=22, weight="bold")
+    g.text(ox + W / 2, oy + 76, "Paper Product Coupon", size=20)
+    cx1, cx2 = ox + 130, ox + 292
+    g.text(cx1, oy + 128, "Buy", size=19, weight="bold")
+    g.text(cx2, oy + 128, "Receive", size=19, weight="bold")
+    tiers = [("1 pack", "5 percent off"), ("2 packs", "10 percent off"),
+             ("3 packs", "15 percent off"), ("4 packs", "20 percent off")]
+    for i, (buy, get) in enumerate(tiers):
+        ty = oy + 162 + i * 27
+        g.text(cx1, ty, buy, size=18)
+        g.text(cx2, ty, get, size=18)
+    return g
+
+
+def tc10_68_70():  # 單車行維修估價單 Bicycle World Inc.
+    g = SVG(430, 400)
+    ox, oy, W = 24, 20, 372
+    top, bot = oy + 14, oy + 352
+    g.line(ox, top, ox, bot, sw=1.8)
+    g.line(ox + W, top, ox + W, bot, sw=1.8)
+    _wavy(g, ox, ox + W, top, down=False)
+
+    def dots(y):                                                            # 點狀分隔線
+        x = ox + 22
+        while x < ox + W - 22:
+            g.circle(x, y, 2.2, fill="#111", sw=0)
+            x += 11
+    g.text(ox + W / 2, top + 46, "Bicycle World Inc.", size=20, weight="bold")
+    dots(top + 20)
+    dots(top + 62)
+    g.text(ox + 22, top + 96, "Service Request Number: 2534", size=16, anchor="start")
+    g.text(ox + 22, top + 140, "Part", size=17, anchor="start", weight="bold")
+    g.text(ox + W - 22, top + 140, "Price", size=17, anchor="end", weight="bold")
+    parts = [("Tire", "$105"), ("Brake pads", "$50"), ("Chain", "$35"), ("Cable", "$5")]
+    ry = top + 152
+    for name, price in parts:
+        g.line(ox + 22, ry, ox + W - 22, ry, sw=1.4)
+        g.text(ox + 22, ry + 26, name, size=16, anchor="start")
+        g.text(ox + W - 22, ry + 26, price, size=16, anchor="end")
+        ry += 34
+    g.line(ox + 22, ry, ox + W - 22, ry, sw=1.4)
+    g.text(ox + 22, ry + 26, "TOTAL DUE", size=17, anchor="start", weight="bold")
+    g.text(ox + W - 22, ry + 26, "$195", size=17, anchor="end")
+    return g
+
+
+def tc10_95_97():  # 圓餅圖 Futura Electric Sales by Product Line
+    g = SVG(420, 380)
+    g.rect(12, 12, 396, 356, fill="white", sw=2)
+    g.text(210, 48, "Futura Electric", size=19, weight="bold")
+    g.text(210, 74, "Sales by Product Line", size=19, weight="bold")
+    cx, cy, r = 210, 230, 118
+    slices = [("Ovens", 40, "#3b3b3b", "white"), ("Toasters", 30, "#f2f2f2", "#111"),
+              ("Electric\nBlankets", 20, "#b4b4b4", "#111"), ("Heaters", 10, "#6f6f6f", "white")]
+    ang = -90.0
+    for name, pct, col, tcol in slices:
+        sweep = pct / 100 * 360
+        a0, a1 = math.radians(ang), math.radians(ang + sweep)
+        x0, y0 = cx + r * math.cos(a0), cy + r * math.sin(a0)
+        x1, y1 = cx + r * math.cos(a1), cy + r * math.sin(a1)
+        large = 1 if sweep > 180 else 0
+        g.path(f"M{cx} {cy} L{x0:.1f} {y0:.1f} A{r} {r} 0 {large} 1 {x1:.1f} {y1:.1f} Z",
+               fill=col, sw=2)
+        mid = math.radians(ang + sweep / 2)
+        lr = 0.62 if pct >= 20 else 0.74
+        lx, ly = cx + r * lr * math.cos(mid), cy + r * lr * math.sin(mid)
+        lines = name.split("\n") + [f"{pct}%"]
+        for j, ln in enumerate(lines):
+            g.text(f"{lx:.1f}", f"{ly + (j - (len(lines) - 1) / 2) * 19 + 6:.1f}",
+                   ln, size=15, weight="bold", fill=tcol)
+        ang += sweep
+    return g
+
+
+def tc10_98_100():  # 各分公司電話一覽
+    rows = [
+        [h("Office"), h("Phone number")],
+        ["Denver", "555-2466"],
+        ["Seattle", "555-9183"],
+        ["Tacoma", "555-7833"],
+        ["Phoenix", "555-3422"],
+    ]
+    return draw_table([190, 220], rows, rowh=38)
+
+
 IMAGES = {
     "Test1": {"q62-64": t1_62_64, "q65-67": t1_65_67, "q68-70": t1_68_70,
               "q95-97": t1_95_97, "q98-100": t1_98_100},
@@ -1408,6 +1657,10 @@ IMAGES = {
                "q95-97": tc7_95_97, "q98-100": tc7_98_100},
     "TestC8": {"q62-64": tc8_62_64, "q65-67": tc8_65_67, "q68-70": tc8_68_70,
                "q95-97": tc8_95_97, "q98-100": tc8_98_100},
+    "TestC9": {"q62-64": tc9_62_64, "q65-67": tc9_65_67, "q68-70": tc9_68_70,
+               "q95-97": tc9_95_97, "q98-100": tc9_98_100},
+    "TestC10": {"q62-64": tc10_62_64, "q65-67": tc10_65_67, "q68-70": tc10_68_70,
+                "q95-97": tc10_95_97, "q98-100": tc10_98_100},
 }
 
 
