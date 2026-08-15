@@ -1333,7 +1333,7 @@ Mr. McGuire needs only one more issue of a rare comic book series to have a \_\_
 
 ## Q114
 
-In the event that the competition results in a tie, the price money will be divided \_\_\_ both contestants.
+In the event that the competition results in a tie, the prize money will be divided \_\_\_ both contestants.
 
 (A) within
 (B) off
