@@ -1315,3 +1315,83 @@ Restaurants have been opening near the new apartment complex with increasing \_\
 答案：B
 解析：句意是「為了服務這些住戶，新公寓大樓附近的餐廳開幕得越來越頻繁。」判斷關鍵在 with increasing \_\_\_ 是修飾「開店」這個動作的副詞片語，與 have been opening（持續發生）呼應的是「次數」，選 (B) frequency（頻率），with increasing frequency 是固定用法，等於 more and more frequently。(A) disagreement（意見不合）、(C) knowledge（知識）、(D) limitation（限制）都無法說明開店的頻繁程度。
 標籤: 字彙, 名詞
+
+# 國學閱讀綠本 第八回合
+
+## Q110
+
+Mr. McGuire needs only one more issue of a rare comic book series to have a \_\_\_ set.
+
+(A) completion
+(B) complete
+(C) completer
+(D) completeness
+
+答案：B
+解析：句意是「McGuire 先生只要再多一期，就能湊齊這套稀有漫畫。」判斷關鍵在空格夾在冠詞 a 與名詞 set 之間，這個位置只能放形容詞，選 (B) complete（完整的）。(A) completion（完成）是名詞，a completion set 兩個名詞硬湊不成合理的複合名詞；(C) completer 不是常用的形容詞比較級（complete 是「完整」這種絕對概念，本來就不比較）；(D) completeness（完整性）也是名詞，不能修飾 set。
+標籤: 詞性, 形容詞
+
+## Q114
+
+In the event that the competition results in a tie, the price money will be divided \_\_\_ both contestants.
+
+(A) within
+(B) off
+(C) along
+(D) between
+
+答案：D
+解析：句意是「萬一比賽結果平手，獎金將由兩位參賽者平分。」判斷關鍵在 a tie（平手）與 both contestants（兩位參賽者）點明只有「兩個人」，分配給兩者之間用 (D) between。(A) within（在…之內）用於範圍或期限；(B) off（離開、脫離）語意不合；(C) along（沿著）用於線狀的路徑。補充：三者以上平分要用 among，例如 divided among the three winners。
+標籤: 介系詞
+
+## Q116
+
+Mr. Chen has nearly 30 years of advertising experience, making him a \_\_\_ professional in his field.
+
+(A) seasons
+(B) seasonal
+(C) seasoned
+(D) seasonally
+
+答案：C
+解析：句意是「陳先生有將近 30 年的廣告資歷，使他成為業界經驗老到的專業人士。」判斷關鍵在空格在冠詞 a 與名詞 professional 之間要放形容詞，而且要呼應前面的 30 年資歷，選 (C) seasoned（經驗豐富的、老練的）。(A) seasons 是名詞複數或動詞三單，不能修飾名詞；(B) seasonal 是「季節性的」，a seasonal professional 變成「季節性上工的人」，與 30 年資歷的稱讚語氣不合；(D) seasonally 是副詞，不能修飾名詞。
+標籤: 字彙, 形容詞
+
+## Q120
+
+The town of Hamilton has seven parks, all of \_\_\_ have hosted outdoor concerts at one time or another.
+
+(A) them
+(B) those
+(C) which
+(D) theirs
+
+答案：C
+解析：句意是「Hamilton 鎮有七座公園，這些公園都曾在不同時期舉辦過戶外音樂會。」判斷關鍵在逗號後面出現了另一個動詞 have hosted，卻沒有連接詞，因此空格必須是能兼作連接詞的關係代名詞；先行詞是 seven parks（物），用 (C) which，形成 all of which 引導的非限定子句。(A) them、(B) those、(D) theirs 都只是代名詞，沒有連接功能，會造成兩個子句連寫（若要用 them，前面得改成 and all of them have hosted…）。
+標籤: 關係代名詞, 非限定
+
+## Q127
+
+During his acceptance speech for the Businessperson of the Year Award, Mr. Gordon expressed \_\_\_ for his dedicated team members.
+
+(A) commitment
+(B) interest
+(C) tribute
+(D) appreciation
+
+答案：D
+解析：句意是「Gordon 先生在年度企業人士獎的得獎感言中，表達了對團隊成員盡心付出的感謝。」判斷關鍵在得獎感言＋dedicated team members（盡心的團隊成員），要表達的是謝意，且 express appreciation for something／somebody 是固定搭配，選 (D) appreciation（感謝、賞識）。(A) commitment（承諾、投入）搭配的介系詞是 to，express commitment to；(B) interest（興趣）搭配 in，且對自己團隊「表達興趣」語意奇怪；(C) tribute（讚頌）不與 express 連用，慣用說法是 pay tribute to somebody。
+標籤: 字彙, 名詞
+
+## Q128
+
+Visitors are not allowed in certain sections of the building, \_\_\_ are they permitted to wander around without a guide.
+
+(A) so
+(B) during
+(C) nor
+(D) though
+
+答案：C
+解析：句意是「訪客不得進入大樓的某些區域，也不准在沒有導覽人員陪同下四處走動。」判斷關鍵在空格後面是 are they permitted 的倒裝語序（be 動詞跑到主詞前面），這是否定副詞或 nor 置句首才會出現的結構；前一句是否定句，後面要接續另一個否定，用 (C) nor（也不）。(A) so 表示結果，且 so 開頭要用正常語序；(B) during 是介系詞，後面只能接名詞；(D) though 是從屬連接詞，後面接的子句不倒裝，語意上也沒有轉折關係。
+標籤: 連接詞, 倒裝
