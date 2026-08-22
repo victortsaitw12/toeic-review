@@ -1590,8 +1590,8 @@ Ms. Ross acquired the \_\_\_ number of new customers in May, falling behind all 
 (D) smallest
 
 答案：D
-解析：句意是「Ross 女士五月開發到的新客戶數量最少，落後其他所有業務代表。」判斷關鍵在 falling behind all the other sales representatives（落後所有其他業務）點明她墊底，而修飾 number（數量）要用大小，選 (D) smallest（最少的）。(A) steadiest（最穩定的）與「落後」不呼應；(B) brightest（最明亮的、最聰明的）不修飾數量；(C) longest（最長的）用於長度或時間，不用來形容數目多寡。
-標籤: 字彙, 最高級
+解析：句意是「Ross 女士五月開發到的新客戶數量最少，落後其他所有業務代表。」判斷關鍵在 falling behind all the other sales representatives（落後所有其他業務）點明她墊底，而修飾 number（數量）要用大小，選 (D) smallest（最少的）。(A) steadiest（最穩定的）與「落後」不呼應；(B) brightest（最明亮的、最聰明的）不修飾數量；(C) longest（最長的）用於長度或時間，不用來形容數目多寡。補充：逗號後的 falling 不是動名詞而是現在分詞，整段 falling behind… 是分詞構句，當副詞補充說明前面的完整句子；它由主詞相同的對等子句簡化而來（＝and she fell behind all the other sales representatives），表示「結果、伴隨狀況」。多益常考這種句尾的 , V-ing／, p.p.：邏輯主詞是主動用現在分詞（reviewed the report, noting several errors），被動則用過去分詞（Written in plain English, the manual is easy to follow.）；分詞的邏輯主詞必須跟主要子句主詞一致，否則就是垂懸分詞。
+標籤: 字彙, 最高級, 分詞構句
 
 ## Q130
 
