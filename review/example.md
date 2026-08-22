@@ -1452,7 +1452,7 @@ Earth Preserve hopes that everyone \_\_\_ to a fund-raiser held in the coming we
 
 ## Q110
 
-Several local ski lodges have deplayed opening \_\_\_ mid-November due to the warm weather.
+Several local ski lodges have delayed opening \_\_\_ mid-November due to the warm weather.
 
 (A) about
 (B) despite
@@ -1465,7 +1465,7 @@ Several local ski lodges have deplayed opening \_\_\_ mid-November due to the wa
 
 ## Q114
 
-As a result of an exclusively agreement, the drink Nitro-Sip is available \_\_\_ at Duggarti Foods.
+As a result of an exclusive agreement, the drink Nitro-Sip is available \_\_\_ at Duggarti Foods.
 
 (A) densely
 (B) fully
@@ -1556,7 +1556,7 @@ Due to the success of his prototypes, the inventor currently has a \_\_\_ reputa
 
 ## Q127
 
-The \_\_\_ of LRB Pharmaceuticals and Hough Laboratories may result in the elimination fo some positions.
+The \_\_\_ of LRB Pharmaceuticals and Hough Laboratories may result in the elimination of some positions.
 
 (A) merger
 (B) potential
