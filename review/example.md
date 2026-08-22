@@ -1395,3 +1395,213 @@ Visitors are not allowed in certain sections of the building, \_\_\_ are they pe
 答案：C
 解析：句意是「訪客不得進入大樓的某些區域，也不准在沒有導覽人員陪同下四處走動。」判斷關鍵在空格後面是 are they permitted 的倒裝語序（be 動詞跑到主詞前面），這是否定副詞或 nor 置句首才會出現的結構；前一句是否定句，後面要接續另一個否定，用 (C) nor（也不）。(A) so 表示結果，且 so 開頭要用正常語序；(B) during 是介系詞，後面只能接名詞；(D) though 是從屬連接詞，後面接的子句不倒裝，語意上也沒有轉折關係。
 標籤: 連接詞, 倒裝
+
+# 國學閱讀綠本 第九回合
+
+## Q103
+
+Thanks to a city council budget surplus, it is \_\_\_ possible that Davondale Bridge will be replaced this year.
+
+(A) certain
+(B) certainty
+(C) certainly
+(D) certitude
+
+答案：C
+解析：句意是「多虧市議會預算有結餘，Davondale 橋今年很可能會被換新。」判斷關鍵在句型已經是完整的 it is + 形容詞 possible + that 子句（虛主詞句型），空格夾在 be 動詞與形容詞 possible 之間，這個位置只能放修飾形容詞的副詞，選 (C) certainly（的確、確實）。(A) certain 是形容詞，it is certain possible 兩個形容詞並排不成立（要說 it is certain that…）；(B) certainty（確定性）與 (D) certitude（確信）都是名詞，放進來變成 it is certainty possible，句子結構壞掉。
+標籤: 詞性, 副詞
+
+## Q107
+
+Attendees found the computer tutorial offered by Offenburg Community Center to be \_\_\_ helpful.
+
+(A) fast
+(B) enough
+(C) quite
+(D) soon
+
+答案：C
+解析：句意是「與會者覺得 Offenburg 社區中心提供的電腦教學相當有幫助。」判斷關鍵在空格要修飾後面的形容詞 helpful，需要一個程度副詞，選 (C) quite（相當、頗）。(B) enough 當副詞修飾形容詞時必須「後置」，要寫成 helpful enough，不能放在前面；(A) fast（快速地）與 (D) soon（很快、不久）講的是速度和時間，不能用來表示「有幫助的程度」。補充：這裡的 find + 受詞 + to be + 形容詞是「覺得某物是…」的句型。
+標籤: 字彙, 副詞
+
+## Q108
+
+To find his printer's model number, Mr. Jansen turned it \_\_\_ and checked the bottom.
+
+(A) past
+(B) against
+(C) in
+(D) over
+
+答案：D
+解析：句意是「為了找印表機的型號，Jansen 先生把它翻過來檢查底部。」判斷關鍵在後半句的 checked the bottom（檢查底部），要先把機器「翻面」才看得到底部，turn something over 就是「把某物翻過來」，選 (D) over。(A) turn past 沒有這個搭配；(B) turn against 是「反目、倒戈」，語意不合；(C) turn in 是「繳交、上交」（turn in a report），也可指「就寢」，都與翻面無關。
+標籤: 介系詞, 片語
+
+## Q109
+
+Earth Preserve hopes that everyone \_\_\_ to a fund-raiser held in the coming week.
+
+(A) contributing
+(B) will contribute
+(C) contributed
+(D) had contributed
+
+答案：B
+解析：句意是「Earth Preserve 希望大家都能為下週舉辦的募款活動出一份力。」判斷關鍵在時間副詞 in the coming week（在接下來這一週）指向未來，而且 hope 後面的 that 子句本來就常接未來式，選 (B) will contribute。(A) contributing 是分詞，that 子句缺少真正的動詞；(C) contributed 是過去式、(D) had contributed 是過去完成式，都與「還沒發生的募款活動」時間矛盾。
+標籤: 時態, 未來式
+
+## Q110
+
+Several local ski lodges have deplayed opening \_\_\_ mid-November due to the warm weather.
+
+(A) about
+(B) despite
+(C) until
+(D) across
+
+答案：C
+解析：句意是「因為天氣偏暖，好幾家當地滑雪旅館把開幕延到十一月中。」判斷關鍵在動詞 delay（延後）搭配的是「延到某個時間點」，用表示持續到某時間的 (C) until。(A) about 接時間是「大約」，delay opening about mid-November 少了「延到」的方向性；(B) despite（儘管）是讓步介系詞，語意不合，何況原因已由 due to 交代；(D) across 表示橫越空間或跨越一段範圍，不用來標記單一時間點。
+標籤: 介系詞
+
+## Q114
+
+As a result of an exclusively agreement, the drink Nitro-Sip is available \_\_\_ at Duggarti Foods.
+
+(A) densely
+(B) fully
+(C) solely
+(D) fairly
+
+答案：C
+解析：句意是「由於一紙獨家協議，Nitro-Sip 這款飲料只在 Duggarti Foods 買得到。」判斷關鍵在 exclusive agreement（獨家協議）這個提示，後面必須呼應「僅此一家」，選 (C) solely（僅、唯獨）。(A) densely（密集地）用於人口或植被；(B) fully（完全地）修飾的是程度，available fully 語意空泛且不呼應獨家；(D) fairly（相當地；公平地）兩個意思放進來都不通。
+標籤: 字彙, 副詞
+
+## Q116
+
+Though the \_\_\_ findings suggested that the medication was effective, further research proved otherwise.
+
+(A) congested
+(B) upcoming
+(C) hazardous
+(D) original
+
+答案：D
+解析：句意是「雖然最初的研究結果顯示這款藥有效，後續研究卻證明並非如此。」判斷關鍵在 Though 帶出的對比：空格的研究結果和後面的 further research（進一步研究）是「先前 vs 後續」的時間對照，選 (D) original（最初的、原本的）。(A) congested（壅塞的）用於交通或鼻塞；(B) upcoming（即將到來的）方向相反，還沒出來的結果不可能已經 suggested；(C) hazardous（危險的）與研究結果搭不上，也對比不出來。
+標籤: 字彙, 形容詞
+
+## Q119
+
+Ahead of his retirement, Director John Bailey \_\_\_ his colleague Vanessa Gail as his successor.
+
+(A) consented
+(B) estimated
+(C) amended
+(D) nominated
+
+答案：D
+解析：句意是「John Bailey 主任在退休前提名同事 Vanessa Gail 接任。」判斷關鍵在 as his successor（作為接班人）這個補語，需要 nominate somebody as／for something（提名某人擔任…）的搭配，選 (D) nominated。(A) consented（同意）是不及物動詞，要說 consent to something，不能直接接受詞；(B) estimated（估計）接的是數量或價值；(C) amended（修訂）的受詞是文件、法規、合約這類東西，不能修訂「人」。
+標籤: 字彙, 動詞
+
+## Q120
+
+The company's new workplace safety policy is high \_\_\_ the agenda for tomorrow's meeting.
+
+(A) of
+(B) to
+(C) at
+(D) on
+
+答案：D
+解析：句意是「公司新的職場安全政策在明天會議的議程上排在前面（是重點項目）。」判斷關鍵在 high on the agenda 是固定搭配，表示「列為優先事項」，選 (D) on；議程上的項目本來就用 on the agenda。(A) of、(B) to、(C) at 都不與 agenda 這樣連用，at the agenda 尤其不存在。補充：同義說法有 a top priority、at the top of the agenda。
+標籤: 介系詞, 片語
+
+## Q122
+
+Students are \_\_\_ arguing for the renovation of Central Library, which is now over 50 years old.
+
+(A) immeasurably
+(B) strongly
+(C) mutually
+(D) inadvertently
+
+答案：B
+解析：句意是「學生們強烈主張中央圖書館應該整修，這棟建築已有超過 50 年歷史。」判斷關鍵在空格修飾 arguing for（主張、力挺），要表達主張的強度，argue strongly for something 是常見搭配，選 (B) strongly（強烈地）。(A) immeasurably（無法衡量地）用來修飾程度差異，如 immeasurably better；(C) mutually（互相地）需要雙方互動，如 mutually beneficial；(D) inadvertently（無意間、不小心地）與「力爭」的刻意行為矛盾。
+標籤: 字彙, 副詞
+
+## Q123
+
+\_\_\_ they are entered into the payroll system, new employees must provide the finance department with some banking information.
+
+(A) As if
+(B) During
+(C) Before
+(D) Instead of
+
+答案：C
+解析：句意是「新進員工在被登錄進薪資系統之前，必須先向財務部提供銀行資料。」判斷關鍵在空格後面是完整子句 they are entered…，需要從屬連接詞，且先給銀行資料才能建檔，時間順序上用 (C) Before。(B) During 與 (D) Instead of 都是介系詞，後面只能接名詞或動名詞，不能接子句；(A) As if（彷彿）雖是連接詞，但表示「好像…一樣」的比擬，語意不合。
+標籤: 連接詞, 副詞子句
+
+## Q125
+
+Due to the success of his prototypes, the inventor currently has a \_\_\_ reputation for innovation.
+
+(A) grown
+(B) growing
+(C) grower
+(D) growth
+
+答案：B
+解析：句意是「由於原型機大獲成功，這位發明家在創新方面的名聲正日益上升。」判斷關鍵在空格在冠詞 a 與名詞 reputation 之間要放修飾語，名聲是「主動地不斷擴大」，用現在分詞 (B) growing（日漸增長的）。(A) grown 是過去分詞，帶被動或完成語氣，a grown reputation 不自然（grown 多用於 a grown man 這種「長大成人的」）；(C) grower（種植者）是人物名詞；(D) growth（成長）是名詞，growth 雖可修飾名詞如 growth rate，但 a growth reputation 不成立。
+標籤: 詞性, 分詞
+
+## Q127
+
+The \_\_\_ of LRB Pharmaceuticals and Hough Laboratories may result in the elimination fo some positions.
+
+(A) merger
+(B) potential
+(C) dedication
+(D) obligation
+
+答案：A
+解析：句意是「LRB 製藥與 Hough 實驗室的合併，可能導致部分職位被裁撤。」判斷關鍵在 A and B 兩家公司並列，加上後果是裁員，指的是企業合併，the merger of A and B 是固定說法，選 (A) merger（合併）。(B) potential（潛力）是抽象特質，不會由兩家公司「的」共同擁有並導致裁員；(C) dedication（奉獻、投入）語意上不會造成職位消失；(D) obligation（義務）通常搭配 to do something，也接不上裁員的因果。
+標籤: 字彙, 名詞
+
+## Q128
+
+Amberview Beach Resort is a popular summer destination, but it is open for business all \_\_\_ the year.
+
+(A) among
+(B) without
+(C) through
+(D) beyond
+
+答案：C
+解析：句意是「Amberview 海灘度假村是熱門的夏日去處，但它整年都營業。」判斷關鍵在 but 帶出的對比：不只夏天，而是「一整年從頭到尾」，all through the year 表示貫穿整段期間，選 (C) through。(A) among（在…之中）用於三者以上的群體；(B) without（沒有）語意不合；(D) beyond（超過、在…之外）指的是越過某界線之後，不是涵蓋整年。補充：同義說法有 all year round、throughout the year。
+標籤: 介系詞
+
+## Q129
+
+Ms. Ross acquired the \_\_\_ number of new customers in May, falling behind all the other sales representatives.
+
+(A) steadiest
+(B) brightest
+(C) longest
+(D) smallest
+
+答案：D
+解析：句意是「Ross 女士五月開發到的新客戶數量最少，落後其他所有業務代表。」判斷關鍵在 falling behind all the other sales representatives（落後所有其他業務）點明她墊底，而修飾 number（數量）要用大小，選 (D) smallest（最少的）。(A) steadiest（最穩定的）與「落後」不呼應；(B) brightest（最明亮的、最聰明的）不修飾數量；(C) longest（最長的）用於長度或時間，不用來形容數目多寡。
+標籤: 字彙, 最高級
+
+## Q130
+
+Completing an important project under a time \_\_\_ calls for careful scheduling.
+
+(A) constraint
+(B) relief
+(C) quality
+(D) proposal
+
+答案：A
+解析：句意是「要在時間壓力下完成重要專案，需要仔細安排進度。」判斷關鍵在後面說需要 careful scheduling（仔細排程），代表時間吃緊，time constraint（時間限制、時間壓力）是固定搭配，選 (A) constraint。(B) relief（緩解、寬慰）方向相反，時間充裕就不必精算排程；(C) quality（品質）與 time 湊不成合理複合名詞；(D) proposal（提案）是待審核的計畫書，不能說 under a time proposal。
+標籤: 字彙, 名詞
