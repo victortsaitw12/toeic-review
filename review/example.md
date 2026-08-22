@@ -1603,5 +1603,5 @@ Completing an important project under a time \_\_\_ calls for careful scheduling
 (D) proposal
 
 答案：A
-解析：句意是「要在時間壓力下完成重要專案，需要仔細安排進度。」判斷關鍵在後面說需要 careful scheduling（仔細排程），代表時間吃緊，time constraint（時間限制、時間壓力）是固定搭配，選 (A) constraint。(B) relief（緩解、寬慰）方向相反，時間充裕就不必精算排程；(C) quality（品質）與 time 湊不成合理複合名詞；(D) proposal（提案）是待審核的計畫書，不能說 under a time proposal。
-標籤: 字彙, 名詞
+解析：句意是「要在時間壓力下完成重要專案，需要仔細安排進度。」判斷關鍵在後面說需要 careful scheduling（仔細排程），代表時間吃緊，time constraint（時間限制、時間壓力）是固定搭配，選 (A) constraint。(B) relief（緩解、寬慰）方向相反，時間充裕就不必精算排程；(C) quality（品質）與 time 湊不成合理複合名詞；(D) proposal（提案）是待審核的計畫書，不能說 under a time proposal。補充：句中的 call for 是片語動詞「需要、要求」（＝require），主詞常是情況或任務，如 This situation calls for immediate action.；這裡的主詞是動名詞片語 Completing an important project…，整組算單數，所以動詞用 calls。call for 另有「呼籲」（called for better conditions）與「去接某人」（I'll call for you at seven.）的用法。
+標籤: 字彙, 名詞, 片語動詞
