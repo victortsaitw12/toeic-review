@@ -1605,3 +1605,135 @@ Completing an important project under a time \_\_\_ calls for careful scheduling
 答案：A
 解析：句意是「要在時間壓力下完成重要專案，需要仔細安排進度。」判斷關鍵在後面說需要 careful scheduling（仔細排程），代表時間吃緊，time constraint（時間限制、時間壓力）是固定搭配，選 (A) constraint。(B) relief（緩解、寬慰）方向相反，時間充裕就不必精算排程；(C) quality（品質）與 time 湊不成合理複合名詞；(D) proposal（提案）是待審核的計畫書，不能說 under a time proposal。補充：句中的 call for 是片語動詞「需要、要求」（＝require），主詞常是情況或任務，如 This situation calls for immediate action.；這裡的主詞是動名詞片語 Completing an important project…，整組算單數，所以動詞用 calls。call for 另有「呼籲」（called for better conditions）與「去接某人」（I'll call for you at seven.）的用法。
 標籤: 字彙, 名詞, 片語動詞
+
+# 國學閱讀綠本 第十回合
+
+## Q113
+
+Most companies advertise online as the Internet has a significant \_\_\_ on consumer behavior.
+
+(A) direction
+(B) influence
+(C) atmosphere
+(D) obligation
+
+答案：B
+解析：句意是「多數公司都在網路上打廣告，因為網際網路對消費者行為有顯著的影響。」判斷關鍵在空格前後的 have a significant \_\_\_ on，have an influence on（對…有影響）是固定搭配，選 (B) influence。(A) direction（方向、指示）不搭配 on，要說 in the direction of 或 give directions；(C) atmosphere（氣氛）是場所給人的感受，不會用 on 接對象；(D) obligation（義務）搭配的是 obligation to do something，語意上網路也不會對消費者行為「有義務」。補充：同義說法有 have an impact on、have an effect on。
+標籤: 字彙, 名詞, 固定搭配
+
+## Q114
+
+\_\_\_ becoming an actor and musician, Mr. Austin worked in the construction industry as an electrician.
+
+(A) Prior to
+(B) In case of
+(C) Provided that
+(D) In accordance with
+
+答案：A
+解析：句意是「在成為演員與音樂家之前，Austin 先生在營建業當電工。」判斷關鍵有兩個：空格後接的是動名詞 becoming，所以要用介系詞（片語）而非連接詞；再看時序，主要子句用過去式描述更早的工作，需要「在…之前」，選 (A) Prior to（＝before）。(B) In case of（萬一、以防）雖然也接名詞，但語意是假設狀況；(C) Provided that（假如）是連接詞，後面必須接完整子句；(D) In accordance with（依照、遵照）用於規定或程序。補充：prior to 是多益常見的正式用語，同義的還有 ahead of、in advance of。
+標籤: 介系詞, 片語介系詞, 動名詞
+
+## Q115
+
+In order to register for the class, prospective students have to \_\_\_ some paperwork.
+
+(A) check in
+(B) fill out
+(C) make over
+(D) give up
+
+答案：B
+解析：句意是「為了報名這門課，有意就讀的學生必須填寫一些文件。」判斷關鍵在受詞 some paperwork（書面表格）與情境 register for the class（報名），報名要填表，選 (B) fill out（填寫）。(A) check in（報到、辦理登機或入住）受詞是行李或人，不接表格；(C) make over（改造、把財產移交他人）；(D) give up（放棄）語意不合。補充：fill out 是美式說法，英式用 fill in；paperwork 是不可數名詞，不加 s。
+標籤: 字彙, 片語動詞
+
+## Q116
+
+The company gives a percentage of its sales revenue to charity, and many consumers have expressed \_\_\_ for this policy.
+
+(A) admires
+(B) admired
+(C) admire
+(D) admiration
+
+答案：D
+解析：句意是「這家公司把部分銷售收入捐給慈善機構，許多消費者對這項政策表達了讚賞。」判斷關鍵在空格前已有動詞 have expressed，後面缺的是受詞，必須用名詞，選 (D) admiration（讚賞、欽佩）。(A) admires 是第三人稱單數動詞、(C) admire 是原形動詞、(B) admired 是過去式／過去分詞，三者都不能當受詞。補充：express admiration for（對…表達讚賞）是常見搭配，同類的還有 express interest in、express concern about。
+標籤: 詞性, 名詞
+
+## Q118
+
+Due to low consumer prices and a supply surplus, producing natural gas is no longer \_\_\_ for many companies.
+
+(A) profitability
+(B) profits
+(C) profitable
+(D) profit
+
+答案：C
+解析：句意是「由於消費者端價格低迷加上供給過剩，對許多公司來說，生產天然氣已不再有利可圖。」判斷關鍵在 be 動詞 is 後面缺主詞補語，用來描述主詞 producing natural gas 的性質，要用形容詞，選 (C) profitable（有利潤的）。(A) profitability（獲利能力）、(B) profits、(D) profit（利潤）都是名詞，說「生產天然氣是利潤」在語意上不通。補充：主詞是動名詞片語 producing natural gas，視為單數，所以動詞用 is；no longer（不再）通常放在 be 動詞之後、一般動詞之前。
+標籤: 詞性, 形容詞
+
+## Q122
+
+The public's positive attitude \_\_\_ environmental protection has resulted in many businesses adopting ecologically friendly practices.
+
+(A) behind
+(B) by
+(C) toward
+(D) like
+
+答案：C
+解析：句意是「大眾對環保的正面態度，促使許多企業採用對生態友善的做法。」判斷關鍵在 attitude 後面要接態度的對象，attitude toward（對…的態度）是固定搭配，選 (C) toward。(A) behind（在…後面）表位置或幕後支持；(B) by（藉由、被）表方法或動作者；(D) like（像）表相似。補充：attitude to、attitude about 也可以，但多益最常考 toward(s)；result in 後面接結果，這裡的 many businesses adopting… 是「名詞＋動名詞」結構，many businesses 是 adopting 的邏輯主詞。
+標籤: 介系詞, 固定搭配
+
+## Q125
+
+Coming up with ways \_\_\_ a business from its competitors can be challenging, especially in a global market.
+
+(A) differentiate
+(B) differentiation
+(C) to differentiate
+(D) differentiates
+
+答案：C
+解析：句意是「要想出讓企業與競爭對手做出區隔的方法，可能很有挑戰性，尤其是在全球市場。」判斷關鍵在整句的主要動詞已經是 can be，空格處只能放不定詞來修飾前面的名詞 ways（ways to do something），選 (C) to differentiate。(A) differentiate 原形動詞、(D) differentiates 都是限定動詞，一個句子不能有兩個主要動詞；(B) differentiation 是名詞，兩個名詞不能直接並排。補充：differentiate A from B 是「把 A 與 B 區別開來」；句首的 Coming up with ways… 是動名詞片語當主詞，視為單數。
+標籤: 不定詞, 修飾
+
+## Q126
+
+Figure skater Erica Mikahailov earned an \_\_\_ high tournament score and is likely to become the new champion.
+
+(A) adversely
+(B) impressively
+(C) identically
+(D) importantly
+
+答案：B
+解析：句意是「花式滑冰選手 Erica Mikahailov 拿到高得驚人的比賽分數，很可能成為新的冠軍。」判斷關鍵在空格要用副詞修飾形容詞 high，且後半句 is likely to become the new champion 是正面語氣，選 (B) impressively（令人印象深刻地）。(A) adversely（不利地）語氣相反，也不修飾 high；(C) identically（相同地）需要比較對象；(D) importantly（重要地）不用來形容分數的高低，通常放句首當評論副詞（More importantly, …）。補充：冠詞用 an 是因為後面接的是母音開頭的 impressively。
+標籤: 副詞, 字彙
+
+## Q128
+
+The actress who played singer Sabrina Newton in the movie Monochrome won an award \_\_\_ her excellent performance.
+
+(A) aside from
+(B) contrary to
+(C) together with
+(D) because of
+
+答案：D
+解析：句意是「在電影《Monochrome》中飾演歌手 Sabrina Newton 的女演員，因為精湛的演出而獲獎。」判斷關鍵在獲獎與演出之間是因果關係，空格後接名詞片語 her excellent performance，選 (D) because of（因為）。(A) aside from（除…之外）；(B) contrary to（與…相反）；(C) together with（連同、和…一起）都接不出得獎的原因。補充：because of 接名詞，because 接子句；同義的介系詞片語還有 due to、owing to、on account of。句中的 who played… 是關係子句，修飾主詞 The actress，主要動詞是 won。
+標籤: 介系詞, 片語介系詞
+
+## Q130
+
+The mobile app allows users to \_\_\_ objects up to 20 times their actual size.
+
+(A) assume
+(B) magnify
+(C) provoke
+(D) multiply
+
+答案：B
+解析：句意是「這款手機應用程式讓使用者可以把物體放大到實際尺寸的 20 倍。」判斷關鍵在 up to 20 times their actual size（達實際大小的 20 倍），講的是把影像放大，選 (B) magnify（放大）。(A) assume（假定、承擔）；(C) provoke（激怒、引發）；(D) multiply 雖有「倍增」之意，但指的是數量變多或做乘法運算，不用在單一物體看起來變大。補充：allow somebody to do something（讓某人做某事）是固定句型，空格必須是原形動詞。
+標籤: 字彙, 動詞
