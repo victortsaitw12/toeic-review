@@ -1737,3 +1737,140 @@ The mobile app allows users to \_\_\_ objects up to 20 times their actual size.
 答案：B
 解析：句意是「這款手機應用程式讓使用者可以把物體放大到實際尺寸的 20 倍。」判斷關鍵在 up to 20 times their actual size（達實際大小的 20 倍），講的是把影像放大，選 (B) magnify（放大）。(A) assume（假定、承擔）；(C) provoke（激怒、引發）；(D) multiply 雖有「倍增」之意，但指的是數量變多或做乘法運算，不用在單一物體看起來變大。補充：allow somebody to do something（讓某人做某事）是固定句型，空格必須是原形動詞。
 標籤: 字彙, 動詞
+
+# 國學閱讀A本 第一回合
+
+## Q105
+
+\_\_\_ the request of residents, the council installed street lamps around Tyler Park.
+
+(A) At
+(B) From
+(C) Under
+(D) Among
+
+## Q107
+
+Mr. Zendaya is a competent employee with an individual \_\_\_ in marketing.
+
+(A) interested
+(B) interests
+(C) interest
+(D) interesting
+
+## Q110
+
+Young people are drawn to big cities by the promise of \_\_\_ and opportunity.
+
+(A) excite
+(B) excited
+(C) excitement
+(D) excitable
+
+## Q113
+
+BT Industries organized a dinner banquet in honor \_\_\_ its newly appointed CEO.
+
+(A) to
+(B) toward
+(C) of
+(D) following
+
+## Q115
+
+The country's stock market achieved gains, \_\_\_ other nations suffered losses.
+
+(A) thus
+(B) besides
+(C) whereas
+(D) concerning
+
+## Q118
+
+Attracting new customers costs more than retaining \_\_\_ ones.
+
+(A) existing
+(B) existed
+(C) exist
+(D) existence
+
+## Q119
+
+Financial experts have not seen \_\_\_ indications that the global economy has come out of recession.
+
+(A) firm
+(B) firmly
+(C) firms
+(D) firmness
+
+## Q120
+
+Manufacturers are looking for ways to \_\_\_ lower operating costs.
+
+(A) considering
+(B) considerate
+(C) considerable
+(D) considerably
+
+## Q122
+
+Capable leaders are \_\_\_ to the ideas of other people.
+
+(A) informative
+(B) successful
+(C) attractive
+(D) receptive
+
+## Q125
+
+Mercura Auto decided that it will move its production plant to Mexico, \_\_\_ costly that is.
+
+(A) once
+(B) however
+(C) very
+(D) just as
+
+## Q126
+
+Shutting down Web servers for \_\_\_ maintenance is vital as it can prevent system errors.
+
+(A) periods
+(B) periodic
+(C) periodically
+(D) periodicals
+
+## Q127
+
+Mr. Tsai receives a 10 percent commission for \_\_\_ sale he makes.
+
+(A) some
+(B) each
+(C) all
+(D) few
+
+## Q128
+
+The positive results of a recent visitor survey \_\_\_ Scottsdale's reputation as an excellent tourist destination.
+
+(A) contradict
+(B) consult
+(C) reinforce
+(D) permit
+
+## Q129
+
+Thornton & Jones settled its disagreement with the client \_\_\_ to avoid negative publicity.
+
+(A) wishfully
+(B) confidentially
+(C) extensively
+(D) incrementally
+
+## Q130
+
+Students are encouraged to participate in a sport that offers a \_\_\_ from the everyday stress of school work.
+
+(A) releasable
+(B) released
+(C) releasing
+(D) release
